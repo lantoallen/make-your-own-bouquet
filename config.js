@@ -1,0 +1,1 @@
+const SB = { url: 'https://oerzmvbnyewsblzfwgia.supabase.co/rest/v1/', key: 'sb_publishable_jEU3RPAO4r1Ny0A2Jmkl5w_iYpZ2IQl' };
