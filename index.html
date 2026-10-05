@@ -1,467 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coquette Bloom Box</title>
-    <!-- Include html2canvas for the image download feature -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Quicksand:wght@400;600&display=swap');
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            background-color: #fdf5f6;
-            background-image: radial-gradient(#f7dcd9 2px, transparent 2px);
-            background-size: 30px 30px;
-            font-family: 'Quicksand', sans-serif;
-            color: #5c3a41;
-            overflow-x: hidden;
-        }
-
-        .app-container {
-            display: flex;
-            flex-wrap: wrap;
-            min-height: 100vh;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* --- UI Control Panel (Sender Mode) --- */
-        .controls {
-            width: 100%;
-            max-width: 400px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 2.5rem;
-            border-right: 2px dashed #f5c4c9;
-            box-shadow: 10px 0 30px rgba(230, 180, 190, 0.2);
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .controls h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.2rem;
-            font-style: italic;
-            color: #d16b8a;
-        }
-
-        .control-group {
-            background: #fffafa;
-            padding: 1.2rem;
-            border-radius: 12px;
-            border: 1px solid #fce4ec;
-            box-shadow: inset 0 2px 5px rgba(255,200,210,0.1);
-        }
-
-        .control-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.8rem;
-            color: #8c6b73;
-        }
-
-        .btn-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        button {
-            padding: 12px;
-            border: 1px solid #fce4ec;
-            border-radius: 20px;
-            background: white;
-            cursor: pointer;
-            font-family: inherit;
-            font-weight: 600;
-            color: #d16b8a;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.2);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-        }
-
-        button:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 6px 12px rgba(209, 107, 138, 0.15);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #ffb6c1, #ffc0cb);
-            color: white;
-            border: none;
-            grid-column: span 2;
-            font-size: 1.1rem;
-        }
-
-        .action-btns {
-            display: flex;
-            gap: 10px;
-            margin-top: 1rem;
-        }
-        
-        .action-btns button {
-            flex: 1;
-            background: #d16b8a;
-            color: white;
-        }
-
-        input[type="color"] {
-            width: 100%;
-            height: 45px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        textarea {
-            width: 100%;
-            height: 70px;
-            padding: 12px;
-            border: 1px solid #fce4ec;
-            border-radius: 8px;
-            font-family: inherit;
-            resize: none;
-            background: #fff;
-        }
-
-        /* --- Receiver Greeting --- */
-        .receiver-greeting {
-            display: none;
-            position: absolute;
-            top: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            z-index: 30;
-        }
-        .receiver-greeting h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            color: #d16b8a;
-            text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
-        }
-
-        /* --- 3D Canvas Output --- */
-        .canvas {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            min-height: 600px;
-        }
-
-        /* The container we will screenshot */
-        .export-frame {
-            position: relative;
-            width: 450px;
-            height: 600px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-end;
-            padding-bottom: 40px;
-        }
-
-        .flower-vase {
-            position: absolute;
-            bottom: 180px;
-            width: 250px;
-            height: 350px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            z-index: 10;
-        }
-
-        .item-sprite {
-            position: absolute;
-            bottom: -20px;
-            font-size: 5rem;
-            transform-origin: bottom center;
-            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            filter: drop-shadow(2px 5px 5px rgba(0,0,0,0.15));
-            animation: popIn 0.5s forwards;
-        }
-        
-        .item-sprite.main-lily {
-            font-size: 7rem;
-            filter: drop-shadow(4px 8px 8px rgba(0,0,0,0.2));
-            z-index: 5 !important;
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0) translateY(50px); opacity: 0; }
-            100% { transform: scale(1) translateY(0); opacity: 1; }
-        }
-
-        /* 3D Wrapper Design */
-        .wrapper-back {
-            position: absolute;
-            bottom: 30px;
-            width: 0;
-            height: 0;
-            border-left: 110px solid transparent;
-            border-right: 110px solid transparent;
-            border-top: 220px solid #e0c8c5; /* Darker interior */
-            border-radius: 10px;
-            z-index: 1;
-        }
-
-        .wrapper-front {
-            position: absolute;
-            bottom: 20px;
-            width: 0;
-            height: 0;
-            border-left: 140px solid transparent;
-            border-right: 140px solid transparent;
-            border-top: 250px solid #ffe4e1;
-            border-radius: 15px;
-            z-index: 20;
-            filter: drop-shadow(0 15px 25px rgba(100, 50, 60, 0.15));
-            transition: border-top-color 0.4s;
-        }
-
-        /* Frilly Lace Edge */
-        .wrapper-front::after {
-            content: '';
-            position: absolute;
-            top: -260px;
-            left: -140px;
-            width: 280px;
-            height: 20px;
-            background-image: radial-gradient(circle at 10px 0, transparent 10px, #ffffff 11px);
-            background-size: 20px 20px;
-            background-repeat: repeat-x;
-            z-index: 21;
-        }
-
-        .bow {
-            position: absolute;
-            top: -230px;
-            left: -35px;
-            font-size: 4rem;
-            z-index: 22;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
-        }
-
-        .gift-tag {
-            position: absolute;
-            top: -140px;
-            left: 50px;
-            background: #fffdfd;
-            padding: 20px;
-            width: 150px;
-            min-height: 80px;
-            border-radius: 4px 4px 4px 20px;
-            box-shadow: 2px 5px 15px rgba(0,0,0,0.1);
-            transform: rotate(8deg);
-            border: 2px solid #f9e4e8;
-            z-index: 25;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .gift-tag p {
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            font-size: 1.1rem;
-            color: #5c3a41;
-            text-align: center;
-            word-wrap: break-word;
-        }
-
-        /* Hide controls when viewing a shared link */
-        .view-mode .controls { display: none; }
-        .view-mode .receiver-greeting { display: block; }
-    </style>
-</head>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Make Your Own Bouquet</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="stylesheet" href="style.css"></head>
 <body>
-    <div class="app-container" id="app">
-        
-        <!-- Receiver Greeting (Hidden by default) -->
-        <div class="receiver-greeting">
-            <h1>Someone sent you a bloom box... 🎀</h1>
-        </div>
-
-        <!-- UI Control Panel -->
-        <aside class="controls" id="controlPanel">
-            <div>
-                <h2>Build a Box 🎀</h2>
-                <p style="margin-top: 5px; color: #8c6b73;">Design a custom arrangement and send it to someone special.</p>
-            </div>
-            
-            <div class="control-group">
-                <label>Add the Main Event</label>
-                <button onclick="addItem('lily', true)" class="btn-primary">🌸 Add Pink Lily</button>
-                <button onclick="addItem('whitelily', true)" class="btn-primary" style="margin-top: 10px; background: linear-gradient(135deg, #f8f8f8, #e0e0e0); color: #5c3a41;">⚜️ Add White Lily</button>
-            </div>
-
-            <div class="control-group">
-                <label>Add Other Accents</label>
-                <div class="btn-grid">
-                    <button onclick="addItem('rose')">🌹 Rose</button>
-                    <button onclick="addItem('tulip')">🌷 Tulip</button>
-                    <button onclick="addItem('cat')">🐱 Kitten</button>
-                    <button onclick="addItem('dog')">🐶 Puppy</button>
-                    <button onclick="addItem('sparkle')">✨ Sparkles</button>
-                    <button onclick="addItem('ribbon')">🎀 Ribbon</button>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label for="wrapColor">Wrapping Paper Color:</label>
-                <input type="color" id="wrapColor" value="#ffe4e1">
-            </div>
-
-            <div class="control-group">
-                <label for="giftMessage">Secret Message:</label>
-                <textarea id="giftMessage" placeholder="You are the sweetest..." maxlength="45"></textarea>
-            </div>
-            
-            <div class="action-btns">
-                <button onclick="generateShareLink()">💌 Copy Link to Share</button>
-                <button onclick="downloadImage()">📸 Save Image</button>
-            </div>
-            <button onclick="clearBouquet()" style="width:100%; margin-top: 10px; background: transparent; border: none; text-decoration: underline;">Start Over</button>
-        </aside>
-
-        <!-- Visual Output -->
-        <main class="canvas">
-            <div class="export-frame" id="exportFrame">
-                <div class="wrapper-back"></div>
-                
-                <div id="flowerVase" class="flower-vase">
-                    <!-- Items injected via JS -->
-                </div>
-                
-                <div id="wrapperFront" class="wrapper-front">
-                    <div class="bow">🎀</div>
-                    <div class="gift-tag">
-                        <p id="tagText">For you...</p>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <script>
-        const vase = document.getElementById('flowerVase');
-        const wrapColorInput = document.getElementById('wrapColor');
-        const wrapperFront = document.getElementById('wrapperFront');
-        const messageInput = document.getElementById('giftMessage');
-        const tagText = document.getElementById('tagText');
-        const app = document.getElementById('app');
-
-        // State Management
-        let bouquetData = [];
-
-        const emojiMap = {
-            lily: '🌸', whitelily: '⚜️', rose: '🌹', 
-            tulip: '🌷', cat: '🐱', dog: '🐶', 
-            sparkle: '✨', ribbon: '🎀'
-        };
-
-        function addItem(type, isMain = false) {
-            bouquetData.push({ type, isMain });
-            renderItem(type, isMain);
-        }
-
-        function renderItem(type, isMain) {
-            const item = document.createElement('div');
-            item.className = 'item-sprite';
-            if(isMain) item.classList.add('main-lily');
-            
-            item.textContent = emojiMap[type];
-            
-            // Calculate 3D positioning
-            const range = isMain ? 20 : 60;
-            const randomX = Math.floor(Math.random() * range * 2) - range;
-            const randomY = Math.floor(Math.random() * 40) - (isMain ? 20 : 0);
-            const randomRot = Math.floor(Math.random() * 30) - 15;
-            
-            item.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRot}deg)`;
-            item.style.zIndex = Math.floor(Math.random() * 10);
-            
-            vase.appendChild(item);
-        }
-
-        // Live UI Updates
-        wrapColorInput.addEventListener('input', (e) => {
-            wrapperFront.style.borderTopColor = e.target.value;
-        });
-
-        messageInput.addEventListener('input', (e) => {
-            tagText.textContent = e.target.value || 'For you...';
-        });
-
-        function clearBouquet() {
-            vase.innerHTML = '';
-            bouquetData = [];
-            messageInput.value = '';
-            tagText.textContent = 'For you...';
-            wrapColorInput.value = '#ffe4e1';
-            wrapperFront.style.borderTopColor = '#ffe4e1';
-        }
-
-        // --- Sharing & Downloading Features --- //
-
-        function generateShareLink() {
-            // Encode the state into a URL parameter
-            const payload = {
-                items: bouquetData,
-                color: wrapColorInput.value,
-                msg: messageInput.value
-            };
-            const encoded = btoa(encodeURIComponent(JSON.stringify(payload)));
-            const shareUrl = `${window.location.origin}${window.location.pathname}?gift=${encoded}`;
-            
-            navigator.clipboard.writeText(shareUrl).then(() => {
-                alert("💌 Link copied! Send it to someone special.");
-            });
-        }
-
-        function downloadImage() {
-            const frame = document.getElementById('exportFrame');
-            // Use html2canvas to take a snapshot of the DOM
-            html2canvas(frame, { backgroundColor: null, scale: 2 }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'coquette-bloom-box.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            });
-        }
-
-        // --- Receiver Mode Initialization --- //
-        
-        window.onload = () => {
-            const params = new URLSearchParams(window.location.search);
-            if (params.has('gift')) {
-                // If a URL parameter exists, switch to view mode and build the bouquet
-                app.classList.add('view-mode');
-                
-                try {
-                    const decoded = JSON.parse(decodeURIComponent(atob(params.get('gift'))));
-                    
-                    // Apply saved state
-                    wrapperFront.style.borderTopColor = decoded.color;
-                    tagText.textContent = decoded.msg || 'For you...';
-                    
-                    // Stagger the animation of items falling into the box
-                    decoded.items.forEach((item, index) => {
-                        setTimeout(() => {
-                            renderItem(item.type, item.isMain);
-                        }, index * 200);
-                    });
-                } catch(e) {
-                    console.error("Invalid gift link");
-                }
-            }
-        };
-    </script>
-</body>
-</html>
+<audio id="music" loop src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_2d8375fb3e.mp3"></audio>
+<nav id="bar"><button id="homeBtn">🏠 Home</button><button id="backBtn" class="hide">← Back</button><span>Make Your Own Bouquet</span><button id="menuBtn">☰ Menu</button></nav>
+<div id="menu" class="hide"><button data-k="home">🏠 Home</button><button data-k="start">💐 New bouquet</button><button data-k="drafts">💾 My drafts</button><button data-k="how">📖 How it works</button><button data-k="about">ℹ️ About</button><button data-k="terms">📜 Terms</button><button data-k="privacy">🔒 Privacy</button></div>
+<div id="petals"></div>
+<div id="app">
+<aside id="panel">
+ <h1>Make Your Own Bouquet 💐</h1>
+ <details open><summary>1 · Pick your flowers</summary>
+  <div class="tabs" id="tabs"></div>
+  <div class="sw" id="sw"></div>
+  <div class="grid" id="grid"></div>
+  <p class="muted"><span id="count">0</span>/40 · tap a stem to select, drag to arrange</p>
+  <div id="tools" class="row hide"><button data-a="s-">−</button><button data-a="s+">＋</button><button data-a="r-">⟲</button><button data-a="r+">⟳</button><button data-a="f">⇅</button><button data-a="d">🗑</button></div>
+ </details>
+ <details open><summary>2 · Wrap it</summary>
+  <div class="sw" id="wsw"></div>
+  <div class="row"><input type="color" id="wrapC" value="#ffd9e2"><select id="wrapP"><option value="">Smooth</option><option value="p-dots">Polka dots</option><option value="p-stripe">Stripes</option><option value="p-check">Gingham</option></select></div>
+  <select id="cont"><option value="paper">Paper wrap</option><option value="vase">Glass vase</option><option value="basket">Flower basket</option></select>
+  <div class="row"><input type="color" id="ribC" value="#e0577f"><select id="rs"><option value="bow">Bow</option><option value="band">Satin band</option><option value="twine">Twine</option><option value="gold">Gold bow</option></select></div>
+  <div class="sw" id="rsw"></div>
+  <select id="bgSel"><option value="blush">Backdrop: Plain</option><option value="garden">Garden</option><option value="meadow">Meadow</option><option value="dusk">Dusk</option><option value="night">Midnight</option></select>
+ </details>
+ <details open><summary><label><input type="checkbox" id="msgOn"> 3 · Add a message 💌</label></summary>
+  <div id="msgBox" class="hide">
+   <input id="to" placeholder="To…" maxlength="30"><input id="from" placeholder="From…" maxlength="30">
+   <textarea id="text" maxlength="500" placeholder="Write something sweet…"></textarea>
+   <label class="file">📷 Add a photo<input type="file" id="photo" accept="image/*" hidden></label>
+   <img id="thumb" class="hide" alt="">
+   <div class="row"><input type="color" id="envC" value="#f4e3e6"><span>Envelope</span></div>
+   <input id="media" placeholder="Song or video link (YouTube / Spotify)…">
+  </div>
+ </details>
+ <details open><summary>4 · Share</summary>
+  <input id="pw" type="password" placeholder="Optional password to open the gift">
+  <button class="primary" id="share">🔗 Create gift link</button>
+  <p id="linkOut" class="muted"></p>
+  <div id="shareBox" class="hide"><input id="linkTxt" readonly><div class="row"><button id="copy">📋 Copy link</button></div>
+   <div id="qr"></div><div class="row"><select id="qrS"></select><button id="qrDl">⬇ QR</button></div>
+   <input id="email" type="email" placeholder="Receiver's email"><button class="primary" id="mail" style="margin-top:8px">✉️ Send by email</button></div>
+ </details>
+ <div class="row"><button id="draft">💾 Draft</button><button id="save">📥 PNG</button><button id="dark">🌙</button><button id="musicBtn">🎵</button></div>
+</aside>
+<main id="stage">
+ <button id="petalBtn" class="float">🌸 Petals: off</button>
+ <p id="hint" class="hide">Tap the envelope 💌</p>
+ <div id="frame">
+  <div id="tag" class="hide"></div>
+  <div id="bunch"></div>
+  <div id="wrapBack"></div><div id="wrapFront"></div>
+  <div id="bow"></div>
+  <div id="mini" class="hide"></div>
+ </div>
+</main>
+</div>
+<section id="landing"><div id="lbloom"></div><h1>Make Your Own Bouquet</h1><p id="ltag">Arrange flowers, wrap them, tuck in a message, and send it as a link.</p>
+<input id="pwIn" type="password" placeholder="Password" class="hide"><div class="row"><button class="primary" id="go">Get started</button></div><div class="row"><button id="how">How it works</button><button id="about">About</button></div><footer>© 2026 Allen · Made with 💐</footer></section>
+<section id="start" class="hide"><h2>How would you like to begin?</h2><p class="muted">Pick a ready-made bouquet (you can still change everything) or start from a blank canvas.</p><div id="presets"></div><button class="primary" id="scratch" style="max-width:300px">✨ Start from scratch</button></section>
+<button id="mk" class="hide">💐 Make one for someone</button>
+<div id="info" class="hide"><div class="card"><h2 id="iT"></h2><p id="iB"></p><button id="iX">Close</button></div></div>
+<div id="ov" class="hide"><div class="env" id="env"><div class="eb"></div><div class="letter"><h4 id="lTo"></h4><img id="lImg" class="hide" alt=""><p id="lText"></p><div id="lMedia"></div><p id="lFrom"></p></div><div class="ef"></div><div class="fl"></div></div><button id="close">✕</button></div>
+<script src="app.js"></script>
+</body></html>
