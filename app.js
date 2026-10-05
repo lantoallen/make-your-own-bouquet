@@ -1,21 +1,16 @@
-// ---- Optional: paste your Supabase values for short gift links (see supabase.sql) ----
-const SB = { url: '', key: '' };
-
 const $ = id => document.getElementById(id), rnd = (a, b) => Math.round(a + Math.random() * (b - a));
 const sh = (c, p) => { const n = parseInt(c.slice(1), 16), f = p < 0 ? 0 : 255, t = Math.abs(p);
   return '#' + [n >> 16, n >> 8 & 255, n & 255].map(v => Math.round((f - v) * t + v).toString(16).padStart(2, '0')).join(''); };
 const PT = { round: 'M0 0C-22-4-24-36 0-38C24-36 22-4 0 0', point: 'M0 0C-11-12-9-34 0-46C9-34 11-12 0 0', thin: 'M0 0C-4-10-4-32 0-42C4-32 4-10 0 0', wide: 'M0 0C-30-6-30-40 0-40C30-40 30-6 0 0' };
-let U = 0;
-const R = (p, n, f, s = 1, o = 0) => { const id = 'g' + U++;
-  return `<radialGradient id="${id}" gradientUnits="userSpaceOnUse" r="42"><stop offset=".05" stop-color="${sh(f, -.4)}"/><stop offset=".55" stop-color="${f}"/><stop offset="1" stop-color="${sh(f, .3)}"/></radialGradient>` +
-  Array.from({ length: n }, (_, i) => `<g transform="rotate(${o + i * 360 / n}) scale(${s})"><path d="${PT[p]}" fill="url(#${id})" stroke="${sh(f, -.3)}" stroke-width=".7"/><path d="M0-6V-26" stroke="#fff" stroke-opacity=".3" stroke-width=".7"/></g>`).join(''); };
+const RG = '<defs><filter id="rg" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency=".07" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter></defs>';
+const R = (p, n, f, s = 1, o = 0) => Array.from({ length: n }, (_, i) => `<g transform="rotate(${o + i * 360 / n}) scale(${s})"><path d="${PT[p]}" fill="${sh(f, [-.1, 0, .09][i % 3])}" stroke="${sh(f, -.35)}" stroke-width=".7"/><path d="M0-6V-28M0-10L-6-24M0-10L6-24" stroke="${sh(f, -.3)}" stroke-opacity=".45" stroke-width=".6" fill="none"/></g>`).join('') + `<circle r="${9 * s}" fill="#000" opacity=".18"/>`;
 const STEM = '<path d="M50 45Q44 100 50 160" stroke="#3f6b33" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M49 50Q43 100 49 158" stroke="#7fb069" stroke-width="1.4" fill="none"/><path d="M47 112q-24-2-30-28 24 2 30 28z" fill="#5f9448" stroke="#3f6b33" stroke-width=".6"/><path d="M47 112Q35 100 20 87" stroke="#3f6b33" stroke-width=".7" fill="none"/><ellipse cx="50" cy="48" rx="8" ry="4" fill="#4e7a3e"/>';
-const bloom = f => c => `<svg viewBox="0 0 100 160">${STEM}<g transform="translate(50 45)">${f(c)}</g></svg>`;
+const bloom = f => c => `<svg viewBox="0 0 100 160">${RG}${STEM}<g filter="url(#rg)"><g transform="translate(50 45)">${f(c)}</g></g></svg>`;
 const GREEN = '#4f7f3f';
 const twig = (c, big) => `<svg viewBox="0 0 100 160">${[[50, 40], [30, 58], [70, 58], [18, 84], [82, 84], [40, 24], [62, 28]].map(([x, y]) =>
   `<path d="M50 160Q50 100 ${x} ${y}" stroke="${GREEN}" fill="none" stroke-width="1.5"/>` + [[0, 0, 1], [7, 6, .75], [-6, 7, .65]].map(([dx, dy, k], n) => `<circle cx="${x + dx}" cy="${y + dy}" r="${(big ? 7 : 5) * k}" fill="${sh(c, n * .08)}" stroke="${sh(c, -.3)}" stroke-width=".5"/>`).join('')).join('')}</svg>`;
-const leafy = (rx, ry, ang, n) => c => `<svg viewBox="0 0 100 160"><path d="M50 160Q44 80 50 14" stroke="${sh(c, -.4)}" stroke-width="2.5" fill="none"/>${Array.from({ length: n }, (_, i) => { const y = 20 + i * 130 / n;
-  return [-1, 1].map(s => `<g transform="translate(${50 + s * 3} ${y}) rotate(${s < 0 ? 180 + ang : -ang})"><path d="M0 0Q${rx / 2} ${-ry * 1.6} ${rx * 2} 0Q${rx / 2} ${ry * 1.6} 0 0" fill="${sh(c, (i % 2) * .12 - .05)}" stroke="${sh(c, -.35)}" stroke-width=".6"/><path d="M0 0H${rx * 1.9}" stroke="${sh(c, -.4)}" stroke-width=".6" opacity=".7"/></g>`).join(''); }).join('')}</svg>`;
+const leafy = (rx, ry, ang, n) => c => `<svg viewBox="0 0 100 160">${RG}<g filter="url(#rg)"><path d="M50 160Q44 80 50 14" stroke="${sh(c, -.4)}" stroke-width="2.5" fill="none"/>${Array.from({ length: n }, (_, i) => { const y = 20 + i * 130 / n;
+  return [-1, 1].map(s => `<g transform="translate(${50 + s * 3} ${y}) rotate(${s < 0 ? 180 + ang : -ang})"><path d="M0 0Q${rx / 2} ${-ry * 1.6} ${rx * 2} 0Q${rx / 2} ${ry * 1.6} 0 0" fill="${sh(c, (i % 2) * .12 - .05)}" stroke="${sh(c, -.35)}" stroke-width=".6"/><path d="M0 0H${rx * 1.9}" stroke="${sh(c, -.4)}" stroke-width=".6" opacity=".7"/></g>`).join(''); }).join('')}</g></svg>`;
 
 const WARM = ['#ff7a9c', '#e63950', '#fff6f6', '#ffd166', '#ff9f68', '#b78cff', '#8ecae6', '#f4a6d7', '#a8201a', '#fdd7e4'];
 const GRN = ['#6b9e6b', '#3f7a4f', '#9cbf8f', '#7a9e9f', '#a3a56a', '#5c6b3a'];
@@ -48,9 +43,9 @@ const TYPES = {
 };
 Object.values(TYPES).forEach(t => { const f = t[3]; t.svg = c => (t[1] === 'b' ? bloom(f) : f)(c); });
 const CATS = { b: ['🌸 Flowers', 'b'], i: ['✨ Fillers', 'i'], f: ['🌿 Foliage', 'f'] };
-const WRAPS = ['#d2a679', '#ffd9e2', '#fff3e0', '#cfe3cf', '#d9ccf5', '#2b2b33', '#2b3a5c', '#ffffff'];
+const WRAPS = ['#d2a679', '#e6cdb8', '#f1e6d2', '#b9c9b0', '#c9bfe0', '#2b2b33', '#2b3a5c', '#f7f2ea'];
 
-const D = () => ({ items: [], w: '#ffd9e2', p: '', rib: '#e0577f', env: '#f4e3e6', on: false, pet: false, cont: 'paper', rs: 'bow', bg: 'blush', pw: '', media: '', to: '', from: '', text: '', photo: '', dark: false });
+const D = () => ({ items: [], w: '#e6cdb8', p: '', rib: '#8f3b4a', env: '#e8dcc8', on: false, mus: false, lp: 'pp-plain', lf: 'f-serif', la: 'a-left', ph: 'ph-top', pf: 'pf-round', pet: false, cont: 'paper', rs: 'bow', bg: 'blush', pw: '', media: '', to: '', from: '', text: '', photo: '', dark: false });
 let S = D();
 let cat = 'b', col = {}, sel = null, view = false;
 const els = new Map();
@@ -111,12 +106,17 @@ $('mini').onclick = () => { $('lTo').textContent = S.to ? 'Dear ' + S.to + ',' :
   $('env').className = 'env'; $('ov').classList.remove('hide'); $('hint').classList.add('hide');
   setTimeout(() => $('env').classList.add('open'), 150); setTimeout(() => $('env').classList.add('gone'), 1900); };
 $('close').onclick = () => $('ov').classList.add('hide');
-$('ov').onclick = e => { if (e.target === $('ov')) $('close').click(); };
-document.addEventListener('keydown', e => { if (e.key === 'Escape') $('close').click(); });
 
 // ---- music, petals, png ----
 let playing = false;
-$('musicBtn').onclick = () => { playing ? $('music').pause() : $('music').play(); playing = !playing; $('musicBtn').textContent = playing ? '⏸️' : '🎵'; };
+let mAC, mT;
+const music = on => { playing = on; $('musicBtn').textContent = $('musicBtn2').textContent = on ? '⏸️ Music' : '🎵 Music'; clearInterval(mT); if (!on) return;
+  mAC = mAC || new (window.AudioContext || window.webkitAudioContext)(); mAC.resume(); const n = [261.6, 329.6, 392, 523.3, 392, 329.6, 293.7, 349.2, 440, 587.3, 440, 349.2]; let i = 0;
+  const p = () => { const o = mAC.createOscillator(), g = mAC.createGain(), t = mAC.currentTime; o.type = 'triangle'; o.frequency.value = n[i++ % n.length]; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.08, t + .05); g.gain.exponentialRampToValueAtTime(.001, t + 1.6); o.connect(g).connect(mAC.destination); o.start(); o.stop(t + 1.7); };
+  p(); mT = setInterval(p, 700); };
+$('musicBtn').onclick = $('musicBtn2').onclick = () => music(!playing);
+$('musOn').onchange = e => S.mus = e.target.checked;
+['lp', 'lf', 'la', 'ph', 'pf'].forEach(k => $(k).onchange = e => S[k] = e.target.value);
 ['🌸', '🌷', '🌼', '🌺'].forEach((p, j) => { for (let i = 0; i < 4; i++) { const s = document.createElement('span'); s.textContent = p; s.style.cssText = `left:${rnd(0, 95)}vw;font-size:${rnd(14, 26)}px;animation-duration:${rnd(9, 18)}s;animation-delay:-${rnd(0, 15)}s`; $('petals').append(s); } });
 $('save').onclick = () => html2canvas($('frame'), { backgroundColor: null }).then(c => { const a = document.createElement('a'); a.download = 'my-bouquet.png'; a.href = c.toDataURL(); a.click(); });
 
@@ -136,13 +136,15 @@ const PRE = {
   'Spring Tulips': { cont: 'basket', rib: '#e0577f', bg: 'meadow', l: [...rp('tulip', '#ff7a9c', 3), ...rp('tulip', '#ffd166', 3), ...rp('ranunculus', '#ff9f68', 2), ...rp('ruscus', '#6b9e6b', 3)] }
 };
 function load(o) {
-  els.forEach(e => e.remove()); els.clear(); sel = null; S = Object.assign(D(), o); S.items.forEach(mk); $('count').textContent = S.items.length;
+  els.forEach(e => e.remove()); els.clear(); sel = null; S = Object.assign(D(), o); if (!S.from) S.from = localStorage.getItem('bq_name') || ''; S.items.forEach(mk); $('count').textContent = S.items.length;
   $('wrapC').value = S.w; $('wrapP').value = S.p; $('ribC').value = S.rib; $('envC').value = S.env; $('msgOn').checked = S.on; $('msgBox').classList.toggle('hide', !S.on);
-  ['to', 'from', 'text', 'media', 'cont', 'rs'].forEach(k => $(k).value = S[k]); $('bgSel').value = S.bg; $('pw').value = '';
+  ['to', 'from', 'text', 'media', 'cont', 'rs', 'lp', 'lf', 'la', 'ph', 'pf'].forEach(k => $(k).value = S[k]); $('musOn').checked = !!S.mus; $('bgSel').value = S.bg; $('pw').value = '';
   $('thumb').src = S.photo; $('thumb').classList.toggle('hide', !S.photo); applyStyle();
 }
-Object.entries(PRE).forEach(([n, { l, ...q }]) => { const b = document.createElement('button'); b.innerHTML = '<b>' + n + '</b><br><small>' + l.length + ' stems</small>'; b.style.borderLeft = '8px solid ' + (q.w || '#e6e6e6');
-  b.onclick = () => { load({ ...q, items: l.map(([t, c]) => mkIt(t, c)) }); show('edit'); }; $('presets').append(b); });
+Object.entries(PRE).forEach(([n, p]) => { p.items = p.l.map(([t, c]) => mkIt(t, c)); const { l, items, ...q } = p, b = document.createElement('button'), v = document.createElement('div'), bx = document.createElement('div'), w = document.createElement('div');
+  v.className = 'pv'; bx.className = 'pvb'; w.className = 'pvw'; w.style.background = q.w || '#f1e6d2';
+  [...items].sort((x, y) => x.z - y.z).forEach(it => { const e = document.createElement('div'); e.className = 'sp'; e.innerHTML = TYPES[it.t].svg(it.c); e.style.transform = `translate(${it.x}px,${it.y}px) rotate(${it.r}deg) scale(${it.s})`; bx.append(e); });
+  v.append(bx, w); b.append(v, Object.assign(document.createElement('b'), { textContent: n })); b.onclick = () => { load({ ...q, items: items.map(i => ({ ...i })) }); show('edit'); }; $('presets').append(b); });
 $('scratch').onclick = () => { load({}); show('edit'); };
 let scr = 'landing';
 function show(s) { scr = s; $('landing').classList.toggle('hide', s !== 'landing'); $('start').classList.toggle('hide', s !== 'start'); $('backBtn').classList.toggle('hide', s === 'landing'); $('menu').classList.add('hide'); }
@@ -159,7 +161,7 @@ function media() { const m = $('lMedia'); m.innerHTML = ''; const u = S.media ||
   if (y) s = 'https://www.youtube.com/embed/' + y[1]; else if (u.includes('open.spotify.com/')) s = u.replace('open.spotify.com/', 'open.spotify.com/embed/');
   if (s) { const f = document.createElement('iframe'); f.src = s; f.allow = 'autoplay;encrypted-media'; f.style.cssText = 'width:100%;height:' + (y ? 180 : 152) + 'px;border:0;border-radius:8px;margin-bottom:12px'; m.append(f); }
   else { const a = document.createElement('a'); a.href = u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = '🎵 Open the song / video'; m.append(a); } }
-const _m = $('mini').onclick; $('mini').onclick = () => { _m(); media(); };
+const _m = $('mini').onclick; $('mini').onclick = () => { _m(); media(); document.querySelector('.letter').className = 'letter ' + [S.lp, S.lf, S.la, S.ph, S.pf].join(' '); };
 // share, QR, email
 let link = '';
 const sha = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -191,7 +193,7 @@ function recvCover() { $('landing').querySelector('h1').textContent = 'A gift ha
   $('go').textContent = 'Open your gift'; if (S.pw) $('pwIn').classList.remove('hide'); $('how').classList.add('hide'); $('about').classList.add('hide'); }
 $('go').onclick = async () => { if (!view) return show('start');
   if (S.pw && await sha($('pwIn').value) !== S.pw) { $('pwIn').value = ''; $('pwIn').placeholder = 'Wrong password, try again'; return; }
-  $('landing').classList.add('hide'); $('frame').classList.add('reveal'); burst(); $('mk').classList.remove('hide'); };
+  $('landing').classList.add('hide'); $('frame').classList.add('reveal'); burst(); if (S.mus) music(true); $('mk').classList.remove('hide'); };
 $('mk').onclick = () => location.href = location.pathname;
 
 // ---- boot ----
@@ -209,16 +211,23 @@ $('mk').onclick = () => location.href = location.pathname;
 })();
 
 // ---- landing page ----
-const INFO = { terms: ['Terms & Conditions', 'By using Make Your Own Bouquet you agree to use it kindly: no harassment, hateful or illegal content, and only photos, music and videos you have the right to share. Gifts are provided as-is and may be removed at any time.\n\n(Draft terms - review before public launch.)'],
-  privacy: ['Privacy Policy', 'When you create a gift link, your bouquet, message, photo and optional password (stored as a hash) are saved so the link can open. Drafts stay in your own browser. Anyone with a gift link can view that gift. Password protection is a light lock, not encryption.\n\n(Draft policy - review before public launch.)'], how: ['How it works', '1. Pick flowers, fillers and foliage, then drag them into place.\n2. Choose a wrapper and ribbon.\n3. Optionally tuck in an envelope with a message and photo.\n4. Press "Create gift link" and send it. Your person taps the envelope to read it.'],
-  about: ['About', 'Make Your Own Bouquet is a little digital gift you build, wrap and send as a link. Gifts are only stored so the link can open them.'] };
+const INFO = {
+  terms: ['Terms & Conditions', '1. Using the app\nMake Your Own Bouquet lets you build a digital bouquet and share it as a link. Please use it kindly and lawfully.\n\n2. Your content\nYou are responsible for the messages, photos, music and video links you add. Only share what you have the right to share. Do not add anything hateful, harassing, sexual or illegal.\n\n3. Gift links\nAnyone who has a gift link can open it. A password adds a light lock but does not guarantee secrecy, so do not put sensitive information in a gift.\n\n4. Availability\nThe app is provided as is, with no promise that it will always be available or error-free. Gifts may be removed or expire at any time.\n\n5. Removal\nGifts that break these terms may be removed.\n\n6. Changes\nThese terms may change as the app grows. Continuing to use the app means you accept the updated terms.\n\nLast updated: October 2026.'],
+  privacy: ['Privacy Policy', 'What is stored\nWhen you create a gift link, the bouquet arrangement, message, photo, optional music or video link, and an optional password (stored only as a hash) are saved in a Supabase database so the link can open.\n\nOn your device only\nDrafts and your profile name are kept in your browser and never leave your device.\n\nEmail\n"Send by email" opens your own mail app. We never see the address you type.\n\nThird parties\nSupabase (storage), Google Fonts and cdnjs (fonts and libraries), and YouTube or Spotify if you add a link (they may set their own cookies).\n\nWhat we do not do\nNo ads, no selling of data.\n\nYour choices\nClearing your browser data removes drafts. To have a gift deleted, contact the app owner.\n\nChildren\nThe app is not intended for children under 13.\n\nLast updated: October 2026.'],
+  how: ['How it works', '1. Choose a ready-made bouquet or start from scratch.\n2. Add flowers, fillers and foliage, then drag, resize and rotate them.\n3. Pick a wrapper (paper, vase or basket), ribbon and backdrop.\n4. Optionally add a letter: choose the paper, font, photo and a song or video.\n5. Add a password if you like, then create the gift link.\n6. Share it by link, QR code or email. Your person opens the gift and taps the envelope.'],
+  about: ['About', 'Make Your Own Bouquet is a little digital gift you build, wrap and send as a link. Choose flowers, fillers and foliage, tuck a letter inside, and let someone special open it.\n\nMade with care by Allen, 2026.'] };
 [['eucalyptus', '#6b9e6b', -32], ['fern', '#3f7a4f', 30], ['rose', '#e63950', -14], ['peony', '#ff7a9c', 12], ['lily', '#fff6f6', -3], ['babysbreath', '#ffffff', 24], ['tulip', '#ffd166', -24]].forEach(([t, c, r], i) => {
   const d = document.createElement('div'); d.className = 'lb'; d.innerHTML = TYPES[t].svg(c); d.style.cssText = `--r:${r}deg;animation-delay:${i * .3}s`; $('lbloom').append(d); });
 $('how').onclick = () => info('how'); $('about').onclick = () => info('about');
 const info = k => { $('iB').textContent = '';
-  if (k === 'drafts') { $('iT').textContent = 'My drafts'; const d = JSON.parse(localStorage.getItem('bq') || '[]'); if (!d.length) $('iB').textContent = 'No drafts yet. Use 💾 Draft while you build.';
+  if (k === 'profile') { $('iT').textContent = 'Your profile'; const i = document.createElement('input'), b = document.createElement('button'); i.placeholder = 'Your name (used as "From")'; i.value = localStorage.getItem('bq_name') || ''; b.textContent = 'Save'; b.onclick = () => { localStorage.setItem('bq_name', i.value); $('info').classList.add('hide'); }; $('iB').append(i, b); }
+  else if (k === 'drafts') { $('iT').textContent = 'My drafts'; const d = JSON.parse(localStorage.getItem('bq') || '[]'); if (!d.length) $('iB').textContent = 'No drafts yet. Use 💾 Draft while you build.';
     d.forEach((x, i) => { const b = document.createElement('button'), r = document.createElement('button'); b.textContent = '📂 ' + x.n; b.onclick = () => { load(x.s); show('edit'); $('info').classList.add('hide'); };
       r.textContent = '🗑'; r.onclick = () => { d.splice(i, 1); localStorage.setItem('bq', JSON.stringify(d)); info('drafts'); }; $('iB').append(b, r, document.createElement('br')); }); }
   else { $('iT').textContent = INFO[k][0]; $('iB').textContent = INFO[k][1]; } $('info').classList.remove('hide'); };
 $('iX').onclick = () => $('info').classList.add('hide');
 document.querySelector('#panel h1').onclick = () => $('landing').classList.remove('hide');
+
+[['fern', '#3f5a3a', -35, 'left:-30px;bottom:-20px'], ['eucalyptus', '#7a9a82', 35, 'right:-30px;bottom:-20px'], ['olive', '#8a9a5b', 150, 'left:-20px;top:70px'], ['ruscus', '#4e6b45', -150, 'right:-20px;top:70px']].forEach(([t, c, r, pos]) => {
+  const d = document.createElement('div'); d.className = 'sprig'; d.innerHTML = TYPES[t].svg(c); d.style.cssText = `--r:${r}deg;${pos}`; $('landing').prepend(d); });
+$('landing').querySelector('footer').onclick = e => { const k = e.target.dataset.k; if (k) info(k); };
