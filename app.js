@@ -1,19 +1,21 @@
 // ---- Optional: paste your Supabase values for short gift links (see supabase.sql) ----
-const SB = { url: 'https://oerzmvbnyewsblzfwgia.supabase.co/rest/v1/', key: 'sb_publishable_jEU3RPAO4r1Ny0A2Jmkl5w_iYpZ2IQl' };
+const SB = { url: '', key: '' };
 
 const $ = id => document.getElementById(id), rnd = (a, b) => Math.round(a + Math.random() * (b - a));
 const sh = (c, p) => { const n = parseInt(c.slice(1), 16), f = p < 0 ? 0 : 255, t = Math.abs(p);
   return '#' + [n >> 16, n >> 8 & 255, n & 255].map(v => Math.round((f - v) * t + v).toString(16).padStart(2, '0')).join(''); };
 const PT = { round: 'M0 0C-22-4-24-36 0-38C24-36 22-4 0 0', point: 'M0 0C-11-12-9-34 0-46C9-34 11-12 0 0', thin: 'M0 0C-4-10-4-32 0-42C4-32 4-10 0 0', wide: 'M0 0C-30-6-30-40 0-40C30-40 30-6 0 0' };
-const R = (p, n, f, s = 1, o = 0) => Array.from({ length: n }, (_, i) =>
-  `<path d="${PT[p]}" fill="${f}" stroke="${sh(f, -.2)}" stroke-width=".8" transform="rotate(${o + i * 360 / n}) scale(${s})"/>`).join('');
-const STEM = '<path d="M50 45Q44 100 50 160" stroke="#5c8f4a" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M47 110q-22-4-26-24 20 0 26 24z" fill="#6ea35a"/>';
+let U = 0;
+const R = (p, n, f, s = 1, o = 0) => { const id = 'g' + U++;
+  return `<radialGradient id="${id}" gradientUnits="userSpaceOnUse" r="42"><stop offset=".05" stop-color="${sh(f, -.4)}"/><stop offset=".55" stop-color="${f}"/><stop offset="1" stop-color="${sh(f, .3)}"/></radialGradient>` +
+  Array.from({ length: n }, (_, i) => `<g transform="rotate(${o + i * 360 / n}) scale(${s})"><path d="${PT[p]}" fill="url(#${id})" stroke="${sh(f, -.3)}" stroke-width=".7"/><path d="M0-6V-26" stroke="#fff" stroke-opacity=".3" stroke-width=".7"/></g>`).join(''); };
+const STEM = '<path d="M50 45Q44 100 50 160" stroke="#3f6b33" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M49 50Q43 100 49 158" stroke="#7fb069" stroke-width="1.4" fill="none"/><path d="M47 112q-24-2-30-28 24 2 30 28z" fill="#5f9448" stroke="#3f6b33" stroke-width=".6"/><path d="M47 112Q35 100 20 87" stroke="#3f6b33" stroke-width=".7" fill="none"/><ellipse cx="50" cy="48" rx="8" ry="4" fill="#4e7a3e"/>';
 const bloom = f => c => `<svg viewBox="0 0 100 160">${STEM}<g transform="translate(50 45)">${f(c)}</g></svg>`;
-const GREEN = '#5c8f4a';
+const GREEN = '#4f7f3f';
 const twig = (c, big) => `<svg viewBox="0 0 100 160">${[[50, 40], [30, 58], [70, 58], [18, 84], [82, 84], [40, 24], [62, 28]].map(([x, y]) =>
-  `<path d="M50 160Q50 100 ${x} ${y}" stroke="${GREEN}" fill="none" stroke-width="1.5"/><circle cx="${x}" cy="${y}" r="${big ? 7 : 5}" fill="${c}"/><circle cx="${x + 7}" cy="${y + 6}" r="${big ? 5 : 4}" fill="${sh(c, .15)}"/><circle cx="${x - 6}" cy="${y + 7}" r="${big ? 5 : 3.5}" fill="${sh(c, -.1)}"/>`).join('')}</svg>`;
-const leafy = (rx, ry, ang, n) => c => `<svg viewBox="0 0 100 160"><path d="M50 160Q44 80 50 14" stroke="${sh(c, -.35)}" stroke-width="3" fill="none"/>${Array.from({ length: n }, (_, i) => {
-  const y = 20 + i * 130 / n; return [-1, 1].map(s => `<ellipse cx="${50 + s * rx * .8}" cy="${y}" rx="${rx}" ry="${ry}" fill="${sh(c, (i % 2) * .12)}" transform="rotate(${s * ang} ${50 + s * rx * .8} ${y})"/>`).join(''); }).join('')}</svg>`;
+  `<path d="M50 160Q50 100 ${x} ${y}" stroke="${GREEN}" fill="none" stroke-width="1.5"/>` + [[0, 0, 1], [7, 6, .75], [-6, 7, .65]].map(([dx, dy, k], n) => `<circle cx="${x + dx}" cy="${y + dy}" r="${(big ? 7 : 5) * k}" fill="${sh(c, n * .08)}" stroke="${sh(c, -.3)}" stroke-width=".5"/>`).join('')).join('')}</svg>`;
+const leafy = (rx, ry, ang, n) => c => `<svg viewBox="0 0 100 160"><path d="M50 160Q44 80 50 14" stroke="${sh(c, -.4)}" stroke-width="2.5" fill="none"/>${Array.from({ length: n }, (_, i) => { const y = 20 + i * 130 / n;
+  return [-1, 1].map(s => `<g transform="translate(${50 + s * 3} ${y}) rotate(${s < 0 ? 180 + ang : -ang})"><path d="M0 0Q${rx / 2} ${-ry * 1.6} ${rx * 2} 0Q${rx / 2} ${ry * 1.6} 0 0" fill="${sh(c, (i % 2) * .12 - .05)}" stroke="${sh(c, -.35)}" stroke-width=".6"/><path d="M0 0H${rx * 1.9}" stroke="${sh(c, -.4)}" stroke-width=".6" opacity=".7"/></g>`).join(''); }).join('')}</svg>`;
 
 const WARM = ['#ff7a9c', '#e63950', '#fff6f6', '#ffd166', '#ff9f68', '#b78cff', '#8ecae6', '#f4a6d7', '#a8201a', '#fdd7e4'];
 const GRN = ['#6b9e6b', '#3f7a4f', '#9cbf8f', '#7a9e9f', '#a3a56a', '#5c6b3a'];
@@ -41,7 +43,7 @@ Object.values(TYPES).forEach(t => { const f = t[3]; t.svg = c => (t[1] === 'b' ?
 const CATS = { b: ['🌸 Flowers', 'b'], i: ['✨ Fillers', 'i'], f: ['🌿 Foliage', 'f'] };
 const WRAPS = ['#d2a679', '#ffd9e2', '#fff3e0', '#cfe3cf', '#d9ccf5', '#2b2b33', '#2b3a5c', '#ffffff'];
 
-let S = { items: [], w: '#ffd9e2', p: '', rib: '#e0577f', env: '#f4e3e6', on: false, to: '', from: '', text: '', photo: '', dark: false };
+let S = { items: [], w: '#ffd9e2', p: '', rib: '#e0577f', env: '#f4e3e6', on: false, pet: false, to: '', from: '', text: '', photo: '', dark: false };
 let cat = 'b', col = {}, sel = null, view = false;
 const els = new Map();
 
@@ -79,7 +81,7 @@ document.addEventListener('pointerdown', e => { if (!e.target.closest('.sp,#tool
 function applyStyle() {
   const r = document.documentElement.style; r.setProperty('--w', S.w); r.setProperty('--rib', S.rib); r.setProperty('--env', S.env);
   $('wrapFront').className = ''; $('wrapFront').id = 'wrapFront'; if (S.p) $('wrapFront').classList.add(S.p);
-  document.body.classList.toggle('dark', S.dark);
+  document.body.classList.toggle('dark', S.dark); document.body.classList.toggle('pet', !!S.pet); $('petalBtn').textContent = '🌸 Petals: ' + (S.pet ? 'on' : 'off');
   $('mini').classList.toggle('hide', !S.on); $('hint').classList.toggle('hide', !(S.on && view));
   $('tag').textContent = S.to ? 'For ' + S.to : ''; $('tag').classList.toggle('hide', !S.to);
 }
@@ -92,6 +94,7 @@ $('msgOn').onchange = e => { S.on = e.target.checked; $('msgBox').classList.togg
 $('to').oninput = e => { S.to = e.target.value; applyStyle(); };
 $('from').oninput = e => S.from = e.target.value;
 $('text').oninput = e => S.text = e.target.value;
+$('petalBtn').onclick = () => { S.pet = !S.pet; applyStyle(); };
 $('dark').onclick = () => { S.dark = !S.dark; applyStyle(); };
 $('photo').onchange = e => { const f = e.target.files[0]; if (!f) return; const img = new Image(); img.onload = () => {
   const k = Math.min(1, 480 / Math.max(img.width, img.height)), c = document.createElement('canvas'); c.width = img.width * k; c.height = img.height * k;
@@ -141,3 +144,15 @@ $('share').onclick = async () => {
   S.items.forEach(mk); $('count').textContent = S.items.length; applyStyle(); drawPicker();
   if (!view) { $('wrapC').value = S.w; }
 })();
+
+// ---- landing page ----
+const INFO = { how: ['How it works', '1. Pick flowers, fillers and foliage, then drag them into place.\n2. Choose a wrapper and ribbon.\n3. Optionally tuck in an envelope with a message and photo.\n4. Press "Create gift link" and send it. Your person taps the envelope to read it.'],
+  about: ['About', 'Make Your Own Bouquet is a little digital gift you build, wrap and send as a link. Gifts are only stored so the link can open them.'] };
+[['eucalyptus', '#6b9e6b', -32], ['fern', '#3f7a4f', 30], ['rose', '#e63950', -14], ['peony', '#ff7a9c', 12], ['lily', '#fff6f6', -3], ['babysbreath', '#ffffff', 24], ['tulip', '#ffd166', -24]].forEach(([t, c, r], i) => {
+  const d = document.createElement('div'); d.className = 'lb'; d.innerHTML = TYPES[t].svg(c); d.style.cssText = `--r:${r}deg;animation-delay:${i * .3}s`; $('lbloom').append(d); });
+setTimeout(() => { if (view) { $('ltag').textContent = 'Someone made a bouquet just for you 💐'; $('go').textContent = 'Open gift'; } }, 400);
+$('go').onclick = () => $('landing').classList.add('hide');
+$('how').onclick = () => info('how'); $('about').onclick = () => info('about');
+const info = k => { $('iT').textContent = INFO[k][0]; $('iB').textContent = INFO[k][1]; $('info').classList.remove('hide'); };
+$('iX').onclick = () => $('info').classList.add('hide');
+document.querySelector('#panel h1').onclick = () => $('landing').classList.remove('hide');
