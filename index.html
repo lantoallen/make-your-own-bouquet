@@ -3,37 +3,50 @@
 <title>Make Your Own Bouquet</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <link rel="stylesheet" href="style.css"></head>
 <body>
 <audio id="music" loop src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_2d8375fb3e.mp3"></audio>
+<nav id="bar"><button id="homeBtn">🏠 Home</button><button id="backBtn" class="hide">← Back</button><span>Make Your Own Bouquet</span><button id="menuBtn">☰ Menu</button></nav>
+<div id="menu" class="hide"><button data-k="home">🏠 Home</button><button data-k="start">💐 New bouquet</button><button data-k="drafts">💾 My drafts</button><button data-k="how">📖 How it works</button><button data-k="about">ℹ️ About</button><button data-k="terms">📜 Terms</button><button data-k="privacy">🔒 Privacy</button></div>
 <div id="petals"></div>
 <div id="app">
 <aside id="panel">
  <h1>Make Your Own Bouquet 💐</h1>
- <section><h3>1 · Pick your flowers</h3>
+ <details open><summary>1 · Pick your flowers</summary>
   <div class="tabs" id="tabs"></div>
   <div class="sw" id="sw"></div>
   <div class="grid" id="grid"></div>
   <p class="muted"><span id="count">0</span>/40 · tap a stem to select, drag to arrange</p>
   <div id="tools" class="row hide"><button data-a="s-">−</button><button data-a="s+">＋</button><button data-a="r-">⟲</button><button data-a="r+">⟳</button><button data-a="f">⇅</button><button data-a="d">🗑</button></div>
- </section>
- <section><h3>2 · Wrap it</h3>
+ </details>
+ <details open><summary>2 · Wrap it</summary>
   <div class="sw" id="wsw"></div>
   <div class="row"><input type="color" id="wrapC" value="#ffd9e2"><select id="wrapP"><option value="">Smooth</option><option value="p-dots">Polka dots</option><option value="p-stripe">Stripes</option><option value="p-check">Gingham</option></select></div>
-  <div class="row"><input type="color" id="ribC" value="#e0577f"><span>Ribbon</span></div>
- </section>
- <section><h3><label><input type="checkbox" id="msgOn"> 3 · Add a message 💌</label></h3>
+  <select id="cont"><option value="paper">Paper wrap</option><option value="vase">Glass vase</option><option value="basket">Flower basket</option></select>
+  <div class="row"><input type="color" id="ribC" value="#e0577f"><select id="rs"><option value="bow">Bow</option><option value="band">Satin band</option><option value="twine">Twine</option><option value="gold">Gold bow</option></select></div>
+  <div class="sw" id="rsw"></div>
+  <select id="bgSel"><option value="blush">Backdrop: Plain</option><option value="garden">Garden</option><option value="meadow">Meadow</option><option value="dusk">Dusk</option><option value="night">Midnight</option></select>
+ </details>
+ <details open><summary><label><input type="checkbox" id="msgOn"> 3 · Add a message 💌</label></summary>
   <div id="msgBox" class="hide">
    <input id="to" placeholder="To…" maxlength="30"><input id="from" placeholder="From…" maxlength="30">
    <textarea id="text" maxlength="500" placeholder="Write something sweet…"></textarea>
    <label class="file">📷 Add a photo<input type="file" id="photo" accept="image/*" hidden></label>
    <img id="thumb" class="hide" alt="">
    <div class="row"><input type="color" id="envC" value="#f4e3e6"><span>Envelope</span></div>
+   <input id="media" placeholder="Song or video link (YouTube / Spotify)…">
   </div>
- </section>
- <button class="primary" id="share">🔗 Create gift link</button>
- <p id="linkOut" class="muted"></p>
- <div class="row"><button id="save">📥 PNG</button><button id="dark">🌙</button><button id="musicBtn">🎵</button></div>
+ </details>
+ <details open><summary>4 · Share</summary>
+  <input id="pw" type="password" placeholder="Optional password to open the gift">
+  <button class="primary" id="share">🔗 Create gift link</button>
+  <p id="linkOut" class="muted"></p>
+  <div id="shareBox" class="hide"><input id="linkTxt" readonly><div class="row"><button id="copy">📋 Copy link</button></div>
+   <div id="qr"></div><div class="row"><select id="qrS"></select><button id="qrDl">⬇ QR</button></div>
+   <input id="email" type="email" placeholder="Receiver's email"><button class="primary" id="mail" style="margin-top:8px">✉️ Send by email</button></div>
+ </details>
+ <div class="row"><button id="draft">💾 Draft</button><button id="save">📥 PNG</button><button id="dark">🌙</button><button id="musicBtn">🎵</button></div>
 </aside>
 <main id="stage">
  <button id="petalBtn" class="float">🌸 Petals: off</button>
@@ -48,8 +61,10 @@
 </main>
 </div>
 <section id="landing"><div id="lbloom"></div><h1>Make Your Own Bouquet</h1><p id="ltag">Arrange flowers, wrap them, tuck in a message, and send it as a link.</p>
-<div class="row"><button class="primary" id="go">Get started</button></div><div class="row"><button id="how">How it works</button><button id="about">About</button></div></section>
+<input id="pwIn" type="password" placeholder="Password" class="hide"><div class="row"><button class="primary" id="go">Get started</button></div><div class="row"><button id="how">How it works</button><button id="about">About</button></div><footer>© 2026 Allen · Made with 💐</footer></section>
+<section id="start" class="hide"><h2>How would you like to begin?</h2><p class="muted">Pick a ready-made bouquet (you can still change everything) or start from a blank canvas.</p><div id="presets"></div><button class="primary" id="scratch" style="max-width:300px">✨ Start from scratch</button></section>
+<button id="mk" class="hide">💐 Make one for someone</button>
 <div id="info" class="hide"><div class="card"><h2 id="iT"></h2><p id="iB"></p><button id="iX">Close</button></div></div>
-<div id="ov" class="hide"><div class="env" id="env"><div class="eb"></div><div class="letter"><h4 id="lTo"></h4><img id="lImg" class="hide" alt=""><p id="lText"></p><p id="lFrom"></p></div><div class="ef"></div><div class="fl"></div></div><button id="close">✕</button></div>
+<div id="ov" class="hide"><div class="env" id="env"><div class="eb"></div><div class="letter"><h4 id="lTo"></h4><img id="lImg" class="hide" alt=""><p id="lText"></p><div id="lMedia"></div><p id="lFrom"></p></div><div class="ef"></div><div class="fl"></div></div><button id="close">✕</button></div>
 <script src="app.js"></script>
 </body></html>
