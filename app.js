@@ -111,6 +111,8 @@ $('mini').onclick = () => { $('lTo').textContent = S.to ? 'Dear ' + S.to + ',' :
   $('env').className = 'env'; $('ov').classList.remove('hide'); $('hint').classList.add('hide');
   setTimeout(() => $('env').classList.add('open'), 150); setTimeout(() => $('env').classList.add('gone'), 1900); };
 $('close').onclick = () => $('ov').classList.add('hide');
+$('ov').onclick = e => { if (e.target === $('ov')) $('close').click(); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $('close').click(); });
 
 // ---- music, petals, png ----
 let playing = false;
