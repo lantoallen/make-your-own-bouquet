@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="style.css"></head>
 <body>
 <nav id="bar"><button id="homeBtn">🏠 Home</button><button id="backBtn" class="hide">← Back</button><span><img src="favicon.svg" alt="" width="32" height="32"> Make Your Own Bouquet</span><button id="menuBtn">☰ Menu</button></nav>
-<div id="menu" class="hide"><button data-k="home">🏠 Home</button><button data-k="start">💐 New bouquet</button><button data-k="profile">👤 Profile</button><button data-k="sent">📬 Sent gifts</button><button data-k="drafts">💾 My drafts</button><button data-k="how">📖 How it works</button><button data-k="about">ℹ️ About</button><button data-k="terms">📜 Terms</button><button data-k="privacy">🔒 Privacy</button></div>
+<div id="menu" class="hide"><button data-k="home">🏠 Home</button><button data-k="start">💐 New bouquet</button><button data-k="profile">👤 Profile</button><button data-k="gallery">🌸 Flower gallery</button><button data-k="sent">📬 Sent gifts</button><button data-k="drafts">💾 My drafts</button><button data-k="how">📖 How it works</button><button data-k="about">ℹ️ About</button><button data-k="terms">📜 Terms</button><button data-k="privacy">🔒 Privacy</button></div>
 <div id="petals"></div>
 <div id="app">
 <aside id="panel">
@@ -31,6 +31,7 @@
   <div class="sw" id="rsw"></div>
   <select id="bgSel"><option value="blush">Backdrop: Plain</option><option value="garden">Garden</option><option value="meadow">Meadow</option><option value="greenhouse">Greenhouse</option><option value="blossom">Cherry blossom</option><option value="table">Wooden table</option><option value="dusk">Dusk</option><option value="night">Midnight</option></select>
   <div class="row" id="bgcRow"><input type="color" id="bgc" value="#e9dfcb"><span>Backdrop color</span></div>
+  <label class="file">🖼 Upload your own backdrop photo<input type="file" id="bgPhoto" accept="image/*" hidden></label><button id="bgPhotoDel" class="hide">Remove photo</button>
  </details>
  <details open><summary><label><input type="checkbox" id="msgOn"> 3 · Add a message 💌</label></summary>
   <div id="msgBox" class="hide">
@@ -42,7 +43,8 @@
    <input id="media" placeholder="Song or video link (YouTube / Spotify)…">
    <label class="muted"><input type="checkbox" id="meanOn"> Add a "flower meanings" card</label>
    <div class="row"><button id="rec">🎙 Record voice note</button><button id="recDel" class="hide">🗑</button></div><audio id="recPrev" controls class="hide"></audio>
-   <select id="lp"><option value="pp-plain">Paper: Plain</option><option value="pp-lined">Lined</option><option value="pp-parch">Parchment</option><option value="pp-kraft">Kraft</option><option value="pp-floral">Floral dots</option><option value="pp-dark">Dark</option><option value="pp-water">Watercolor wash</option><option value="pp-linen">Linen weave</option><option value="pp-rice">Rice paper</option><option value="pp-leaves">Pressed leaves</option><option value="pp-vintage">Vintage aged</option><option value="pp-grid">Graph grid</option><option value="pp-blush">Blush</option><option value="pp-sage">Sage</option><option value="pp-navy">Midnight blue</option></select>
+   <select id="lp"><option value="pp-plain">Paper: Plain</option><option value="pp-lined">Lined</option><option value="pp-parch">Parchment</option><option value="pp-kraft">Kraft</option><option value="pp-floral">Floral dots</option><option value="pp-dark">Dark</option><option value="pp-water">Watercolor wash</option><option value="pp-linen">Linen weave</option><option value="pp-rice">Rice paper</option><option value="pp-leaves">Pressed leaves</option><option value="pp-vintage">Vintage aged</option><option value="pp-grid">Graph grid</option><option value="pp-blush">Blush</option><option value="pp-sage">Sage</option><option value="pp-navy">Midnight blue</option><option value="pp-stripe">Pastel stripes</option><option value="pp-hearts">Tiny hearts</option><option value="pp-stars">Golden stars</option><option value="pp-marble">Marble</option><option value="pp-burlap">Burlap</option><option value="pp-foil">Gold foil</option><option value="pp-frame">Postcard frame</option><option value="pp-canvas">Canvas</option><option value="pp-lilac">Lilac</option><option value="pp-peach">Peach</option><option value="pp-mint">Mint</option><option value="pp-butter">Butter</option></select>
+   <div class="row"><input type="color" id="pc" value="#fffdf9"><span>Paper color</span><button id="pcDel">Reset</button></div>
    <select id="lf"><option value="f-serif">Font: Elegant</option><option value="f-script">Script (Caveat)</option><option value="f-dancing">Dancing Script</option><option value="f-vibes">Great Vibes</option><option value="f-indie">Playful hand</option><option value="f-hand">Classic italic</option><option value="f-lora">Lora serif</option><option value="f-type">Typewriter</option><option value="f-cinzel">Cinzel caps</option><option value="f-sans">Clean</option></select>
    <div class="row"><select id="la"><option value="a-left">Align left</option><option value="a-center">Center</option><option value="a-right">Right</option></select><select id="ph"><option value="ph-top">Photo above</option><option value="ph-below">Photo below</option></select></div>
    <select id="pf"><option value="pf-round">Photo: Rounded</option><option value="pf-polaroid">Polaroid</option><option value="pf-none">Square</option></select>
@@ -53,6 +55,7 @@
  <details open><summary>4 · Share</summary>
   <label class="muted">Unlock on (optional)</label><input type="datetime-local" id="sched">
   <input id="pw" type="password" placeholder="Optional password to open the gift">
+  <button id="prevOpen" style="margin:6px 0">👀 Preview the opening animation</button>
   <label class="muted"><input type="checkbox" id="musOn"> Play soft music when opened</label>
   <button class="primary" id="share">🔗 Create gift link</button>
   <p id="linkOut" class="muted"></p>
