@@ -48,7 +48,7 @@ Object.values(TYPES).forEach(t => { const f = t[3]; t.svg = c => (t[1] === 'b' ?
 const CATS = { b: ['🌸 Flowers', 'b'], i: ['✨ Fillers', 'i'], f: ['🌿 Foliage', 'f'] };
 const WRAPS = ['#d2a679', '#e6cdb8', '#f1e6d2', '#b9c9b0', '#c9bfe0', '#2b2b33', '#2b3a5c', '#f7f2ea'];
 
-const D = () => ({ items: [], w: '#e6cdb8', p: '', rib: '#8f3b4a', env: '#e8dcc8', on: false, mus: false, ink: '', lp: 'pp-plain', lf: 'f-serif', la: 'a-left', ph: 'ph-top', pf: 'pf-round', pet: false, cont: 'paper', rs: 'bow', bg: 'blush', bgc: '', pw: '', media: '', to: '', from: '', text: '', photo: '', dark: false });
+const D = () => ({ at: '', voice: '', mean: false, items: [], w: '#e6cdb8', p: '', rib: '#8f3b4a', env: '#e8dcc8', on: false, mus: false, ink: '', lp: 'pp-plain', lf: 'f-serif', la: 'a-left', ph: 'ph-top', pf: 'pf-round', pet: false, cont: 'paper', rs: 'bow', bg: 'blush', bgc: '', pw: '', media: '', to: '', from: '', text: '', photo: '', dark: false });
 let S = D();
 let cat = 'b', col = {}, sel = null, view = false;
 const els = new Map();
@@ -72,7 +72,7 @@ function mk(it) {
   e.onpointermove = ev => { if (!drag) return; it.x = ox + ev.clientX - sx; it.y = oy + ev.clientY - sy; place(it); };
   e.onpointerup = () => drag = false;
 }
-function select(it) { sel = it; els.forEach((e, i) => e.classList.toggle('sel', i === it)); $('tools').classList.toggle('hide', !it); $('isw').classList.toggle('hide', !it); $('isw').innerHTML = '';
+function select(it) { sel = it; $('mean').textContent = it ? TYPES[it.t][0] + ': ' + (MEAN[it.t] || '') : ''; els.forEach((e, i) => e.classList.toggle('sel', i === it)); $('tools').classList.toggle('hide', !it); $('isw').classList.toggle('hide', !it); $('isw').innerHTML = '';
   if (it) TYPES[it.t][2].forEach(c => { const i = document.createElement('i'); i.style.background = c; i.onclick = () => { it.c = c; els.get(it).innerHTML = TYPES[it.t].svg(c); }; $('isw').append(i); }); }
 $('tools').onclick = ev => { const a = ev.target.dataset.a; if (!a || !sel) return;
   if (a === 'd') { els.get(sel).remove(); els.delete(sel); S.items = S.items.filter(i => i !== sel); sel = null; $('count').textContent = S.items.length; $('tools').classList.add('hide'); return; }
@@ -144,10 +144,19 @@ function load(o) {
   ['to', 'from', 'text', 'media', 'cont', 'rs', 'lp', 'lf', 'la', 'ph', 'pf'].forEach(k => $(k).value = S[k]); $('musOn').checked = !!S.mus; $('ink').value = S.ink || '#33281f'; prev(); $('bgSel').value = S.bg; $('bgc').value = S.bgc || '#e9dfcb'; $('pw').value = '';
   $('thumb').src = S.photo; $('thumb').classList.toggle('hide', !S.photo); applyStyle();
 }
+const oc = (o, l) => ({ occ: 1, on: true, ...o, l: l.filter(([t]) => TYPES[t]) });
+Object.assign(PRE, {
+  '🎂 Birthday': oc({ w: '#f1e6d2', rib: '#d4af37', rs: 'flow', bg: 'garden', lp: 'pp-water', lf: 'f-dancing', text: 'Happy Birthday! Wishing you a day as beautiful as these flowers and a year full of joy. 🎉' }, [...rp('gerbera', '#ff6f3c', 3), ...rp('daisy', '#ffffff', 3), ...rp('cosmos', '#ff7a9c', 2), ...rp('eucalyptus', '#6b9e6b', 3)]),
+  '💍 Anniversary': oc({ w: '#2b2b33', rib: '#d4af37', rs: 'flow', bg: 'dusk', lp: 'pp-vintage', lf: 'f-vibes', text: 'Every year with you is my favorite bouquet. Happy anniversary, my love. ❤️' }, [...rp('rose', '#a8201a', 6), ...rp('babysbreath', '#ffffff', 3), ...rp('eucalyptus', '#3f7a4f', 3)]),
+  '🌻 Get well soon': oc({ w: '#d2a679', rib: '#6b8e23', rs: 'twine', bg: 'meadow', lp: 'pp-sage', lf: 'f-lora', text: 'Sending sunshine and good wishes your way. Rest well and get better soon! 🌻' }, [...rp('sunflower', '#ffc300', 3), ...rp('daisy', '#ffffff', 3), ...rp('lavender', '#b78cff', 2), ...rp('fern', '#3f7a4f', 2)]),
+  '🙏 Thank you': oc({ w: '#e6cdb8', rib: '#8f3b4a', bg: 'blush', lp: 'pp-blush', lf: 'f-script', text: 'Thank you for everything you do. You mean so much to me. 💐' }, [...rp('peony', '#f4a6d7', 3), ...rp('tulip', '#ff7a9c', 3), ...rp('ruscus', '#6b9e6b', 3)]),
+  '🎉 Congratulations': oc({ w: '#f7f2ea', rib: '#d4af37', rs: 'double', bg: 'greenhouse', lp: 'pp-plain', lf: 'f-serif', text: 'Congratulations! So proud of you. Here is to your big moment. 🎉' }, [...rp('gerbera', '#ffc300', 3), ...rp('anemone', '#b78cff', 2), ...rp('poppy', '#ff4d2e', 2), ...rp('eucalyptus', '#6b9e6b', 3)]),
+  '🤍 With sympathy': oc({ w: '#f1e6d2', rib: '#c0c0c0', bg: 'blush', lp: 'pp-linen', lf: 'f-hand', text: 'Thinking of you with love. May these flowers bring a little comfort in a hard time. 🤍' }, [...rp('lily', '#fff6f6', 4), ...rp('rose', '#fff6f6', 3), ...rp('eucalyptus', '#9cbf8f', 3)])
+});
 Object.entries(PRE).forEach(([n, p]) => { p.items = p.l.map(([t, c]) => mkIt(t, c)); const { l, items, ...q } = p, b = document.createElement('button'), v = document.createElement('div'), bx = document.createElement('div'), w = document.createElement('div');
   v.className = 'pv'; bx.className = 'pvb'; w.className = 'pvw'; w.style.background = q.w || '#f1e6d2';
   [...items].sort((x, y) => x.z - y.z).forEach(it => { const e = document.createElement('div'); e.className = 'sp'; e.innerHTML = TYPES[it.t].svg(it.c); e.style.transform = `translate(${it.x}px,${it.y}px) rotate(${it.r}deg) scale(${it.s})`; bx.append(e); });
-  v.append(bx, w); b.append(v, Object.assign(document.createElement('b'), { textContent: n })); b.onclick = () => { load({ ...q, items: items.map(i => ({ ...i })) }); show('edit'); }; $('presets').append(b); });
+  v.append(bx, w); b.append(v, Object.assign(document.createElement('b'), { textContent: n })); b.onclick = () => { load({ ...q, items: items.map(i => ({ ...i })) }); show('edit'); }; $(p.occ ? 'occ' : 'presets').append(b); });
 $('scratch').onclick = () => { load({}); show('edit'); };
 let scr = 'landing';
 function show(s) { scr = s; $('ov').classList.add('hide'); $('info').classList.add('hide'); $('landing').classList.toggle('hide', s !== 'landing'); $('start').classList.toggle('hide', s !== 'start'); $('backBtn').classList.toggle('hide', s === 'landing'); $('menu').classList.add('hide'); $('ov').classList.add('hide'); $('info').classList.add('hide'); $('resume').classList.toggle('hide', s !== 'start' || !S.items.length); }
@@ -164,7 +173,7 @@ function media() { const m = $('lMedia'); m.innerHTML = ''; const u = S.media ||
   if (y) s = 'https://www.youtube.com/embed/' + y[1]; else if (u.includes('open.spotify.com/')) s = u.replace('open.spotify.com/', 'open.spotify.com/embed/');
   if (s) { const f = document.createElement('iframe'); f.src = s; f.allow = 'autoplay;encrypted-media'; f.style.cssText = 'width:100%;height:' + (y ? 180 : 152) + 'px;border:0;border-radius:8px;margin-bottom:12px'; m.append(f); }
   else { const a = document.createElement('a'); a.href = u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = '🎵 Open the song / video'; m.append(a); } }
-const _m = $('mini').onclick; $('mini').onclick = () => { _m(); media(); const L = document.querySelector('.letter'); L.className = 'letter ' + [S.lp, S.lf, S.la, S.ph, S.pf].join(' '); L.style.color = S.ink || ''; };
+const _m = $('mini').onclick; $('mini').onclick = () => { _m(); media(); extras(); const L = document.querySelector('.letter'); L.className = 'letter ' + [S.lp, S.lf, S.la, S.ph, S.pf].join(' '); L.style.color = S.ink || ''; };
 // share, QR, email
 let link = '';
 const sha = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -205,12 +214,12 @@ $('mail').onclick = () => { if (link && $('qr').querySelector('canvas') && $('qr
   const body = `Dear ${t},\n\nA little garden has grown just for you. 🌷\n${f} arranged a bouquet, wrapped it with care${S.on ? ', and tucked a secret note inside' : ''}.\n\nOpen your gift here:\n${link}\n${S.pw ? '\n🔒 It is locked with a password. Ask ' + f + ' for it.\n' : ''}\nWith petals and wishes,\nMake Your Own Bouquet 💐`;
   location.href = `mailto:${encodeURIComponent($('email').value)}?subject=${encodeURIComponent('💐 A gift has arrived for you')}&body=${encodeURIComponent(body)}`; };
 $('share').onclick = async () => {
-  if (!S.items.length) return alert('Add a few flowers first 🌸');
+  if (!S.items.length) return alert('Add a few flowers first 🌸'); if (S.voice && !SB.url) return toast('Voice notes need Supabase short links. Add your keys in config.js.');
   S.pw = $('pw').value ? await sha($('pw').value) : ''; const data = snap(); data.pw = S.pw; const base = location.origin + location.pathname; $('linkOut').textContent = 'Creating link…';
   try {
     if (SB.url) { const id = Math.random().toString(36).slice(2, 10);
       const r = await fetch(SB.url + '/rest/v1/gifts', { method: 'POST', headers: { ...H(), 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify({ id, data }) });
-      if (!r.ok) throw new Error(await r.text()); link = `${base}?g=${id}`;
+      if (!r.ok) throw new Error(await r.text()); link = `${base}?g=${id}`; const sent = JSON.parse(localStorage.getItem('bq_sent') || '[]'); sent.unshift({ id, to: S.to || '', t: Date.now(), link }); localStorage.setItem('bq_sent', JSON.stringify(sent.slice(0, 30)));
     } else link = `${base}#d=${await pack(JSON.stringify(data))}`;
     $('linkOut').textContent = '💌 Link ready! Copy it, scan the QR, or email it.'; $('shareBox').classList.remove('hide'); $('linkTxt').value = link; navigator.clipboard.writeText(link).catch(() => {}); drawQR();
   } catch (e) { $('linkOut').textContent = 'Could not create link: ' + e.message; }
@@ -219,10 +228,10 @@ $('share').onclick = async () => {
 function burst() { const ks = Object.keys(TYPES).filter(k => TYPES[k][1] === 'b'); for (let i = 0; i < 36; i++) { const d = document.createElement('div'); d.className = 'bp'; d.innerHTML = TYPES[ks[rnd(0, ks.length - 1)]].svg(WARM[rnd(0, WARM.length - 1)]);
   d.style.cssText = `left:${rnd(0, 90)}vw;top:${rnd(0, 80)}vh;--s:${rnd(5, 12) / 10};animation-delay:${rnd(0, 12) / 10}s`; document.body.append(d); setTimeout(() => d.remove(), 3800); } }
 function recvCover() { $('landing').querySelector('h1').textContent = 'A gift has arrived 💐'; $('ltag').textContent = (S.from ? S.from + ' made' : 'Someone made') + ' a bouquet just for you.' + (S.pw ? ' Enter the password to open it.' : ' Tap below to open it.');
-  $('go').textContent = 'Open your gift'; if (S.pw) $('pwIn').classList.remove('hide'); $('how').classList.add('hide'); $('about').classList.add('hide'); }
+  $('go').textContent = 'Open your gift'; if (S.pw) $('pwIn').classList.remove('hide'); $('how').classList.add('hide'); $('about').classList.add('hide'); lockCheck(); }
 $('go').onclick = async () => { if (!view) return show('start');
   if (S.pw && await sha($('pwIn').value) !== S.pw) { $('pwIn').value = ''; $('pwIn').placeholder = 'Wrong password, try again'; return; }
-  $('landing').classList.add('hide'); $('frame').classList.add('reveal'); burst(); if (S.mus) music(true); $('mk').classList.remove('hide'); };
+  $('landing').classList.add('hide'); $('frame').classList.add('reveal'); burst(); if (S.mus) music(true); $('mk').classList.remove('hide'); if (SB.url && window.GID) rpost({ gift_id: GID, kind: 'opened' }).catch(() => {}); };
 $('mk').onclick = () => location.href = location.pathname;
 
 // ---- v3: containers, ribbons, backdrops, letter preview ----
@@ -257,10 +266,31 @@ $('resume').onclick = () => show('edit');
 $('bgc').oninput = e => { S.bgc = e.target.value; applyStyle(); };
 let tT; const toast = m => { const t = $('toast'); t.innerHTML = ''; const i = document.createElement('span'), s = document.createElement('span'); i.textContent = '🌸'; s.textContent = m; t.append(i, s); t.classList.remove('hide'); clearTimeout(tT); tT = setTimeout(() => t.classList.add('hide'), 4200); };
 window.alert = toast; $('toast').onclick = () => $('toast').classList.add('hide');
+// ---- v4: meanings, schedule, voice, replies ----
+const MEAN = { rose: 'love and passion', peony: 'romance and prosperity', lily: 'purity and renewal', tulip: 'perfect love', daisy: 'innocence', sunflower: 'loyalty and joy', cosmos: 'harmony', hydrangea: 'gratitude', poppy: 'remembrance', carnation: 'admiration', ranunculus: 'charm', anemone: 'anticipation', gerbera: 'cheerfulness', lavender: 'calm and devotion', babysbreath: 'everlasting love', waxflower: 'lasting love', eucalyptus: 'protection and healing', fern: 'sincerity', olive: 'peace', ruscus: 'devotion', pampas: 'strength', wheat: 'prosperity', berries: 'abundance', monstera: 'new growth' };
+function extras() { $('lVoice').classList.toggle('hide', !S.voice); if (S.voice) $('lVoice').src = S.voice;
+  const ms = S.mean ? [...new Set(S.items.map(i => i.t))].map(t => TYPES[t][0] + ' — ' + (MEAN[t] || '')).join('  ·  ') : ''; $('lMean').textContent = ms ? 'In the language of flowers: ' + ms : ''; $('lMean').classList.toggle('hide', !ms);
+  $('lReply').classList.toggle('hide', !(view && SB.url && window.GID)); }
+$('sched').onchange = e => S.at = e.target.value; $('meanOn').onchange = e => S.mean = e.target.checked;
+const _load = load; load = o => { _load(o); $('meanOn').checked = !!S.mean; $('sched').value = S.at || ''; $('recPrev').classList.toggle('hide', !S.voice); $('recDel').classList.toggle('hide', !S.voice); if (S.voice) $('recPrev').src = S.voice; };
+function lockCheck() { if (!S.at || !view) return; const t = new Date(S.at) - Date.now();
+  if (t > 0) { $('go').disabled = true; const f = (n, u) => Math.floor(n) + u; $('ltag').textContent = `This gift unlocks in ${f(t / 864e5, 'd')} ${f(t % 864e5 / 36e5, 'h')} ${f(t % 36e5 / 6e4, 'm')} ${f(t % 6e4 / 1e3, 's')} ⏳`; setTimeout(lockCheck, 1000); }
+  else { $('go').disabled = false; $('ltag').textContent = 'Your gift is ready! Tap below to open it.'; } }
+let mr, chunks;
+$('rec').onclick = async () => { if (mr && mr.state === 'recording') return mr.stop();
+  try { const st = await navigator.mediaDevices.getUserMedia({ audio: true }); mr = new MediaRecorder(st, { audioBitsPerSecond: 24000 }); chunks = []; mr.ondataavailable = e => chunks.push(e.data);
+    mr.onstop = () => { st.getTracks().forEach(t => t.stop()); const f = new FileReader(); f.onload = () => { S.voice = f.result; $('recPrev').src = S.voice; $('recPrev').classList.remove('hide'); $('recDel').classList.remove('hide'); $('rec').textContent = '🎙 Re-record'; }; f.readAsDataURL(new Blob(chunks, { type: mr.mimeType })); };
+    mr.start(); $('rec').textContent = '⏹ Stop (max 30s)'; setTimeout(() => mr.state === 'recording' && mr.stop(), 30000);
+  } catch (e) { toast('Microphone access was blocked.'); } };
+$('recDel').onclick = () => { S.voice = ''; $('recPrev').classList.add('hide'); $('recDel').classList.add('hide'); $('rec').textContent = '🎙 Record voice note'; };
+const rpost = b => fetch(SB.url + '/rest/v1/replies', { method: 'POST', headers: { ...H(), 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(b) });
+let emo = ''; document.querySelectorAll('#lReply .em span').forEach(s => s.onclick = () => { emo = s.textContent; document.querySelectorAll('#lReply .em span').forEach(x => x.classList.toggle('on', x === s)); });
+$('rSend').onclick = async () => { if (!emo && !$('rTxt').value.trim()) return toast('Pick an emoji or write a few words first.');
+  try { const r = await rpost({ gift_id: GID, kind: 'reply', emoji: emo, body: $('rTxt').value.trim() }); if (!r.ok) throw 0; $('lReply').innerHTML = '<b>Sent! 💌 They will love it.</b>'; } catch (e) { toast('Could not send your reply. Please try again.'); } };
 // ---- boot ----
 (async () => {
   try {
-    const g = new URLSearchParams(location.search).get('g'), h = location.hash.startsWith('#d=') ? location.hash.slice(3) : '';
+    const g = (window.GID = new URLSearchParams(location.search).get('g')), h = location.hash.startsWith('#d=') ? location.hash.slice(3) : '';
     if (g && SB.url) S = (await (await fetch(`${SB.url}/rest/v1/gifts?id=eq.${encodeURIComponent(g)}&select=data`, { headers: H() })).json())[0].data;
     else if (h) S = JSON.parse(await unpack(h));
     view = !!(g || h);
@@ -284,6 +314,13 @@ const info = k => { const b = $('iB'); b.innerHTML = ''; $('iS').textContent = '
   if (k === 'profile') { $('iT').textContent = 'Your profile'; const i = document.createElement('input'), s = document.createElement('button'); i.placeholder = 'Your name (used as "From")'; i.value = localStorage.getItem('bq_name') || ''; s.textContent = 'Save'; s.onclick = () => { localStorage.setItem('bq_name', i.value); $('info').classList.add('hide'); }; b.append(i, s); }
   else if (k === 'drafts') { $('iT').textContent = 'My drafts'; const d = JSON.parse(localStorage.getItem('bq') || '[]'); if (!d.length) b.textContent = 'No drafts yet. Use 💾 Draft while you build.';
     d.forEach((x, n) => { const o = document.createElement('button'), r = document.createElement('button'); o.textContent = '📂 ' + x.n; o.onclick = () => { load(x.s); show('edit'); }; r.textContent = '🗑'; r.onclick = () => { d.splice(n, 1); localStorage.setItem('bq', JSON.stringify(d)); info('drafts'); }; b.append(o, r, document.createElement('br')); }); }
+  else if (k === 'sent') { $('iT').textContent = 'My sent gifts'; const L = JSON.parse(localStorage.getItem('bq_sent') || '[]');
+    if (!L.length) b.textContent = 'Gifts you send from this device will show up here.'; else if (!SB.url) b.textContent = 'Connect Supabase to see replies.';
+    else { b.textContent = 'Loading…'; fetch(`${SB.url}/rest/v1/replies?gift_id=in.(${L.map(x => x.id).join(',')})&order=created_at.desc`, { headers: H() }).then(r => r.json()).then(R => { b.textContent = '';
+      L.forEach(x => { const rs = R.filter(y => y.gift_id === x.id), d = document.createElement('div'), hd = document.createElement('h3'), cp = document.createElement('button'); d.className = 'sec';
+        hd.textContent = (x.to ? 'For ' + x.to : 'Gift') + ' · ' + new Date(x.t).toLocaleDateString() + (rs.some(y => y.kind === 'opened') ? ' · Opened ✓' : ' · Not opened yet'); d.append(hd);
+        rs.filter(y => y.kind === 'reply').forEach(y => { const p = document.createElement('p'); p.textContent = (y.emoji || '') + ' ' + (y.body || ''); d.append(p); });
+        cp.textContent = '📋 Copy link'; cp.onclick = () => navigator.clipboard.writeText(x.link).then(() => toast('Link copied')); d.append(cp); b.append(d); }); }).catch(() => b.textContent = 'Could not load. Check your connection.'); } }
   else { const [t, s, secs] = INFO[k]; $('iT').textContent = t; $('iS').textContent = s; secs.forEach(([hd, p]) => { const d = document.createElement('div'); d.className = 'sec'; if (hd) { const e = document.createElement('h3'); e.textContent = hd; d.append(e); } const q = document.createElement('p'); q.textContent = p; d.append(q); b.append(d); }); }
   $('info').classList.remove('hide'); };
 $('iX').onclick = () => $('info').classList.add('hide');
