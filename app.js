@@ -170,11 +170,37 @@ let link = '';
 const sha = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
 const QC = { Forest: ['#1f4d3a', '#f7f1e6'], Classic: ['#000000', '#ffffff'], Wine: ['#6b1e2e', '#fff8f0'], Navy: ['#1b2a5c', '#f4f7ff'], Plum: ['#4a2c6f', '#faf5ff'] };
 Object.keys(QC).forEach(k => $('qrS').add(new Option(k + ' QR', k)));
-function drawQR() { $('qr').innerHTML = ''; const [d, l] = QC[$('qrS').value]; if (window.QRCode && link.length < 1800) new QRCode($('qr'), { text: link, width: 170, height: 170, colorDark: d, colorLight: l }); else $('qr').textContent = 'QR codes need a short link. Connect Supabase (see supabase.sql).'; }
-$('qrS').onchange = drawQR;
+const HP = new Path2D('M.5 .95C.1 .65 0 .45 0 .28C0 .1 .13 0 .27 0C.38 0 .46 .06 .5 .15C.54 .06 .62 0 .73 0C.87 0 1 .1 1 .28C1 .45 .9 .65 .5 .95Z');
+async function drawQR() {
+  const box = $('qr'); box.innerHTML = '';
+  if (!window.QRCode || link.length >= 1800) { box.textContent = 'QR codes need a short link. Connect Supabase (see supabase.sql).'; return; }
+  const [d, l0] = QC[$('qrS').value], bg = $('qrBg').value, l = bg === 'auto' ? l0 : bg, st = $('qrStyle').value, fr = $('qrFrame').value, t = document.createElement('div');
+  const m = new QRCode(t, { text: link, width: 8, height: 8, correctLevel: QRCode.CorrectLevel.H })._oQRCode, n = m.getModuleCount();
+  const cs = 8, pad = 24, Q = n * cs + pad * 2, cap = $('qrCap').checked ? 34 : 0;
+  const T = fr === 'heart' ? Math.round(Q / .45) : fr === 'circle' ? Math.round(Q * 1.25) : fr === 'flower' ? Math.round(Q * 1.6) : Q;
+  const c = document.createElement('canvas'); c.width = T; c.height = T + cap; const x = c.getContext('2d'), ox = (T - Q) / 2, oy = fr === 'heart' ? T * .2 : ox;
+  x.fillStyle = sh(d, .82); x.strokeStyle = d; x.lineWidth = 5;
+  if (fr === 'heart') { x.save(); x.scale(T, T); x.lineWidth = 5 / T; x.fill(HP); x.stroke(HP); x.restore(); }
+  else if (fr === 'circle') { x.beginPath(); x.arc(T / 2, T / 2, T / 2 - 3, 0, 7); x.fill(); x.stroke(); }
+  else if (fr === 'flower') { for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; x.beginPath(); x.arc(T / 2 + Math.cos(a) * T * .39, T / 2 + Math.sin(a) * T * .39, T * .11, 0, 7); x.fill(); x.stroke(); } x.beginPath(); x.arc(T / 2, T / 2, T * .44, 0, 7); x.fill(); }
+  x.fillStyle = l; x.beginPath(); if (fr === 'card') x.roundRect(0, 0, T, T + cap, 18); else x.roundRect(ox, oy, Q, Q, 16); x.fill(); x.fillStyle = d;
+  const eye = (r, k) => (r < 7 && k < 7) || (r < 7 && k >= n - 7) || (r >= n - 7 && k < 7);
+  for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) { if (!m.isDark(r, k) || (st !== 'square' && eye(r, k))) continue; const px = ox + pad + k * cs, py = oy + pad + r * cs;
+    if (st === 'square') x.fillRect(px, py, cs, cs);
+    else if (st === 'round') { x.beginPath(); x.roundRect(px + .5, py + .5, cs - 1, cs - 1, 3); x.fill(); }
+    else if (st === 'dots') { x.beginPath(); x.arc(px + cs / 2, py + cs / 2, cs * .42, 0, 7); x.fill(); }
+    else if (st === 'heart') { x.save(); x.translate(px - cs * .05, py); x.scale(cs * 1.1, cs * 1.1); x.fill(HP); x.restore(); }
+    else { x.beginPath(); x.ellipse(px + cs / 2, py + cs / 2, cs * .5, cs * .3, Math.PI / 4, 0, 7); x.fill(); } }
+  if (st !== 'square') [[0, 0], [0, n - 7], [n - 7, 0]].forEach(([r, k]) => { const px = ox + pad + k * cs, py = oy + pad + r * cs; x.lineWidth = cs; x.strokeStyle = d; x.beginPath(); x.roundRect(px + cs / 2, py + cs / 2, cs * 6, cs * 6, cs * 1.6); x.stroke(); x.beginPath(); x.roundRect(px + cs * 2, py + cs * 2, cs * 3, cs * 3, cs); x.fill(); });
+  if ($('qrLogo').checked) { const s = Math.round(n * cs * .22), cx = ox + Q / 2 - s / 2, cy = oy + Q / 2 - s / 2; x.fillStyle = l; x.beginPath(); x.roundRect(cx - 4, cy - 4, s + 8, s + 8, 10); x.fill();
+    await new Promise(res => { const im = new Image(); im.onload = () => { x.drawImage(im, cx, cy, s, s); res(); }; im.onerror = res; im.src = 'favicon.svg'; }); }
+  if (cap) { x.fillStyle = d; x.font = '600 15px Quicksand, sans-serif'; x.textAlign = 'center'; x.fillText('Scan to open your gift', T / 2, T + 22); }
+  box.append(c);
+}
+['qrS', 'qrStyle', 'qrFrame', 'qrBg', 'qrLogo', 'qrCap'].forEach(k => $(k).onchange = drawQR);
 $('qrDl').onclick = () => { const c = $('qr').querySelector('canvas'); if (c) { const a = document.createElement('a'); a.download = 'bouquet-qr.png'; a.href = c.toDataURL(); a.click(); } };
 $('copy').onclick = () => navigator.clipboard.writeText(link).then(() => $('linkOut').textContent = '📋 Copied!');
-$('mail').onclick = () => { if (!link) return; if (link.length > 1500) return alert('Email links need to be short. Connect Supabase first (see supabase.sql).');
+$('mail').onclick = () => { if (link && $('qr').querySelector('canvas') && $('qrAtt').checked) { $('qrDl').click(); toast('QR image downloaded. Drag it into your email to attach it.'); } if (!link) return; if (link.length > 1500) return alert('Email links need to be short. Connect Supabase first (see supabase.sql).');
   const f = S.from || 'Someone who adores you', t = S.to || 'lovely';
   const body = `Dear ${t},\n\nA little garden has grown just for you. 🌷\n${f} arranged a bouquet, wrapped it with care${S.on ? ', and tucked a secret note inside' : ''}.\n\nOpen your gift here:\n${link}\n${S.pw ? '\n🔒 It is locked with a password. Ask ' + f + ' for it.\n' : ''}\nWith petals and wishes,\nMake Your Own Bouquet 💐`;
   location.href = `mailto:${encodeURIComponent($('email').value)}?subject=${encodeURIComponent('💐 A gift has arrived for you')}&body=${encodeURIComponent(body)}`; };
@@ -229,6 +255,8 @@ function prev() { const p = $('lprev'); p.className = 'lprev ' + [S.lp, S.lf, S.
 $('msgBox').addEventListener('input', prev); $('msgBox').addEventListener('change', prev); $('ink').oninput = e => S.ink = e.target.value;
 $('resume').onclick = () => show('edit');
 $('bgc').oninput = e => { S.bgc = e.target.value; applyStyle(); };
+let tT; const toast = m => { const t = $('toast'); t.innerHTML = ''; const i = document.createElement('span'), s = document.createElement('span'); i.textContent = '🌸'; s.textContent = m; t.append(i, s); t.classList.remove('hide'); clearTimeout(tT); tT = setTimeout(() => t.classList.add('hide'), 4200); };
+window.alert = toast; $('toast').onclick = () => $('toast').classList.add('hide');
 // ---- boot ----
 (async () => {
   try {
