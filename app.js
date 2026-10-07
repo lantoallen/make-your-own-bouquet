@@ -58,10 +58,15 @@ addT('statice', 'Statice', 'i', ['#b78cff', '#f4a6d7', '#ffffff', '#8e7cc3'], c 
 addT('astilbe', 'Astilbe', 'i', ['#f4a6d7', '#ffffff', '#b78cff', '#e63950'], TYPES.lavender[3]);
 addT('craspedia', 'Craspedia', 'i', ['#ffc300', '#ffd166'], c => `<svg viewBox="0 0 100 160"><path d="M50 160Q47 90 50 40" stroke="${GREEN}" stroke-width="2.5" fill="none"/><circle cx="50" cy="32" r="12" fill="${c}" stroke="${sh(c, -.3)}" stroke-width=".6"/></svg>`);
 addT('ivy', 'Ivy', 'f', GRN, leafy(9, 6, 40, 9)); addT('bayleaf', 'Bay leaf', 'f', GRN, leafy(14, 4, 28, 8)); addT('dustymiller', 'Dusty miller', 'f', ['#b8c4bb', '#a3b2a8', '#cdd6cf'], leafy(11, 7, 35, 7)); addT('palm', 'Palm leaf', 'f', GRN, leafy(20, 2.5, 50, 10));
-const wreathF = pts => c => `<svg viewBox="0 0 100 160">${RG}<g filter="url(#rg)">${pts.map(([x, y, a], i) => `<ellipse cx="${x}" cy="${y}" rx="9" ry="3.6" fill="${i % 2 ? '#5f9448' : '#4a7a3a'}" transform="rotate(${a} ${x} ${y})"/>`).join('')}${pts.filter((_, i) => i % 2 === 0).map(([x, y], i) => `<circle cx="${x}" cy="${y}" r="6.5" fill="${sh(c, [-.1, 0, .12][i % 3])}" stroke="${sh(c, -.35)}" stroke-width=".7"/><circle cx="${x}" cy="${y}" r="2.2" fill="${sh(c, -.4)}"/>`).join('')}</g><path d="M50 82l-9 24l9-6l9 6z" fill="${sh(c, -.5)}"/></svg>`;
-const ringP = n => Array.from({ length: n }, (_, i) => { const t = i / n * 2 * Math.PI; return [50 + 35 * Math.cos(t), 45 + 35 * Math.sin(t), t * 180 / Math.PI + 90]; });
-const heartP = n => Array.from({ length: n }, (_, i) => { const t = i / n * 2 * Math.PI; return [50 + 2.1 * 16 * Math.pow(Math.sin(t), 3), 42 - 2.1 * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)), 0]; });
-addT('wreath', 'Memorial wreath', 'x', WARM, wreathF(ringP(26))); addT('hwreath', 'Heart wreath', 'x', WARM, wreathF(heartP(26)));
+const ringP = (n, rx, ry, a0 = 0, a1 = 2 * Math.PI) => Array.from({ length: n }, (_, i) => { const t = a0 + (a1 - a0) * i / n; return [50 + rx * Math.cos(t), 45 + ry * Math.sin(t)]; });
+const heartP = n => Array.from({ length: n }, (_, i) => { const t = i / n * 2 * Math.PI; return [50 + 33 * Math.pow(Math.sin(t), 3), 42 - 2.1 * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t))]; });
+const wreathF = (pts, bow = [50, 82]) => c => { const n = pts.length, ang = i => { const p = pts[(i + n - 1) % n], q = pts[(i + 1) % n]; return Math.atan2(q[1] - p[1], q[0] - p[0]) * 180 / Math.PI; };
+  const leaves = pts.map(([x, y], i) => [-1, 1].map(s => `<path d="M0 0Q5.5 -4.5 12 0Q5.5 4.5 0 0Z" transform="translate(${x} ${y}) rotate(${ang(i) + s * 32 + (i % 2) * 8}) scale(${1 + (i % 3) * .14})" fill="${(i + (s > 0)) % 2 ? '#5f9448' : '#47763a'}" stroke="#35602b" stroke-width=".4"/>`).join('')).join('');
+  const fl = pts.map(([x, y], i) => i % 2 ? (i % 4 === 1 ? `<circle cx="${x}" cy="${y}" r="3.2" fill="${sh(c, .3)}" stroke="${sh(c, -.2)}" stroke-width=".4"/>` : '') : `<circle cx="${x}" cy="${y}" r="7.4" fill="${sh(c, [-.12, 0, .1][(i / 2) % 3 | 0])}" stroke="${sh(c, -.35)}" stroke-width=".6"/><circle cx="${x - .6}" cy="${y - .4}" r="4.8" fill="${sh(c, .1)}" stroke="${sh(c, -.25)}" stroke-width=".4"/><circle cx="${x + .4}" cy="${y + .3}" r="2.3" fill="${sh(c, -.3)}"/>`).join('');
+  const dots = pts.filter((_, i) => i % 3 === 0).map(([x, y]) => `<circle cx="${x + 5}" cy="${y - 5}" r="1.6" fill="#fff" opacity=".9"/>`).join(''), [bx, by] = bow, r = sh(c, -.55);
+  return `<svg viewBox="0 0 100 160">${RG}<g filter="url(#rg)">${leaves}${fl}${dots}</g><g fill="${r}" stroke="${sh(c, -.7)}" stroke-width=".5"><path d="M${bx} ${by}L${bx - 13} ${by - 7}Q${bx - 18} ${by + 2} ${bx - 13} ${by + 10}Z"/><path d="M${bx} ${by}L${bx + 13} ${by - 7}Q${bx + 18} ${by + 2} ${bx + 13} ${by + 10}Z"/><path d="M${bx - 3} ${by + 2}L${bx - 9} ${by + 24}L${bx - 4} ${by + 20}L${bx} ${by + 26}L${bx + 2} ${by + 3}Z"/><path d="M${bx + 3} ${by + 2}L${bx + 9} ${by + 24}L${bx + 4} ${by + 20}L${bx} ${by + 26}L${bx - 2} ${by + 3}Z"/><circle cx="${bx}" cy="${by}" r="3.4"/></g></svg>`; };
+addT('wreath', 'Round wreath', 'x', WARM, wreathF(ringP(30, 35, 35), [50, 80])); addT('owreath', 'Oval wreath', 'x', WARM, wreathF(ringP(32, 42, 26), [50, 71])); addT('cwreath', 'Crescent wreath', 'x', WARM, wreathF(ringP(24, 35, 35, -Math.PI / 2 + .8, -Math.PI / 2 + 2 * Math.PI - .8), [50, 80]));
+addT('dwreath', 'Double ring', 'x', WARM, wreathF([...ringP(34, 37, 37), ...ringP(20, 22, 22)], [50, 82])); addT('hwreath', 'Heart wreath', 'x', WARM, wreathF(heartP(30), [50, 78]));
 const CATS = { b: ['🌸 Flowers', 'b'], i: ['✨ Fillers', 'i'], f: ['🌿 Foliage', 'f'], x: ['🕊 Memorial', 'x'] };
 const WRAPS = ['#d2a679', '#e6cdb8', '#f1e6d2', '#b9c9b0', '#c9bfe0', '#2b2b33', '#2b3a5c', '#f7f2ea'];
 
@@ -80,7 +85,7 @@ function drawPicker() {
 }
 const mkIt = (t, c) => { const k = TYPES[t][1], sp = k === 'b' ? 55 : 90, x = rnd(-sp, sp); return { t, c, x, y: -(k === 'b' ? rnd(40, 120) : rnd(70, 150)), r: Math.round(x / 5), s: 1, z: k === 'b' || k === 'x' ? 2 : k === 'i' ? 1 : 0 }; };
 function add(t, c) { if (S.items.length >= 40) return alert('Your bouquet is full! 💐'); const it = mkIt(t, c); if (TYPES[t][1] === 'x') Object.assign(it, { x: 0, y: -90, s: 1.6, r: 0 }); S.items.push(it); mk(it); select(it); }
-function place(it) { const e = els.get(it); e.style.transform = `translate(${it.x}px,${it.y}px) rotate(${it.r}deg) scale(${it.s})`; e.style.zIndex = it.z; if (it === sel) inv(it); }
+function place(it) { const e = els.get(it); e.style.transform = `translate(${it.x}px,${it.y}px) rotate(${it.r}deg) scale(${it.s})`; e.style.zIndex = it.z; if (it === sel) inv(it); if (S.cont === 'none') drawStems(); }
 function mk(it) {
   const e = document.createElement('div'); e.className = 'sp'; e.innerHTML = TYPES[it.t].svg(it.c); els.set(it, e); place(it); $('bunch').append(e);
   $('count').textContent = S.items.length;
@@ -92,14 +97,14 @@ function mk(it) {
 function select(it) { sel = it; drawH(it); $('mean').textContent = it ? TYPES[it.t][0] + ': ' + (MEAN[it.t] || '') : ''; els.forEach((e, i) => e.classList.toggle('sel', i === it)); $('tools').classList.toggle('hide', !it); $('isw').classList.toggle('hide', !it); $('isw').innerHTML = '';
   if (it) TYPES[it.t][2].forEach(c => { const i = document.createElement('i'); i.style.background = c; i.onclick = () => { it.c = c; els.get(it).innerHTML = TYPES[it.t].svg(c); }; $('isw').append(i); }); }
 $('tools').onclick = ev => { const a = ev.target.dataset.a; if (!a || !sel) return;
-  if (a === 'd') { els.get(sel).remove(); els.delete(sel); S.items = S.items.filter(i => i !== sel); sel = null; $('count').textContent = S.items.length; $('tools').classList.add('hide'); return; }
+  if (a === 'd') { els.get(sel).remove(); els.delete(sel); S.items = S.items.filter(i => i !== sel); sel = null; drawStems(); $('count').textContent = S.items.length; $('tools').classList.add('hide'); return; }
   if (a === 's-') sel.s = Math.max(.4, sel.s - .1); if (a === 's+') sel.s = Math.min(2, sel.s + .1);
   if (a === 'r-') sel.r -= 12; if (a === 'r+') sel.r += 12; if (a === 'f') sel.z = sel.z >= 3 ? 0 : 3; if (a === 'zu') sel.z = Math.min(sel.z + 1, 6); if (a === 'zd') sel.z = Math.max(sel.z - 1, -1); place(sel); };
 document.addEventListener('pointerdown', e => { if (!e.target.closest('.sp,#tools,#isw,#grid,#sw')) select(null); });
 
 // ---- wrapper / theme / message ----
 function applyStyle() {
-  $('frame').className = S.cont || 'paper'; const rk = RIB[S.rs] || ['band', 'twine', 'lace'].includes(S.rs) ? S.rs : 'bow'; $('bow').className = rk; $('bow').innerHTML = ribbon(rk, S.rib); { const v = S.bgImg ? `url("${S.bgImg}") center/cover no-repeat` : S.bg === 'blush' && S.bgc ? S.bgc : scene(S.bg); if (v !== _bg) { _bg = v; $('stage').style.background = v; } } $('bgcRow').classList.toggle('hide', S.bg !== 'blush');
+  $('frame').className = S.cont || 'paper'; drawStems(); const rk = RIB[S.rs] || ['band', 'twine', 'lace'].includes(S.rs) ? S.rs : 'bow'; $('bow').className = rk; $('bow').innerHTML = ribbon(rk, S.rib); { const v = S.bgImg ? `url("${S.bgImg}") center/cover no-repeat` : S.bg === 'blush' && S.bgc ? S.bgc : scene(S.bg); if (v !== _bg) { _bg = v; $('stage').style.background = v; } } $('bgcRow').classList.toggle('hide', S.bg !== 'blush');
   const r = document.documentElement.style; r.setProperty('--w', S.w); r.setProperty('--rib', S.rib); r.setProperty('--env', S.env);
   $('wrapFront').className = ''; $('wrapFront').id = 'wrapFront'; if (S.p) $('wrapFront').classList.add(S.p);
   document.body.classList.toggle('dark', S.dark); document.body.classList.toggle('pet', !!S.pet); $('petalBtn').textContent = '🌸 Petals: ' + (S.pet ? 'on' : 'off');
@@ -170,9 +175,9 @@ Object.assign(PRE, {
   '🎉 Congratulations': oc({ w: '#f7f2ea', rib: '#d4af37', rs: 'double', bg: 'greenhouse', lp: 'pp-plain', lf: 'f-serif', text: 'Congratulations! So proud of you. Here is to your big moment. 🎉' }, [...rp('gerbera', '#ffc300', 3), ...rp('anemone', '#b78cff', 2), ...rp('poppy', '#ff4d2e', 2), ...rp('eucalyptus', '#6b9e6b', 3)]),
   '🤍 With sympathy': oc({ w: '#f1e6d2', rib: '#c0c0c0', bg: 'blush', lp: 'pp-linen', lf: 'f-hand', text: 'Thinking of you with love. May these flowers bring a little comfort in a hard time. 🤍' }, [...rp('lily', '#fff6f6', 4), ...rp('rose', '#fff6f6', 3), ...rp('eucalyptus', '#9cbf8f', 3)])
 });
-Object.assign(PRE, { '🕊️ Condolences': oc({ w: '#f1e6d2', rib: '#c0c0c0', rs: 'band', bg: 'blush', bgc: '#e3e8e3', lp: 'pp-linen', lf: 'f-hand', text: 'With deepest sympathy. May these flowers, and the love around you, bring comfort in the days ahead. 🕊️', fix: { wreath: { x: 0, y: -95, s: 1.5, r: 0 } } }, [['wreath', '#ffffff'], ...rp('eucalyptus', '#9cbf8f', 2)]) });
+Object.assign(PRE, { '🕊️ Condolences': oc({ w: '#f1e6d2', rib: '#c0c0c0', cont: 'easel', rs: 'nobow', bg: 'blush', bgc: '#e3e8e3', lp: 'pp-linen', lf: 'f-hand', text: 'With deepest sympathy. May these flowers, and the love around you, bring comfort in the days ahead. 🕊️', fix: { wreath: { x: 0, y: -95, s: 1.5, r: 0 } } }, [['wreath', '#ffffff'], ...rp('eucalyptus', '#9cbf8f', 2)]) });
 Object.entries(PRE).forEach(([n, p]) => { p.items = p.l.map(([t, c]) => Object.assign(mkIt(t, c), (p.fix || {})[t] || {})); const { l, items, fix, ...q } = p, b = document.createElement('button'), v = document.createElement('div'), bx = document.createElement('div'), w = document.createElement('div');
-  v.className = 'pv'; bx.className = 'pvb'; w.className = 'pvw'; w.style.background = q.w || '#f1e6d2';
+  v.className = 'pv'; bx.className = 'pvb'; w.className = 'pvw'; w.style.background = q.w || '#f1e6d2'; if (q.cont === 'easel' || q.cont === 'none') w.style.display = 'none';
   [...items].sort((x, y) => x.z - y.z).forEach(it => { const e = document.createElement('div'); e.className = 'sp'; e.innerHTML = TYPES[it.t].svg(it.c); e.style.transform = `translate(${it.x}px,${it.y}px) rotate(${it.r}deg) scale(${it.s})`; bx.append(e); });
   v.append(bx, w); b.append(v, Object.assign(document.createElement('b'), { textContent: n })); b.onclick = () => { load({ ...q, ev: p.occ ? n : '', items: items.map(i => ({ ...i })) }); show('edit'); }; $(p.occ ? 'occ' : 'presets').append(b); });
 $('scratch').onclick = () => { load({}); show('edit'); };
@@ -323,7 +328,7 @@ $('bgPhoto').onchange = e => { const f = e.target.files[0]; if (f) fit(f, 1000, 
 $('bgPhotoDel').onclick = () => { S.bgImg = ''; $('bgPhotoDel').classList.add('hide'); applyStyle(); };
 $('pc').oninput = e => { S.pc = e.target.value; prev(); }; $('pcDel').onclick = () => { S.pc = ''; $('pc').value = '#fffdf9'; prev(); };
 $('prevOpen').onclick = () => curtain(() => burst(), S.ev);
-Object.assign(MEAN, { dahlia: 'dignity and elegance', aster: 'patience and love', chrysanthemum: 'honor and remembrance', lotus: 'rebirth and peace', zinnia: 'lasting affection', camellia: 'devotion and admiration', statice: 'remembrance', astilbe: 'patience', craspedia: 'good fortune', ivy: 'fidelity', bayleaf: 'honor', dustymiller: 'friendship', palm: 'victory and peace', wreath: 'eternal love and remembrance', hwreath: 'love and sympathy' });
+Object.assign(MEAN, { owreath: 'enduring love', cwreath: 'life continuing', dwreath: 'an eternal bond', dahlia: 'dignity and elegance', aster: 'patience and love', chrysanthemum: 'honor and remembrance', lotus: 'rebirth and peace', zinnia: 'lasting affection', camellia: 'devotion and admiration', statice: 'remembrance', astilbe: 'patience', craspedia: 'good fortune', ivy: 'fidelity', bayleaf: 'honor', dustymiller: 'friendship', palm: 'victory and peace', wreath: 'eternal love and remembrance', hwreath: 'love and sympathy' });
 $('ps').oninput = e => { S.ps = +e.target.value; prev(); }; $('pr').oninput = e => { S.pr = +e.target.value; prev(); };
 // ---- v6: canva-style handles, trackpad and touch gestures ----
 const inv = it => { const s = els.get(it) && els.get(it).querySelector('.sh'); if (s) s.style.setProperty('--inv', 1 / it.s); };
@@ -340,6 +345,10 @@ $('stage').addEventListener('touchmove', e => { if (!t0 || e.touches.length !== 
 $('stage').addEventListener('touchend', () => { t0 = null; });
 document.addEventListener('keydown', e => { if (!sel || view || /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return; const st = e.shiftKey ? 10 : 2, m = { ArrowLeft: ['x', -st], ArrowRight: ['x', st], ArrowUp: ['y', -st], ArrowDown: ['y', st] }[e.key];
   if (m) { e.preventDefault(); sel[m[0]] += m[1]; place(sel); } else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); $('tools').querySelector('[data-a=d]').click(); } else if (e.key === ']') { sel.z = Math.min(sel.z + 1, 6); place(sel); } else if (e.key === '[') { sel.z = Math.max(sel.z - 1, -1); place(sel); } });
+RIB.nobow = () => '';
+function drawStems() { const sv = $('stems'); if (!sv) return; if (S.cont !== 'none') { sv.innerHTML = ''; return; }
+  sv.innerHTML = S.items.filter(it => TYPES[it.t][1] !== 'x').map((it, i) => { const L = 115 * it.s, th = it.r * Math.PI / 180, hx = 170 + it.x, hy = 230 + it.y, bx = hx - L * Math.sin(th), by = hy + L * Math.cos(th), tx = 170 + ((i % 7) - 3) * 3.5, ty = 440 + (i % 5) * 3;
+    return `<path d="M${bx} ${by}Q${bx} ${(by + ty) / 2} ${tx} ${ty}" stroke="#4f7f3f" stroke-width="${Math.max(3, 4.5 * it.s)}" fill="none" stroke-linecap="round"/><ellipse cx="${tx}" cy="${ty}" rx="3.2" ry="2" fill="#cfe3b4"/>`; }).join(''); }
 // ---- boot ----
 (async () => {
   try {
@@ -368,7 +377,7 @@ const info = k => { const b = $('iB'); b.innerHTML = ''; $('iS').textContent = '
   else if (k === 'drafts') { $('iT').textContent = 'My drafts'; const d = JSON.parse(localStorage.getItem('bq') || '[]'); if (!d.length) b.textContent = 'No drafts yet. Use 💾 Draft while you build.';
     d.forEach((x, n) => { const o = document.createElement('button'), r = document.createElement('button'); o.textContent = '📂 ' + x.n; o.onclick = () => { load(x.s); show('edit'); }; r.textContent = '🗑'; r.onclick = () => { d.splice(n, 1); localStorage.setItem('bq', JSON.stringify(d)); info('drafts'); }; b.append(o, r, document.createElement('br')); }); }
   else if (k === 'gallery') { $('iT').textContent = 'Flower gallery'; $('iS').textContent = 'What every flower means in the language of flowers.';
-    [['b', 'Flowers'], ['i', 'Fillers'], ['f', 'Foliage']].forEach(([cat, nm]) => { const hd = document.createElement('h3'), g = document.createElement('div'); hd.textContent = nm; g.className = 'gal';
+    [['b', 'Flowers'], ['i', 'Fillers'], ['f', 'Foliage'], ['x', 'Memorial']].forEach(([cat, nm]) => { const hd = document.createElement('h3'), g = document.createElement('div'); hd.textContent = nm; g.className = 'gal';
       Object.keys(TYPES).filter(t => TYPES[t][1] === cat).forEach(t => { const d = document.createElement('div'), n = document.createElement('b'), m = document.createElement('small'); d.innerHTML = TYPES[t].svg(TYPES[t][2][0]); n.textContent = TYPES[t][0]; m.textContent = MEAN[t] || ''; d.append(n, m); g.append(d); }); b.append(hd, g); }); }
   else if (k === 'sent') { $('iT').textContent = 'My sent gifts'; const L = JSON.parse(localStorage.getItem('bq_sent') || '[]');
     if (!L.length) b.textContent = 'Gifts you send from this device will show up here.'; else if (!SB.url) b.textContent = 'Connect Supabase to see replies.';

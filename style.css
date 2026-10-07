@@ -195,3 +195,7 @@ body.view #go{padding:16px 36px;font-size:1.1rem;animation:glow 2s infinite}@key
  #presets,#occ{grid-template-columns:repeat(2,1fr)}#landing h1{font-size:2.2rem}body.view #landing h1{font-size:2.8rem}
  button,select,textarea,input:not([type=checkbox]):not([type=range]){min-height:44px}
 }
+
+#stems,#easel{position:absolute;left:0;top:0;width:340px;height:520px;pointer-events:none;display:none;overflow:visible}
+#frame.none #stems{display:block}#frame.easel #easel{display:block}
+#frame.none #wrapBack,#frame.none #wrapFront,#frame.none #handle,#frame.easel #wrapBack,#frame.easel #wrapFront,#frame.easel #handle,#frame.easel #bow{display:none}
