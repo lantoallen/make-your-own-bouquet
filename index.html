@@ -20,7 +20,7 @@
   <div class="sw" id="sw"></div>
   <div class="grid" id="grid"></div>
   <p class="muted"><span id="count">0</span>/40 · tap a stem to select, drag to arrange</p>
-  <p id="mean" class="muted"></p><div id="tools" class="row hide"><button data-a="s-">−</button><button data-a="s+">＋</button><button data-a="r-">⟲</button><button data-a="r+">⟳</button><button data-a="f">⇅</button><button data-a="d">🗑</button></div>
+  <p id="mean" class="muted"></p><div id="tools" class="row hide"><button data-a="s-">−</button><button data-a="s+">＋</button><button data-a="r-">⟲</button><button data-a="r+">⟳</button><button data-a="zu" title="Bring forward">▲</button><button data-a="zd" title="Send backward">▼</button><button data-a="d">🗑</button></div>
   <div class="sw hide" id="isw"></div>
  </details>
  <details open><summary>2 · Wrap it</summary>
@@ -49,6 +49,7 @@
    <div class="row"><select id="la"><option value="a-left">Align left</option><option value="a-center">Center</option><option value="a-right">Right</option></select><select id="ph"><option value="ph-top">Photo above</option><option value="ph-below">Photo below</option></select></div>
    <select id="pf"><option value="pf-round">Photo: Rounded</option><option value="pf-polaroid">Polaroid</option><option value="pf-none">Square</option></select>
    <div class="row"><input type="color" id="ink" value="#33281f"><span>Ink color</span></div>
+   <label class="muted">Photo size <input type="range" id="ps" min="30" max="100" value="100"></label><label class="muted">Photo tilt <input type="range" id="pr" min="-15" max="15" value="0"></label>
    <div id="lprev" class="lprev"></div>
   </div>
  </details>
