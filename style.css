@@ -199,3 +199,39 @@ body.view #go{padding:16px 36px;font-size:1.1rem;animation:glow 2s infinite}@key
 #stems,#easel{position:absolute;left:0;top:0;width:340px;height:520px;pointer-events:none;display:none;overflow:visible}
 #frame.none #stems{display:block}#frame.easel #easel{display:block}
 #frame.none #wrapBack,#frame.none #wrapFront,#frame.none #handle,#frame.easel #wrapBack,#frame.easel #wrapFront,#frame.easel #handle,#frame.easel #bow{display:none}
+
+/* ===== Gallery look: warm paper, botanical green, fine gold lines ===== */
+:root{--gold:#b08d57;--ac2:#a65f45}body.dark{--gold:#c9a96a;--ac2:#d98a6d}
+button:focus,select:focus,input:focus,textarea:focus{outline:none}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--ac2);outline-offset:2px}
+button{border-radius:8px;border:1px solid rgba(176,141,87,.55);background:rgba(255,252,245,.7);color:var(--ac);letter-spacing:.01em}
+button:hover{background:rgba(255,252,245,.95);border-color:var(--gold);transform:translateY(-1px);box-shadow:0 3px 10px rgba(80,60,30,.12)}
+.primary{background:var(--ac);color:#f7f1e6;border:1px solid var(--ac);border-radius:8px;letter-spacing:.05em;box-shadow:inset 0 0 0 2px rgba(247,241,230,.18),0 4px 14px rgba(40,60,45,.25)}
+.primary:hover{background:var(--ac);filter:brightness(1.08)}
+input:not([type]),input[type=email],input[type=password],select,textarea,#sched{border-radius:6px;border:1px solid rgba(80,60,40,.25);background:rgba(255,252,245,.85)}
+#panel{padding:1.8rem 1.6rem 3rem}
+#panel h1{font:italic 400 1.9rem 'Playfair Display',serif;letter-spacing:.01em;margin-bottom:.2rem;cursor:pointer}
+#panel h1:after{content:'';display:block;width:56px;height:1px;background:var(--gold);margin-top:12px}
+details{border:1px solid rgba(176,141,87,.55);border-radius:4px;box-shadow:inset 0 0 0 4px var(--bg),inset 0 0 0 5px rgba(176,141,87,.3);padding:1.3rem 1.3rem 1.1rem;margin-top:1.3rem;background:rgba(255,252,245,.4)}
+summary{font:italic 400 1.25rem 'Cormorant Garamond',serif;letter-spacing:.02em;color:var(--ac);list-style:none;display:flex;align-items:center;gap:12px;margin-bottom:.9rem;cursor:pointer}
+summary::-webkit-details-marker{display:none}summary:after{content:'';flex:1;height:1px;background:var(--gold);opacity:.4}
+.tabs button{border-radius:6px}.tabs .on{background:var(--ac);color:#f7f1e6;border-color:var(--ac)}
+.grid button{border-radius:6px;background:rgba(255,252,245,.8)}
+#bar{border-bottom:1px solid rgba(176,141,87,.5)}#bar button{border-radius:8px}#bar span{font:italic 400 1.6rem 'Playfair Display',serif}
+#menu{border-radius:8px;border:1px solid rgba(176,141,87,.5)}#menu button{border:0;background:none;box-shadow:none;border-radius:4px;color:var(--tx);font-weight:500}#menu button:hover{background:rgba(176,141,87,.16);transform:none;box-shadow:none}
+#stage:before{content:'';position:absolute;inset:18px;border:1px solid rgba(176,141,87,.5);pointer-events:none;z-index:1}#stage:after{content:'';position:absolute;inset:24px;border:1px solid rgba(176,141,87,.22);pointer-events:none;z-index:1}
+#landing h1{letter-spacing:.01em}#lbloom:before,#lbloom:after{content:'';position:absolute;border-radius:50%;border:1px solid rgba(176,141,87,.55);pointer-events:none}#lbloom:before{inset:-26px}#lbloom:after{inset:-46px;border-color:rgba(176,141,87,.25)}
+#landing p{letter-spacing:.02em;line-height:1.6}
+#start h2{font:italic 400 2.2rem 'Playfair Display',serif;color:var(--ac)}#start h2:after{content:'';display:block;width:56px;height:1px;background:var(--gold);margin:12px auto 0}
+#start h3{font:italic 400 1.4rem 'Cormorant Garamond',serif;color:var(--ac);letter-spacing:.03em;margin:26px 0 10px;text-align:center}
+#presets button,#occ button{border:1px solid rgba(176,141,87,.55);border-radius:4px;background:rgba(255,252,245,.7);box-shadow:inset 0 0 0 5px var(--bg),inset 0 0 0 6px rgba(176,141,87,.25);padding:22px 16px 16px}
+#presets button:hover,#occ button:hover{box-shadow:inset 0 0 0 5px var(--bg),inset 0 0 0 6px var(--gold),0 8px 20px rgba(80,60,30,.14)}
+#presets button b,#occ button b{font:italic 400 1.15rem 'Playfair Display',serif;color:var(--tx);margin-top:6px}
+.card{border-radius:4px;box-shadow:inset 0 0 0 6px var(--bg),inset 0 0 0 7px rgba(176,141,87,.4),0 20px 50px rgba(0,0,0,.35);padding:36px 40px}.card h2{font:italic 400 1.9rem 'Playfair Display',serif}
+#toast{border-radius:6px;border-left-color:var(--ac2)}.ti{width:10px;height:10px;border-radius:50%;background:var(--ac2);flex:none}
+.sw i{box-shadow:0 0 0 1px rgba(80,60,40,.25)}
+@media(max-width:800px){#panel{padding:1.2rem 1rem 3rem}details{padding:1.1rem 1rem .9rem}#bar span{font-size:1.15rem}#start h2{font-size:1.8rem}.card{padding:28px 22px}}
+
+#start{padding-top:100px}#panel h1{display:none}
+#lbloom{margin-bottom:46px}#landing .row{width:300px}#landing .row button{white-space:nowrap}
+@media(max-width:800px){#bar span{font-size:0;gap:0}#bar span img{width:30px;height:30px}.float{min-height:34px;padding:4px 10px;font-size:.75rem}#musicBtn2{top:50px!important}}
