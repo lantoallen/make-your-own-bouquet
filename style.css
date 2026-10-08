@@ -235,3 +235,14 @@ summary::-webkit-details-marker{display:none}summary:after{content:'';flex:1;hei
 #start{padding-top:100px}#panel h1{display:none}
 #lbloom{margin-bottom:46px}#landing .row{width:300px}#landing .row button{white-space:nowrap}
 @media(max-width:800px){#bar span{font-size:0;gap:0}#bar span img{width:30px;height:30px}.float{min-height:34px;padding:4px 10px;font-size:.75rem}#musicBtn2{top:50px!important}}
+
+.a-justify{text-align:justify}.a-center #lFrom,.a-center .pfrom{text-align:center}
+.letter .pText,.lprev .pText,.letter .pTo,.lprev .pTo,.letter .pFrom,.lprev .pFrom{font-family:var(--ff,inherit);font-size:calc(var(--fs,18px)*var(--k,1));line-height:var(--lh,1.5);letter-spacing:var(--ls,0);font-weight:var(--fw,400);font-style:var(--fst,inherit);text-decoration:var(--td,none)}
+.letter .pTo,.lprev .pTo,.letter .pFrom,.lprev .pFrom{font-size:calc(var(--fs,18px)*var(--gs,1.2)*var(--k,1))}
+.tbox{border-top:1px solid var(--bd);margin-top:12px;padding-top:12px}.tt{font:italic 1.2rem 'Cormorant Garamond',serif;color:var(--ac);margin-bottom:8px}
+.fgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-height:230px;overflow-y:auto;padding:2px}.fgrid button{display:flex;flex-direction:column;align-items:center;padding:6px 2px;border-radius:6px;min-height:0}
+.fgrid button span{font-size:1.35rem;line-height:1.25;color:var(--tx)}.fgrid button small{font-size:.62rem;color:var(--mut)}.fgrid button.on{background:var(--ac);border-color:var(--ac)}.fgrid button.on span,.fgrid button.on small{color:#f7f1e6}
+.rg{display:flex;align-items:center;gap:8px;margin:10px 0 0;font-size:.85rem;color:var(--mut)}.rg input{flex:1}.rg b{min-width:44px;text-align:right;color:var(--tx);font-weight:600}
+.seg{display:flex;gap:4px;margin-top:10px}.seg button{flex:1;padding:8px 4px;font-size:.8rem;min-height:0}.seg button.on{background:var(--ac);color:#f7f1e6;border-color:var(--ac)}
+@media(max-width:800px){.fgrid{grid-template-columns:repeat(3,1fr)}}
+.rg{display:grid;grid-template-columns:104px 1fr 48px;align-items:center}
