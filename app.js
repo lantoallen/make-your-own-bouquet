@@ -70,7 +70,7 @@ addT('dwreath', 'Double ring', 'x', WARM, wreathF([...ringP(34, 37, 37), ...ring
 const CATS = { b: ['Flowers', 'b'], i: ['Fillers', 'i'], f: ['Foliage', 'f'], x: ['Memorial', 'x'] };
 const WRAPS = ['#d2a679', '#e6cdb8', '#f1e6d2', '#b9c9b0', '#c9bfe0', '#2b2b33', '#2b3a5c', '#f7f2ea'];
 
-const D = () => ({ ev: '', ps: 100, pr: 0, bgImg: '', pc: '', at: '', voice: '', mean: false, items: [], w: '#e6cdb8', p: '', rib: '#8f3b4a', env: '#e8dcc8', on: false, mus: false, ink: '', lp: 'pp-plain', lf: 'f-serif', la: 'a-left', ph: 'ph-top', pf: 'pf-round', pet: false, cont: 'paper', rs: 'bow', bg: 'blush', bgc: '', pw: '', media: '', to: '', from: '', text: '', photo: '', dark: false });
+const D = () => ({ ev: '', ps: 100, pr: 0, bgImg: '', pc: '', at: '', voice: '', mean: false, items: [], w: '#e6cdb8', p: '', rib: '#8f3b4a', env: '#e8dcc8', on: false, mus: false, ink: '', tz: 20, tl: 1.5, tk: 0, tg: 120, tb: false, ti: null, tu: false, lp: 'pp-plain', lf: 'f-serif', la: 'a-left', ph: 'ph-top', pf: 'pf-round', pet: false, cont: 'paper', rs: 'bow', bg: 'blush', bgc: '', pw: '', media: '', to: '', from: '', text: '', photo: '', dark: false });
 let S = D();
 let cat = 'b', col = {}, sel = null, view = false;
 const els = new Map();
@@ -196,7 +196,7 @@ function media() { const m = $('lMedia'); m.innerHTML = ''; const u = S.media ||
   if (y) s = 'https://www.youtube.com/embed/' + y[1]; else if (u.includes('open.spotify.com/')) s = u.replace('open.spotify.com/', 'open.spotify.com/embed/');
   if (s) { const f = document.createElement('iframe'); f.src = s; f.allow = 'autoplay;encrypted-media'; f.style.cssText = 'width:100%;height:' + (y ? 180 : 152) + 'px;border:0;border-radius:8px;margin-bottom:12px'; m.append(f); }
   else { const a = document.createElement('a'); a.href = u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Open the song / video'; m.append(a); } }
-const _m = $('mini').onclick; $('mini').onclick = () => { _m(); media(); extras(); const L = document.querySelector('.letter'); L.className = 'letter ' + [S.lp, S.lf, S.la, S.ph, S.pf].join(' '); L.style.color = S.ink || ''; L.style.backgroundColor = S.pc || ''; };
+const _m = $('mini').onclick; $('mini').onclick = () => { _m(); media(); extras(); const L = document.querySelector('.letter'); L.className = 'letter ' + [S.lp, S.lf, S.la, S.ph, S.pf].join(' '); L.style.color = S.ink || ''; applyText(L); L.style.setProperty('--k', 1); L.style.backgroundColor = S.pc || ''; };
 // share, QR, email
 let link = '';
 const sha = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -281,8 +281,8 @@ const scene = k => { if (SC[k] !== undefined) return SC[k]; let sd = 7; const r 
     dusk: `<rect width="800" height="600" fill="#e9b99a"/><circle cx="400" cy="380" r="80" fill="#f4d58d"/><path d="M0 600V430Q200 380 400 440T800 400V600Z" fill="#7a5a7a"/><path d="M0 600V500Q250 450 500 510T800 480V600Z" fill="#4b3a5e"/>`,
     night: `<rect width="800" height="600" fill="#1c2540"/>${dots(70, 0, 400, ['#fff', '#f4efe6'], 1, 2.4)}<circle cx="620" cy="110" r="42" fill="#f4efe6"/><circle cx="640" cy="100" r="38" fill="#1c2540"/><path d="M0 600V470Q200 420 420 480T800 450V600Z" fill="#101830"/>` };
   return SC[k] = B[k] ? `url("data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">' + B[k] + '</svg>')}") center bottom/cover` : ''; };
-function prev() { const p = $('lprev'); p.className = 'lprev ' + [S.lp, S.lf, S.la, S.pf].join(' '); p.style.color = S.ink || ''; p.style.backgroundColor = S.pc || ''; p.innerHTML = '';
-  const t = document.createElement('h4'), x = document.createElement('p'), f = document.createElement('p'); t.textContent = S.to ? 'Dear ' + S.to + ',' : 'Dear friend,'; x.textContent = S.text || 'Your message will look like this…'; f.className = 'pfrom'; f.textContent = '— ' + (S.from || 'You');
+function prev() { const p = $('lprev'); p.className = 'lprev ' + [S.lp, S.lf, S.la, S.pf].join(' '); p.style.color = S.ink || ''; applyText(p); p.style.setProperty('--k', .62); p.style.backgroundColor = S.pc || ''; p.innerHTML = '';
+  const t = document.createElement('h4'), x = document.createElement('p'), f = document.createElement('p'); t.textContent = S.to ? 'Dear ' + S.to + ',' : 'Dear friend,'; x.textContent = S.text || 'Your message will look like this…'; f.className = 'pfrom pFrom'; t.className = 'pTo'; x.className = 'pText'; f.textContent = '— ' + (S.from || 'You');
   const parts = [t, x, f]; if (S.photo) { const i = document.createElement('img'); i.src = S.photo; i.className = 'pimg'; i.style.width = S.ps + '%'; if (S.pr) i.style.transform = 'rotate(' + S.pr + 'deg)'; parts.splice(S.ph === 'ph-below' ? 2 : 1, 0, i); } p.append(...parts); }
 $('msgBox').addEventListener('input', prev); $('msgBox').addEventListener('change', prev); $('ink').oninput = e => S.ink = e.target.value;
 $('resume').onclick = () => show('edit');
@@ -295,7 +295,7 @@ function extras() { $('lVoice').classList.toggle('hide', !S.voice); if (S.voice)
   const ms = S.mean ? [...new Set(S.items.map(i => i.t))].map(t => TYPES[t][0] + ' — ' + (MEAN[t] || '')).join('  ·  ') : ''; $('lMean').textContent = ms ? 'In the language of flowers: ' + ms : ''; $('lMean').classList.toggle('hide', !ms);
   $('lReply').classList.toggle('hide', !(view && SB.url && window.GID)); }
 $('sched').onchange = e => S.at = e.target.value; $('meanOn').onchange = e => S.mean = e.target.checked;
-const _load = load; load = o => { _load(o); $('meanOn').checked = !!S.mean; $('sched').value = S.at || ''; $('recPrev').classList.toggle('hide', !S.voice); $('recDel').classList.toggle('hide', !S.voice); if (S.voice) $('recPrev').src = S.voice; $('bgPhotoDel').classList.toggle('hide', !S.bgImg); $('pc').value = S.pc || '#fffdf9'; $('ps').value = S.ps; $('pr').value = S.pr; prev(); };
+const _load = load; load = o => { _load(o); $('meanOn').checked = !!S.mean; $('sched').value = S.at || ''; $('recPrev').classList.toggle('hide', !S.voice); $('recDel').classList.toggle('hide', !S.voice); if (S.voice) $('recPrev').src = S.voice; $('bgPhotoDel').classList.toggle('hide', !S.bgImg); $('pc').value = S.pc || '#fffdf9'; $('ps').value = S.ps; $('pr').value = S.pr; syncText(); prev(); };
 function lockCheck() { if (!S.at || !view) return; const t = new Date(S.at) - Date.now();
   if (t > 0) { $('go').disabled = true; const f = (n, u) => Math.floor(n) + u; $('ltag').textContent = `This gift unlocks in ${f(t / 864e5, 'd')} ${f(t % 864e5 / 36e5, 'h')} ${f(t % 36e5 / 6e4, 'm')} ${f(t % 6e4 / 1e3, 's')} ⏳`; setTimeout(lockCheck, 1000); }
   else { $('go').disabled = false; $('ltag').textContent = 'Your gift is ready! Tap below to open it.'; } }
@@ -349,6 +349,19 @@ RIB.nobow = () => '';
 function drawStems() { const sv = $('stems'); if (!sv) return; if (S.cont !== 'none') { sv.innerHTML = ''; return; }
   sv.innerHTML = S.items.filter(it => TYPES[it.t][1] !== 'x').map((it, i) => { const L = 115 * it.s, th = it.r * Math.PI / 180, hx = 170 + it.x, hy = 230 + it.y, bx = hx - L * Math.sin(th), by = hy + L * Math.cos(th), tx = 170 + ((i % 7) - 3) * 3.5, ty = 440 + (i % 5) * 3;
     return `<path d="M${bx} ${by}Q${bx} ${(by + ty) / 2} ${tx} ${ty}" stroke="#4f7f3f" stroke-width="${Math.max(3, 4.5 * it.s)}" fill="none" stroke-linecap="round"/><ellipse cx="${tx}" cy="${ty}" rx="3.2" ry="2" fill="#cfe3b4"/>`; }).join(''); }
+// ---- v7: text styling ----
+const FONTS = [["f-serif", "Elegant", "'Playfair Display',serif", 1, 1], ["f-bask", "Classic", "'Libre Baskerville',serif", 0.9, 1], ["f-lora", "Lora", "Lora,serif", 1, 1], ["f-hand", "Cormorant", "'Cormorant Garamond',serif", 1.15, 1], ["f-cinzel", "Cinzel", "Cinzel,serif", 0.9, 0], ["f-vibes", "Great Vibes", "'Great Vibes',cursive", 1.55, 0], ["f-pari", "Parisienne", "Parisienne,cursive", 1.4, 0], ["f-dancing", "Dancing", "'Dancing Script',cursive", 1.2, 0], ["f-sat", "Satisfy", "Satisfy,cursive", 1.2, 0], ["f-pacifico", "Pacifico", "Pacifico,cursive", 0.9, 0], ["f-script", "Caveat", "Caveat,cursive", 1.3, 0], ["f-indie", "Indie Flower", "'Indie Flower',cursive", 1.15, 0], ["f-shadow", "Handwritten", "'Shadows Into Light',cursive", 1.25, 0], ["f-type", "Typewriter", "'Special Elite',monospace", 0.95, 0], ["f-sans", "Clean", "Quicksand,sans-serif", 1, 0], ["f-mont", "Modern", "Montserrat,sans-serif", 0.92, 0]];
+const fnt = () => FONTS.find(x => x[0] === S.lf) || FONTS[0];
+function applyText(el) { const f = fnt(), st = el.style; st.setProperty('--ff', f[2]); st.setProperty('--fs', (S.tz * f[3]) + 'px'); st.setProperty('--lh', S.tl); st.setProperty('--ls', S.tk + 'px'); st.setProperty('--fw', S.tb ? 700 : 400); st.setProperty('--fst', (S.ti ?? f[4]) ? 'italic' : 'normal'); st.setProperty('--td', S.tu ? 'underline' : 'none'); st.setProperty('--gs', S.tg / 100); }
+function syncText() { const f = fnt(); $('lf').value = S.lf; $('la').value = S.la; $('tz').value = S.tz; $('tzv').textContent = S.tz + 'px'; $('tl').value = S.tl; $('tlv').textContent = S.tl; $('tk').value = S.tk; $('tkv').textContent = S.tk; $('tg').value = S.tg; $('tgv').textContent = S.tg + '%'; $('ink').value = S.ink || '#33281f';
+  document.querySelectorAll('#fgrid button').forEach(b => b.classList.toggle('on', b.dataset.f === S.lf)); document.querySelectorAll('#aseg button').forEach(b => b.classList.toggle('on', b.dataset.al === S.la));
+  const on = { tb: S.tb, ti: S.ti ?? !!f[4], tu: S.tu }; document.querySelectorAll('#bseg [data-st]').forEach(b => b.classList.toggle('on', !!on[b.dataset.st])); }
+FONTS.forEach(f => { const b = document.createElement('button'); b.dataset.f = f[0]; b.title = f[1]; b.innerHTML = '<span>Aa</span><small>' + f[1] + '</small>'; b.firstChild.style.fontFamily = f[2]; b.onclick = () => { S.lf = f[0]; syncText(); prev(); }; $('fgrid').append(b); });
+[['tz', 'tz', v => v + 'px'], ['tl', 'tl', v => v], ['tk', 'tk', v => v], ['tg', 'tg', v => v + '%']].forEach(([id, k, fm]) => $(id).oninput = e => { S[k] = +e.target.value; $(id + 'v').textContent = fm(S[k]); prev(); });
+document.querySelectorAll('#aseg button').forEach(b => b.onclick = () => { S.la = b.dataset.al; syncText(); prev(); });
+document.querySelectorAll('#bseg [data-st]').forEach(b => b.onclick = () => { const k = b.dataset.st; S[k] = k === 'ti' ? !(S.ti ?? !!fnt()[4]) : !S[k]; syncText(); prev(); });
+$('tReset').onclick = () => { Object.assign(S, { tz: 20, tl: 1.5, tk: 0, tg: 120, tb: false, ti: null, tu: false, la: 'a-left', ink: '' }); syncText(); prev(); };
+['#33281f', '#000000', '#3d5a47', '#8f3b4a', '#2b3a5c', '#6b4e8a', '#a65f45', '#ffffff'].forEach(c => { const i = document.createElement('i'); i.style.background = c; i.onclick = () => { S.ink = c; syncText(); prev(); }; $('tsw').append(i); });
 // ---- boot ----
 (async () => {
   try {
@@ -360,7 +373,7 @@ function drawStems() { const sv = $('stems'); if (!sv) return; if (S.cont !== 'n
   S = Object.assign(D(), S);
   if (view) { document.body.classList.add('view'); recvCover(); }
   S.items.forEach(mk); $('count').textContent = S.items.length; applyStyle(); drawPicker();
-  if (!view) { $('wrapC').value = S.w; } fillPat(); prev();
+  if (!view) { $('wrapC').value = S.w; } fillPat(); syncText(); prev();
 })();
 
 // ---- landing page ----
