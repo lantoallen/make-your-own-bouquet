@@ -4,7 +4,7 @@
 <meta name="description" content="Build a bouquet, tuck in a letter and send it as a link, QR code or email.">
 <meta name="theme-color" content="#3d5a47">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&family=Quicksand:wght@400;600&family=Caveat&family=Cormorant+Garamond:ital@1&family=Dancing+Script&family=Great+Vibes&family=Indie+Flower&family=Lora:ital@1&family=Special+Elite&family=Cinzel&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&family=Quicksand:wght@400;600&family=Caveat&family=Cormorant+Garamond:ital@1&family=Dancing+Script&family=Great+Vibes&family=Parisienne&family=Satisfy&family=Indie+Flower&family=Lora:ital@1&family=Shadows+Into+Light&family=Special+Elite&family=Cinzel&family=Libre+Baskerville:ital@1&family=Pacifico&family=Montserrat&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <link rel="stylesheet" href="style.css"></head>
@@ -45,11 +45,18 @@
    <div class="row"><button id="rec">Record voice note</button><button id="recDel" class="hide"></button></div><audio id="recPrev" controls class="hide"></audio>
    <select id="lp"><option value="pp-plain">Paper: Plain</option><option value="pp-lined">Lined</option><option value="pp-parch">Parchment</option><option value="pp-kraft">Kraft</option><option value="pp-floral">Floral dots</option><option value="pp-dark">Dark</option><option value="pp-water">Watercolor wash</option><option value="pp-linen">Linen weave</option><option value="pp-rice">Rice paper</option><option value="pp-leaves">Pressed leaves</option><option value="pp-vintage">Vintage aged</option><option value="pp-grid">Graph grid</option><option value="pp-blush">Blush</option><option value="pp-sage">Sage</option><option value="pp-navy">Midnight blue</option><option value="pp-stripe">Pastel stripes</option><option value="pp-hearts">Tiny hearts</option><option value="pp-stars">Golden stars</option><option value="pp-marble">Marble</option><option value="pp-burlap">Burlap</option><option value="pp-foil">Gold foil</option><option value="pp-frame">Postcard frame</option><option value="pp-canvas">Canvas</option><option value="pp-lilac">Lilac</option><option value="pp-peach">Peach</option><option value="pp-mint">Mint</option><option value="pp-butter">Butter</option></select>
    <div class="row"><input type="color" id="pc" value="#fffdf9"><span>Paper color</span><button id="pcDel">Reset</button></div>
-   <select id="lf"><option value="f-serif">Font: Elegant</option><option value="f-script">Script (Caveat)</option><option value="f-dancing">Dancing Script</option><option value="f-vibes">Great Vibes</option><option value="f-indie">Playful hand</option><option value="f-hand">Classic italic</option><option value="f-lora">Lora serif</option><option value="f-type">Typewriter</option><option value="f-cinzel">Cinzel caps</option><option value="f-sans">Clean</option></select>
-   <div class="row"><select id="la"><option value="a-left">Align left</option><option value="a-center">Center</option><option value="a-right">Right</option></select><select id="ph"><option value="ph-top">Photo above</option><option value="ph-below">Photo below</option></select></div>
+   <select id="lf" class="hide"><option value="f-serif">Elegant</option><option value="f-bask">Classic</option><option value="f-lora">Lora</option><option value="f-hand">Cormorant</option><option value="f-cinzel">Cinzel</option><option value="f-vibes">Great Vibes</option><option value="f-pari">Parisienne</option><option value="f-dancing">Dancing</option><option value="f-sat">Satisfy</option><option value="f-pacifico">Pacifico</option><option value="f-script">Caveat</option><option value="f-indie">Indie Flower</option><option value="f-shadow">Handwritten</option><option value="f-type">Typewriter</option><option value="f-sans">Clean</option><option value="f-mont">Modern</option></select>
+   <div class="tbox"><div class="tt">Text style</div><div id="fgrid" class="fgrid"></div>
+    <label class="rg">Size <input type="range" id="tz" min="12" max="44" value="20"><b id="tzv">20px</b></label>
+    <label class="rg">Line spacing <input type="range" id="tl" min="1.1" max="2.2" step=".05" value="1.5"><b id="tlv">1.5</b></label>
+    <label class="rg">Letter spacing <input type="range" id="tk" min="-1" max="6" step=".5" value="0"><b id="tkv">0</b></label>
+    <label class="rg">Greeting size <input type="range" id="tg" min="100" max="220" step="5" value="120"><b id="tgv">120%</b></label>
+    <div class="seg" id="aseg"><button data-al="a-left">Left</button><button data-al="a-center">Center</button><button data-al="a-right">Right</button><button data-al="a-justify">Justify</button></div>
+    <div class="seg" id="bseg"><button data-st="tb"><b>B</b></button><button data-st="ti"><i>I</i></button><button data-st="tu"><u>U</u></button><button id="tReset">Reset</button></div>
+    <div class="row"><input type="color" id="ink" value="#33281f"><span>Ink color</span></div><div class="sw" id="tsw"></div></div>
+   <div class="row"><select id="la" class="hide"><option value="a-left">Align left</option><option value="a-center">Center</option><option value="a-right">Right</option><option value="a-justify">Justify</option></select><select id="ph"><option value="ph-top">Photo above</option><option value="ph-below">Photo below</option></select></div>
    <select id="pf"><option value="pf-round">Photo: Rounded</option><option value="pf-polaroid">Polaroid</option><option value="pf-none">Square</option></select>
-   <div class="row"><input type="color" id="ink" value="#33281f"><span>Ink color</span></div>
-   <label class="muted">Photo size <input type="range" id="ps" min="30" max="100" value="100"></label><label class="muted">Photo tilt <input type="range" id="pr" min="-15" max="15" value="0"></label>
+      <label class="muted">Photo size <input type="range" id="ps" min="30" max="100" value="100"></label><label class="muted">Photo tilt <input type="range" id="pr" min="-15" max="15" value="0"></label>
    <div id="lprev" class="lprev"></div>
   </div>
  </details>
@@ -92,7 +99,7 @@
 <button class="primary" id="scratch" style="max-width:300px">Start from scratch</button></section>
 <button id="mk" class="hide">Make one for someone</button>
 <div id="info" class="hide"><div class="card"><button id="iX" class="x"></button><h2 id="iT"></h2><p id="iS" class="muted"></p><div id="iB"></div></div></div>
-<div id="ov" class="hide"><div class="env" id="env"><div class="eb"></div><div class="letter"><h4 id="lTo"></h4><img id="lImg" class="hide" alt=""><p id="lText"></p><div id="lMedia"></div><p id="lMean" class="hide"></p><audio id="lVoice" controls class="hide"></audio><p id="lFrom"></p><div id="lReply" class="hide"><b>Send a thank-you back </b><div class="em"><span>❤️</span><span>🥹</span><span>😍</span><span>🌸</span><span>🙏</span></div><textarea id="rTxt" maxlength="200" placeholder="Say thanks…"></textarea><button id="rSend">Send</button></div></div><div class="ef"></div><div class="fl"></div></div><button id="close">Close</button></div>
+<div id="ov" class="hide"><div class="env" id="env"><div class="eb"></div><div class="letter"><h4 id="lTo" class="pTo"></h4><img id="lImg" class="hide" alt=""><p id="lText" class="pText"></p><div id="lMedia"></div><p id="lMean" class="hide"></p><audio id="lVoice" controls class="hide"></audio><p id="lFrom" class="pFrom"></p><div id="lReply" class="hide"><b>Send a thank-you back </b><div class="em"><span>❤️</span><span>🥹</span><span>😍</span><span>🌸</span><span>🙏</span></div><textarea id="rTxt" maxlength="200" placeholder="Say thanks…"></textarea><button id="rSend">Send</button></div></div><div class="ef"></div><div class="fl"></div></div><button id="close">Close</button></div>
 <div id="toast" class="hide"></div>
 <script src="config.js"></script>
 <script src="app.js"></script>
