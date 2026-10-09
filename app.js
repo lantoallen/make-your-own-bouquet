@@ -276,7 +276,9 @@ function prev() {
   if (S.voice) parts.splice(1, 0, voiceBox(S.voice));
   p.replaceChildren(...parts);
 }
+const lum = c => { const n = parseInt(c.slice(1), 16); return (.299 * (n >> 16) + .587 * (n >> 8 & 255) + .114 * (n & 255)) / 255; };
 function openLetter() {
+  $('envTo').textContent = S.to ? 'For ' + S.to : ''; $('env').style.setProperty('--envink', lum(S.env) > .58 ? '#3a2c22' : '#f6efe4');
   $('lTo').textContent = S.to ? 'Dear ' + S.to + ',' : ''; $('lText').textContent = S.text; $('lFrom').textContent = S.from ? '— ' + S.from : '';
   $('lImg').classList.toggle('hide', !S.photo); if (S.photo) $('lImg').src = S.photo; $('lImg').style.width = S.ps + '%'; $('lImg').style.transform = S.pr ? 'rotate(' + S.pr + 'deg)' : '';
   media();
