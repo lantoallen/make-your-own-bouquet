@@ -146,7 +146,7 @@
      <label class="switch"><input type="checkbox" id="qrCap" checked><span>Caption under the code</span></label>
      <div class="row"><button id="qrDl">Download QR</button></div>
      <div class="lbl">Send by email</div>
-     <input id="email" type="email" placeholder="Receiver's email" aria-label="Receiver's email">
+     <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="Receiver's email" aria-label="Receiver's email">
      <label class="switch"><input type="checkbox" id="qrAtt" checked><span>Also download the QR to attach</span></label>
      <button class="primary" id="mail">Send by email</button>
     </div>
@@ -162,7 +162,7 @@
    <button id="sizeBtn">Bigger preview</button>
    <div id="viewSeg" class="hide" role="group" aria-label="What to preview"><button data-v="bouquet">Bouquet</button><button data-v="letter">Letter</button><button data-v="env">Envelope</button></div>
    <div id="letterView" class="hide"><div id="lprev" class="lprev"></div></div>
-   <div id="envView" class="hide"><div id="envBig" title="Tap to see it open"></div><p class="muted">Tap the envelope to see it open</p></div>
+   <div id="envView" class="hide"><div id="envBig" role="button" tabindex="0" aria-label="Preview the envelope opening" title="Tap to see it open"></div><p class="muted">Tap the envelope to see it open</p></div>
    <p id="hint" class="hide">Tap the envelope</p>
    <div id="frame">
     <div id="tag" class="hide"></div>
@@ -171,13 +171,13 @@
     <div id="handle"></div><div id="bunch"></div>
     <div id="wrapBack"></div><div id="wrapFront"></div>
     <div id="bow"></div>
-    <div id="mini" class="hide" role="button" aria-label="Open the letter"></div>
+    <div id="mini" class="hide" role="button" tabindex="0" aria-label="Open the letter"></div>
    </div>
   </div>
   <div id="selbar" class="empty">
    <p class="selhint">Tap a flower in the bouquet to resize, rotate, recolor, copy or delete it. Drag the corner dots to scale and the top dot to turn.</p>
    <div class="selwrap">
-   <div class="selhead"><b id="selName"></b><span id="mean"></span></div>
+   <div class="selhead" aria-live="polite"><b id="selName"></b><span id="mean"></span></div>
    <div id="tools">
     <button data-a="s-" title="Smaller" aria-label="Smaller"><svg viewBox="0 0 20 20"><path d="M5 10h10"/></svg><span>Smaller</span></button>
     <button data-a="s+" title="Bigger" aria-label="Bigger"><svg viewBox="0 0 20 20"><path d="M5 10h10M10 5v10"/></svg><span>Bigger</span></button>
@@ -206,9 +206,9 @@
  <h3 class="muted">Occasions</h3><div id="occ"></div></section>
 
 <button id="mk" class="hide">Make one for someone</button>
-<div id="info" class="hide"><div class="card"><button id="iX" class="x">Close</button><h2 id="iT"></h2><p id="iS" class="muted"></p><div id="iB"></div></div></div>
+<div id="info" class="hide" role="dialog" aria-modal="true" aria-labelledby="iT"><div class="card"><button id="iX" class="x">Close</button><h2 id="iT"></h2><p id="iS" class="muted"></p><div id="iB"></div></div></div>
 
-<div id="ov" class="hide"><div class="env" id="env"><div class="eb"></div>
+<div id="ov" class="hide" role="dialog" aria-modal="true" aria-label="Your letter"><div class="env" id="env"><div class="eb"></div>
  <div class="letter">
   <h4 id="lTo" class="pTo"></h4>
   <div id="lVoiceBox" class="vbox hide"><div class="vlab"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="7.5" y="2.5" width="5" height="9" rx="2.5"/><path d="M4.5 9.5a5.5 5.5 0 0 0 11 0M10 15v3"/></svg><span id="lVoiceTxt">A voice note for you</span></div><audio id="lVoice" controls preload="metadata"></audio><p id="lVoiceErr" class="hide"></p></div>
@@ -217,7 +217,7 @@
   <p id="lFrom" class="pFrom"></p>
   <div id="lReply" class="hide"><b>Send a note back</b><div class="em"></div><textarea id="rTxt" maxlength="200" placeholder="Say thanks"></textarea><button id="rSend">Send</button></div>
  </div><div class="ef"><span class="envTo"></span></div><div class="fl"></div><div class="seal"></div></div><button id="close">Close</button></div>
-<div id="toast" class="hide"></div>
+<div id="toast" class="hide" role="status" aria-live="polite"></div>
 <script src="config.js"></script>
 <script src="flowers.js?v=6"></script>
 <script src="app.js?v=6"></script>
