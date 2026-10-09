@@ -87,10 +87,23 @@
       <button id="recDel" class="hide wide">Remove voice note</button>
      </details>
 
-     <details class="acc"><summary>Paper and envelope</summary>
-      <div class="lbl">Paper</div><div class="papers" id="paperGrid"></div>
+     <details class="acc"><summary>Paper</summary>
+      <div class="papers" id="paperGrid"></div>
       <div class="row"><input type="color" id="pc" value="#fffdf9" aria-label="Paper color"><span>Paper color</span><button id="pcDel">Reset</button></div>
-      <div class="row"><input type="color" id="envC" value="#e8dcc8" aria-label="Envelope color"><span>Envelope color</span></div>
+     </details>
+
+     <details class="acc" id="envAcc"><summary>Envelope</summary>
+      <div id="envPrev" class="envPrev"></div>
+      <div class="lbl">Color</div>
+      <div class="row"><div class="sw" id="envsw"></div><input type="color" id="envC" value="#e8dcc8" aria-label="Envelope color"></div>
+      <div class="lbl">Wax seal</div>
+      <div class="chips" id="emChips"></div>
+      <div class="row" id="sealRow"><div class="sw" id="sealsw"></div><input type="color" id="sealC" value="#b3382c" aria-label="Seal color"></div>
+      <div class="lbl">Stamp</div><div class="chips" id="stChips"></div>
+      <div class="lbl">Inside lining</div><div class="chips" id="liChips"></div>
+      <div class="lbl">Edge trim</div><div class="chips" id="trChips"></div>
+      <label class="switch"><input type="checkbox" id="nmOn" checked><span>Write the name on the front</span></label>
+      <button id="envOpen" class="wide">Preview it opening</button>
      </details>
 
      <details class="acc"><summary>Text style</summary>
@@ -202,7 +215,7 @@
   <p id="lText" class="pText"></p><div id="lMedia"></div><p id="lMean" class="hide"></p>
   <p id="lFrom" class="pFrom"></p>
   <div id="lReply" class="hide"><b>Send a note back</b><div class="em"></div><textarea id="rTxt" maxlength="200" placeholder="Say thanks"></textarea><button id="rSend">Send</button></div>
- </div><div class="ef"><span id="envTo"></span></div><div class="fl"></div><div class="seal"></div></div><button id="close">Close</button></div>
+ </div><div class="ef"><span class="envTo"></span></div><div class="fl"></div><div class="seal"></div></div><button id="close">Close</button></div>
 <div id="toast" class="hide"></div>
 <script src="config.js"></script>
 <script src="flowers.js?v=4"></script>
