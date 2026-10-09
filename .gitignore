@@ -15,3 +15,5 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+# Claude Code local config
+.claude/

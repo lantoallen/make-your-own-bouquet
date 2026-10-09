@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Make Your Own Bouquet · Send a digital flower gift</title>
 <meta name="description" content="Build a bouquet, tuck in a letter and send it as a link, QR code or email.">
 <meta name="theme-color" content="#3d5a47">
@@ -7,100 +7,204 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&family=Quicksand:wght@400;600&family=Caveat&family=Cormorant+Garamond:ital@1&family=Dancing+Script&family=Great+Vibes&family=Parisienne&family=Satisfy&family=Indie+Flower&family=Lora:ital@1&family=Shadows+Into+Light&family=Special+Elite&family=Cinzel&family=Libre+Baskerville:ital@1&family=Pacifico&family=Montserrat&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<link rel="stylesheet" href="style.css"></head>
+<link rel="stylesheet" href="style.css?v=2"></head>
 <body>
-<nav id="bar"><button id="homeBtn">Home</button><button id="backBtn" class="hide">← Back</button><span><img src="favicon.svg" alt="" width="32" height="32"> Make Your Own Bouquet</span><button id="menuBtn">Menu</button></nav>
-<div id="menu" class="hide"><button data-k="home">Home</button><button data-k="start">New bouquet</button><button data-k="profile">Profile</button><button data-k="gallery">Flower gallery</button><button data-k="sent">Sent gifts</button><button data-k="drafts">My drafts</button><button data-k="how">How it works</button><button data-k="about">ℹAbout</button><button data-k="terms">Terms</button><button data-k="privacy">Privacy</button></div>
-<div id="petals"></div>
-<div id="app">
-<aside id="panel">
- <h1>Make Your Own Bouquet </h1>
- <details open><summary>1 · Pick your flowers</summary>
-  <div class="tabs" id="tabs"></div>
-  <div class="sw" id="sw"></div>
-  <div class="grid" id="grid"></div>
-  <p class="muted"><span id="count">0</span>/40 · tap a stem to select, drag to arrange</p>
-  <p id="mean" class="muted"></p><div id="tools" class="row hide"><button data-a="s-">−</button><button data-a="s+">＋</button><button data-a="r-">⟲</button><button data-a="r+">⟳</button><button data-a="zu" title="Bring forward">▲</button><button data-a="zd" title="Send backward">▼</button><button data-a="d">Delete</button></div>
-  <div class="sw hide" id="isw"></div>
- </details>
- <details open><summary>2 · Wrap it</summary>
-  <div class="sw" id="wsw"></div>
-  <div class="row"><input type="color" id="wrapC" value="#e6cdb8"><select id="wrapP"><option value="">Smooth</option><option value="p-dots">Polka dots</option><option value="p-stripe">Stripes</option><option value="p-check">Gingham</option></select></div>
-  <select id="cont"><option value="paper">Paper wrap</option><option value="none">No wrap (tied with ribbon)</option><option value="vase">Glass vase</option><option value="basket">Flower basket</option><option value="easel">Standing easel (for wreaths)</option></select>
-  <div class="row"><input type="color" id="ribC" value="#8f3b4a"><select id="rs"><option value="bow">Classic bow</option><option value="flow">Flowy ribbon</option><option value="double">Double bow</option><option value="rosette">Ribbon rosette</option><option value="band">Satin band</option><option value="lace">Lace band</option><option value="twine">Twine</option><option value="nobow">No ribbon</option></select></div>
-  <div class="sw" id="rsw"></div>
-  <select id="bgSel"><option value="blush">Backdrop: Plain</option><option value="garden">Garden</option><option value="meadow">Meadow</option><option value="greenhouse">Greenhouse</option><option value="blossom">Cherry blossom</option><option value="table">Wooden table</option><option value="dusk">Dusk</option><option value="night">Midnight</option></select>
-  <div class="row" id="bgcRow"><input type="color" id="bgc" value="#e9dfcb"><span>Backdrop color</span></div>
-  <label class="file">Upload your own backdrop photo<input type="file" id="bgPhoto" accept="image/*" hidden></label><button id="bgPhotoDel" class="hide">Remove photo</button>
- </details>
- <details open><summary><label><input type="checkbox" id="msgOn"> 3 · Add a message </label></summary>
-  <div id="msgBox" class="hide">
-   <input id="to" placeholder="To…" maxlength="30"><input id="from" placeholder="From…" maxlength="30">
-   <textarea id="text" maxlength="500" placeholder="Write something sweet…"></textarea>
-   <label class="file">Add a photo<input type="file" id="photo" accept="image/*" hidden></label>
-   <img id="thumb" class="hide" alt="">
-   <div class="row"><input type="color" id="envC" value="#e8dcc8"><span>Envelope</span></div>
-   <input id="media" placeholder="Song or video link (YouTube / Spotify)…">
-   <label class="muted"><input type="checkbox" id="meanOn"> Add a "flower meanings" card</label>
-   <div class="row"><button id="rec">Record voice note</button><button id="recDel" class="hide"></button></div><audio id="recPrev" controls class="hide"></audio>
-   <select id="lp"><option value="pp-plain">Paper: Plain</option><option value="pp-lined">Lined</option><option value="pp-parch">Parchment</option><option value="pp-kraft">Kraft</option><option value="pp-floral">Floral dots</option><option value="pp-dark">Dark</option><option value="pp-water">Watercolor wash</option><option value="pp-linen">Linen weave</option><option value="pp-rice">Rice paper</option><option value="pp-leaves">Pressed leaves</option><option value="pp-vintage">Vintage aged</option><option value="pp-grid">Graph grid</option><option value="pp-blush">Blush</option><option value="pp-sage">Sage</option><option value="pp-navy">Midnight blue</option><option value="pp-stripe">Pastel stripes</option><option value="pp-hearts">Tiny hearts</option><option value="pp-stars">Golden stars</option><option value="pp-marble">Marble</option><option value="pp-burlap">Burlap</option><option value="pp-foil">Gold foil</option><option value="pp-frame">Postcard frame</option><option value="pp-canvas">Canvas</option><option value="pp-lilac">Lilac</option><option value="pp-peach">Peach</option><option value="pp-mint">Mint</option><option value="pp-butter">Butter</option></select>
-   <div class="row"><input type="color" id="pc" value="#fffdf9"><span>Paper color</span><button id="pcDel">Reset</button></div>
-   <select id="lf" class="hide"><option value="f-serif">Elegant</option><option value="f-bask">Classic</option><option value="f-lora">Lora</option><option value="f-hand">Cormorant</option><option value="f-cinzel">Cinzel</option><option value="f-vibes">Great Vibes</option><option value="f-pari">Parisienne</option><option value="f-dancing">Dancing</option><option value="f-sat">Satisfy</option><option value="f-pacifico">Pacifico</option><option value="f-script">Caveat</option><option value="f-indie">Indie Flower</option><option value="f-shadow">Handwritten</option><option value="f-type">Typewriter</option><option value="f-sans">Clean</option><option value="f-mont">Modern</option></select>
-   <div class="tbox"><div class="tt">Text style</div><div id="fgrid" class="fgrid"></div>
-    <label class="rg">Size <input type="range" id="tz" min="12" max="44" value="20"><b id="tzv">20px</b></label>
-    <label class="rg">Line spacing <input type="range" id="tl" min="1.1" max="2.2" step=".05" value="1.5"><b id="tlv">1.5</b></label>
-    <label class="rg">Letter spacing <input type="range" id="tk" min="-1" max="6" step=".5" value="0"><b id="tkv">0</b></label>
-    <label class="rg">Greeting size <input type="range" id="tg" min="100" max="220" step="5" value="120"><b id="tgv">120%</b></label>
-    <div class="seg" id="aseg"><button data-al="a-left">Left</button><button data-al="a-center">Center</button><button data-al="a-right">Right</button><button data-al="a-justify">Justify</button></div>
-    <div class="seg" id="bseg"><button data-st="tb"><b>B</b></button><button data-st="ti"><i>I</i></button><button data-st="tu"><u>U</u></button><button id="tReset">Reset</button></div>
-    <div class="row"><input type="color" id="ink" value="#33281f"><span>Ink color</span></div><div class="sw" id="tsw"></div></div>
-   <div class="row"><select id="la" class="hide"><option value="a-left">Align left</option><option value="a-center">Center</option><option value="a-right">Right</option><option value="a-justify">Justify</option></select><select id="ph"><option value="ph-top">Photo above</option><option value="ph-below">Photo below</option></select></div>
-   <select id="pf"><option value="pf-round">Photo: Rounded</option><option value="pf-polaroid">Polaroid</option><option value="pf-none">Square</option></select>
-      <label class="muted">Photo size <input type="range" id="ps" min="30" max="100" value="100"></label><label class="muted">Photo tilt <input type="range" id="pr" min="-15" max="15" value="0"></label>
-   <div id="lprev" class="lprev"></div>
-  </div>
- </details>
- <details open><summary>4 · Share</summary>
-  <label class="muted">Unlock on (optional)</label><input type="datetime-local" id="sched">
-  <input id="pw" type="password" placeholder="Optional password to open the gift">
-  <button id="prevOpen" style="margin:6px 0">Preview the opening animation</button>
-  <label class="muted"><input type="checkbox" id="musOn"> Play soft music when opened</label>
-  <button class="primary" id="share">Create gift link</button>
-  <p id="linkOut" class="muted"></p>
-  <div id="shareBox" class="hide"><input id="linkTxt" readonly><div class="row"><button id="copy">Copy link</button></div>
-   <div id="qr"></div>
-   <div class="row"><select id="qrStyle"><option value="round">Modules: Rounded</option><option value="heart">Hearts</option><option value="dots">Dots</option><option value="petal">Petals</option><option value="square">Classic squares</option></select><select id="qrFrame"><option value="card">Frame: Card</option><option value="heart">Heart</option><option value="flower">Flower</option><option value="circle">Circle</option></select></div>
-   <div class="row"><select id="qrS"></select><select id="qrBg"><option value="auto">Background: Theme</option><option value="#ffffff">White</option><option value="#f7f1e6">Cream</option><option value="#fbe4e8">Blush</option><option value="#e3ecdc">Sage</option><option value="#ece6f7">Lavender</option><option value="#fbf0c9">Butter</option></select></div>
-   <label class="muted"><input type="checkbox" id="qrLogo" checked> Logo in the center</label> <label class="muted"><input type="checkbox" id="qrCap" checked> Caption</label>
-   <div class="row"><button id="qrDl">Download QR</button></div>
-   <input id="email" type="email" placeholder="Receiver's email"><label class="muted"><input type="checkbox" id="qrAtt" checked> Also download the QR to attach</label><button class="primary" id="mail" style="margin-top:8px">Send by email</button></div>
- </details>
- <div class="row"><button id="draft">Draft</button><button id="save">PNG</button><button id="dark">Dark</button><button id="musicBtn">Music</button></div>
-</aside>
-<main id="stage">
- <button id="musicBtn2" class="float" style="top:66px">Music</button>
- <button id="petalBtn" class="float">Petals: off</button>
- <p id="hint" class="hide">Tap the envelope </p>
- <div id="frame">
-  <div id="tag" class="hide"></div>
-  <svg id="stems" viewBox="0 0 340 520"></svg>
-  <svg id="easel" viewBox="0 0 340 520"><g style="stroke:var(--w)" stroke-width="8" stroke-linecap="round" fill="none"><path d="M170 90L100 505M170 90L240 505M128 425H212"/><path d="M118 272H222" stroke-width="10"/></g><g style="stroke:#fff;opacity:.25" stroke-width="2" stroke-linecap="round" fill="none"><path d="M168 95L103 500M172 95L237 500M118 269H222"/></g></svg>
-  <div id="handle"></div><div id="bunch"></div>
-  <div id="wrapBack"></div><div id="wrapFront"></div>
-  <div id="bow"></div>
-  <div id="mini" class="hide"></div>
- </div>
-</main>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="rg" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency=".07" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter></defs></svg>
+<nav id="bar">
+ <button id="homeBtn">Home</button><button id="backBtn" class="hide">Back</button>
+ <span class="brand"><img src="favicon.svg" alt="" width="30" height="30"><b>Make Your Own Bouquet</b></span>
+ <button id="menuBtn" aria-haspopup="true" aria-expanded="false">Menu</button>
+</nav>
+<div id="menu" class="hide">
+ <button data-k="home">Home</button><button data-k="start">New bouquet</button><button data-k="profile">Profile</button><button data-k="gallery">Flower gallery</button><button data-k="sent">Sent gifts</button><button data-k="drafts">My drafts</button>
+ <div class="mm"><hr><button data-k="a-draft">Save draft</button><button data-k="a-png">Save as picture</button><button data-k="a-dark">Dark mode</button><button data-k="a-petals">Falling petals</button><button data-k="a-music">Music</button></div>
+ <hr><button data-k="how">How it works</button><button data-k="about">About</button><button data-k="terms">Terms</button><button data-k="privacy">Privacy</button>
 </div>
+<div id="petals"></div>
+
+<div id="app">
+ <aside id="panel">
+  <nav id="steps" aria-label="Steps">
+   <button data-s="1" class="on"><i>1</i><span>Flowers</span></button><button data-s="2"><i>2</i><span>Wrap</span></button><button data-s="3"><i>3</i><span>Letter</span></button><button data-s="4"><i>4</i><span>Share</span></button>
+  </nav>
+
+  <div id="stepBody">
+   <section class="step" data-s="1">
+    <h2>Pick your flowers</h2>
+    <input id="search" type="search" placeholder="Search flowers" autocomplete="off" aria-label="Search flowers">
+    <div class="tabs" id="tabs"></div>
+    <div class="lbl">Color <small id="colName">Natural</small></div>
+    <div class="sw" id="sw"></div>
+    <div class="grid" id="grid"></div>
+    <p class="muted"><span id="count">0</span>/40 stems. Tap a flower to add it, then drag it into place.</p>
+   </section>
+
+   <section class="step hide" data-s="2">
+    <h2>Wrap it</h2>
+    <div class="lbl">Style</div>
+    <div class="chips" id="contSeg"></div>
+    <div id="wrapOpts">
+     <div class="lbl">Wrap color</div>
+     <div class="row"><div class="sw" id="wsw"></div><input type="color" id="wrapC" value="#e6cdb8" aria-label="Custom wrap color"></div>
+     <div class="lbl" id="patLbl">Pattern</div>
+     <div class="chips" id="patChips"></div>
+    </div>
+    <div class="lbl">Ribbon</div>
+    <div class="chips" id="rsChips"></div>
+    <div class="row" id="ribRow"><div class="sw" id="rsw"></div><input type="color" id="ribC" value="#8f3b4a" aria-label="Custom ribbon color"></div>
+    <div class="lbl">Backdrop</div>
+    <div class="bgrid" id="bgGrid"></div>
+    <div class="row" id="bgcRow"><input type="color" id="bgc" value="#e9dfcb" aria-label="Backdrop color"><span>Backdrop color</span></div>
+    <label class="file">Upload your own backdrop photo<input type="file" id="bgPhoto" accept="image/*" hidden></label>
+    <button id="bgPhotoDel" class="hide wide">Remove backdrop photo</button>
+   </section>
+
+   <section class="step hide" data-s="3">
+    <h2>Write a letter</h2>
+    <label class="switch"><input type="checkbox" id="msgOn"><span>Tuck a letter into an envelope</span></label>
+    <div id="msgBox" class="hide">
+     <details class="acc" open><summary>Message</summary>
+      <div class="two"><input id="to" placeholder="To" maxlength="30" aria-label="To"><input id="from" placeholder="From" maxlength="30" aria-label="From"></div>
+      <textarea id="text" maxlength="500" placeholder="Write something sweet" aria-label="Message"></textarea>
+      <p class="muted"><span id="tcount">0</span>/500</p>
+     </details>
+
+     <details class="acc"><summary>Photo</summary>
+      <label class="file">Add a photo<input type="file" id="photo" accept="image/*" hidden></label>
+      <img id="thumb" class="hide" alt="">
+      <button id="photoDel" class="hide wide">Remove photo</button>
+      <label class="rg">Size <input type="range" id="ps" min="30" max="100" value="100"><b id="psv">100%</b></label>
+      <label class="rg">Tilt <input type="range" id="pr" min="-15" max="15" value="0"><b id="prv">0</b></label>
+      <div class="lbl">Frame</div><div class="seg" id="pfSeg"></div>
+      <div class="lbl">Position</div><div class="seg" id="phSeg"></div>
+     </details>
+
+     <details class="acc" id="voiceAcc"><summary>Voice note <small id="voiceTag"></small></summary>
+      <p class="muted">Appears at the top of the letter, right under the greeting, with a play button your person can't miss.</p>
+      <div class="row"><button id="rec" class="wide">Record voice note</button></div>
+      <p id="recStat" class="muted hide"></p>
+      <audio id="recPrev" controls class="hide"></audio>
+      <button id="recDel" class="hide wide">Remove voice note</button>
+     </details>
+
+     <details class="acc"><summary>Paper and envelope</summary>
+      <div class="lbl">Paper</div><div class="papers" id="paperGrid"></div>
+      <div class="row"><input type="color" id="pc" value="#fffdf9" aria-label="Paper color"><span>Paper color</span><button id="pcDel">Reset</button></div>
+      <div class="row"><input type="color" id="envC" value="#e8dcc8" aria-label="Envelope color"><span>Envelope color</span></div>
+     </details>
+
+     <details class="acc"><summary>Text style</summary>
+      <div id="fgrid" class="fgrid"></div>
+      <label class="rg">Size <input type="range" id="tz" min="12" max="44" value="20"><b id="tzv">20px</b></label>
+      <label class="rg">Line spacing <input type="range" id="tl" min="1.1" max="2.2" step=".05" value="1.5"><b id="tlv">1.5</b></label>
+      <label class="rg">Letter spacing <input type="range" id="tk" min="-1" max="6" step=".5" value="0"><b id="tkv">0</b></label>
+      <label class="rg">Greeting size <input type="range" id="tg" min="100" max="220" step="5" value="120"><b id="tgv">120%</b></label>
+      <div class="seg" id="aseg"><button data-al="a-left">Left</button><button data-al="a-center">Center</button><button data-al="a-right">Right</button><button data-al="a-justify">Justify</button></div>
+      <div class="seg" id="bseg"><button data-st="tb" aria-label="Bold"><b>B</b></button><button data-st="ti" aria-label="Italic"><i>I</i></button><button data-st="tu" aria-label="Underline"><u>U</u></button><button id="tReset">Reset</button></div>
+      <div class="row"><input type="color" id="ink" value="#33281f" aria-label="Ink color"><span>Ink color</span></div><div class="sw" id="tsw"></div>
+     </details>
+
+     <details class="acc"><summary>Song, video and meanings</summary>
+      <input id="media" placeholder="Song or video link (YouTube or Spotify)" aria-label="Song or video link">
+      <label class="switch"><input type="checkbox" id="meanOn"><span>Add a "flower meanings" card</span></label>
+     </details>
+
+     <div class="lbl">Live preview</div>
+     <div id="lprev" class="lprev"></div>
+     <button id="openPrev" class="wide">Open the letter full size</button>
+    </div>
+   </section>
+
+   <section class="step hide" data-s="4">
+    <h2>Share it</h2>
+    <div id="summary" class="summary"></div>
+    <div class="lbl">Unlock on <small>optional</small></div>
+    <input type="datetime-local" id="sched" aria-label="Unlock date and time">
+    <div class="lbl">Password <small>optional</small></div>
+    <input id="pw" type="password" placeholder="Password to open the gift" autocomplete="new-password" aria-label="Password">
+    <label class="switch"><input type="checkbox" id="musOn"><span>Play soft music when it opens</span></label>
+    <button id="prevOpen" class="wide">Preview the opening animation</button>
+    <button class="primary" id="share">Create gift link</button>
+    <p id="linkOut" class="muted"></p>
+    <div id="shareBox" class="hide">
+     <input id="linkTxt" readonly aria-label="Gift link"><div class="row"><button id="copy">Copy link</button></div>
+     <div id="qr"></div>
+     <div class="row"><select id="qrStyle" aria-label="QR module style"><option value="round">Modules: Rounded</option><option value="heart">Hearts</option><option value="dots">Dots</option><option value="petal">Petals</option><option value="square">Classic squares</option></select><select id="qrFrame" aria-label="QR frame"><option value="card">Frame: Card</option><option value="heart">Heart</option><option value="flower">Flower</option><option value="circle">Circle</option></select></div>
+     <div class="row"><select id="qrS" aria-label="QR colors"></select><select id="qrBg" aria-label="QR background"><option value="auto">Background: Theme</option><option value="#ffffff">White</option><option value="#f7f1e6">Cream</option><option value="#fbe4e8">Blush</option><option value="#e3ecdc">Sage</option><option value="#ece6f7">Lavender</option><option value="#fbf0c9">Butter</option></select></div>
+     <label class="switch"><input type="checkbox" id="qrLogo" checked><span>Logo in the center</span></label>
+     <label class="switch"><input type="checkbox" id="qrCap" checked><span>Caption under the code</span></label>
+     <div class="row"><button id="qrDl">Download QR</button></div>
+     <div class="lbl">Send by email</div>
+     <input id="email" type="email" placeholder="Receiver's email" aria-label="Receiver's email">
+     <label class="switch"><input type="checkbox" id="qrAtt" checked><span>Also download the QR to attach</span></label>
+     <button class="primary" id="mail">Send by email</button>
+    </div>
+   </section>
+  </div>
+
+  <div id="stepNav"><button id="prevStep">Back</button><button class="primary" id="nextStep">Next: Wrap</button></div>
+ </aside>
+
+ <main id="stage">
+  <div id="toolbar"><button id="draft">Draft</button><button id="save">Picture</button><button id="dark">Dark</button><button id="petalBtn">Petals: off</button><button id="musicBtn">Music</button></div>
+  <div id="canvas">
+   <button id="sizeBtn">Bigger preview</button>
+   <p id="hint" class="hide">Tap the envelope</p>
+   <div id="frame">
+    <div id="tag" class="hide"></div>
+    <svg id="stems" viewBox="0 0 340 520"></svg>
+    <svg id="easel" viewBox="0 0 340 520"><g style="stroke:var(--w)" stroke-width="8" stroke-linecap="round" fill="none"><path d="M170 90L100 505M170 90L240 505M128 425H212"/><path d="M118 272H222" stroke-width="10"/></g><g style="stroke:#fff;opacity:.25" stroke-width="2" stroke-linecap="round" fill="none"><path d="M168 95L103 500M172 95L237 500M118 269H222"/></g></svg>
+    <div id="handle"></div><div id="bunch"></div>
+    <div id="wrapBack"></div><div id="wrapFront"></div>
+    <div id="bow"></div>
+    <div id="mini" class="hide" role="button" aria-label="Open the letter"></div>
+   </div>
+  </div>
+  <div id="selbar" class="empty">
+   <p class="selhint">Tap a flower in the bouquet to resize, rotate, recolor, copy or delete it. Drag the corner dots to scale and the top dot to turn.</p>
+   <div class="selwrap">
+   <div class="selhead"><b id="selName"></b><span id="mean"></span></div>
+   <div id="tools">
+    <button data-a="s-" title="Smaller" aria-label="Smaller"><svg viewBox="0 0 20 20"><path d="M5 10h10"/></svg><span>Smaller</span></button>
+    <button data-a="s+" title="Bigger" aria-label="Bigger"><svg viewBox="0 0 20 20"><path d="M5 10h10M10 5v10"/></svg><span>Bigger</span></button>
+    <button data-a="r-" title="Rotate left" aria-label="Rotate left"><svg viewBox="0 0 20 20"><path d="M5 9a6 6 0 1 1 1.8 4.2M5 4v5h5"/></svg><span>Left</span></button>
+    <button data-a="r+" title="Rotate right" aria-label="Rotate right"><svg viewBox="0 0 20 20"><path d="M15 9a6 6 0 1 0-1.8 4.2M15 4v5h-5"/></svg><span>Right</span></button>
+    <button data-a="zu" title="Bring forward" aria-label="Bring forward"><svg viewBox="0 0 20 20"><path d="M10 15V5M5.5 9.5 10 5l4.5 4.5"/></svg><span>Raise</span></button>
+    <button data-a="zd" title="Send backward" aria-label="Send backward"><svg viewBox="0 0 20 20"><path d="M10 5v10M5.5 10.5 10 15l4.5-4.5"/></svg><span>Lower</span></button>
+    <button data-a="dup" title="Duplicate" aria-label="Duplicate"><svg viewBox="0 0 20 20"><rect x="7" y="7" width="9" height="9" rx="1.5"/><path d="M4 12V5a1 1 0 0 1 1-1h7"/></svg><span>Copy</span></button>
+    <button data-a="d" title="Delete" aria-label="Delete" class="danger"><svg viewBox="0 0 20 20"><path d="M4 6h12M8 6V4h4v2M6 6l1 10h6l1-10"/></svg><span>Delete</span></button>
+   </div>
+   <div class="sw" id="isw"></div>
+   </div>
+  </div>
+ </main>
+</div>
+
 <section id="landing"><div id="lbloom"></div><h1>Make Your Own Bouquet</h1><p id="ltag">Arrange flowers, wrap them, tuck in a message, and send it as a link.</p>
-<input id="pwIn" type="password" placeholder="Password" class="hide"><div class="row"><button class="primary" id="go">Get started</button></div><div class="row"><button id="how">How it works</button><button id="about">About</button></div><footer><span>© 2026 Allen</span><i>·</i><a data-k="terms">Terms</a><i>·</i><a data-k="privacy">Privacy</a><i>·</i><a data-k="about">About</a></footer></section>
-<section id="start" class="hide"><h2>How would you like to begin?</h2><p class="muted">Pick a ready-made bouquet (you can still change everything) or start from a blank canvas.</p><div id="presets"></div>
-<h3 class="muted" style="margin-top:14px">Occasions</h3><div id="occ"></div><button id="resume" class="hide">Continue my bouquet</button>
-<button class="primary" id="scratch" style="max-width:300px">Start from scratch</button></section>
+ <p id="lnote" class="gtag hide"></p>
+ <input id="pwIn" type="password" placeholder="Password" class="hide" aria-label="Password" autocomplete="off"><div class="row"><button class="primary" id="go">Get started</button></div><div class="row"><button id="how">How it works</button><button id="about">About</button></div>
+ <footer><span>© 2026 Allen</span><i>·</i><a data-k="terms">Terms</a><i>·</i><a data-k="privacy">Privacy</a><i>·</i><a data-k="about">About</a></footer></section>
+
+<section id="start" class="hide"><h2>How would you like to begin?</h2><p class="muted">Pick a ready-made bouquet (you can still change everything) or start from a blank canvas.</p>
+ <button id="resume" class="hide">Continue my bouquet</button>
+ <button class="primary" id="scratch">Start from scratch</button>
+ <h3 class="muted">Bouquets</h3><div id="presets"></div>
+ <h3 class="muted">Occasions</h3><div id="occ"></div></section>
+
 <button id="mk" class="hide">Make one for someone</button>
-<div id="info" class="hide"><div class="card"><button id="iX" class="x"></button><h2 id="iT"></h2><p id="iS" class="muted"></p><div id="iB"></div></div></div>
-<div id="ov" class="hide"><div class="env" id="env"><div class="eb"></div><div class="letter"><h4 id="lTo" class="pTo"></h4><img id="lImg" class="hide" alt=""><p id="lText" class="pText"></p><div id="lMedia"></div><p id="lMean" class="hide"></p><audio id="lVoice" controls class="hide"></audio><p id="lFrom" class="pFrom"></p><div id="lReply" class="hide"><b>Send a thank-you back </b><div class="em"><span>❤️</span><span>🥹</span><span>😍</span><span>🌸</span><span>🙏</span></div><textarea id="rTxt" maxlength="200" placeholder="Say thanks…"></textarea><button id="rSend">Send</button></div></div><div class="ef"></div><div class="fl"></div></div><button id="close">Close</button></div>
+<div id="info" class="hide"><div class="card"><button id="iX" class="x">Close</button><h2 id="iT"></h2><p id="iS" class="muted"></p><div id="iB"></div></div></div>
+
+<div id="ov" class="hide"><div class="env" id="env"><div class="eb"></div>
+ <div class="letter">
+  <h4 id="lTo" class="pTo"></h4>
+  <div id="lVoiceBox" class="vbox hide"><div class="vlab"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="7.5" y="2.5" width="5" height="9" rx="2.5"/><path d="M4.5 9.5a5.5 5.5 0 0 0 11 0M10 15v3"/></svg><span id="lVoiceTxt">A voice note for you</span></div><audio id="lVoice" controls preload="metadata"></audio><p id="lVoiceErr" class="hide"></p></div>
+  <img id="lImg" class="hide" alt="">
+  <p id="lText" class="pText"></p><div id="lMedia"></div><p id="lMean" class="hide"></p>
+  <p id="lFrom" class="pFrom"></p>
+  <div id="lReply" class="hide"><b>Send a note back</b><div class="em"></div><textarea id="rTxt" maxlength="200" placeholder="Say thanks"></textarea><button id="rSend">Send</button></div>
+ </div><div class="ef"></div><div class="fl"></div></div><button id="close">Close</button></div>
 <div id="toast" class="hide"></div>
 <script src="config.js"></script>
-<script src="app.js"></script>
+<script src="flowers.js?v=2"></script>
+<script src="app.js?v=2"></script>
 </body></html>
