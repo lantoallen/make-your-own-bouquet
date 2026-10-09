@@ -78,7 +78,7 @@ function goStep(n) {
   document.querySelectorAll('.step').forEach(s => s.classList.toggle('hide', +s.dataset.s !== step));
   document.querySelectorAll('#steps button').forEach(b => { const k = +b.dataset.s; b.classList.toggle('on', k === step); b.classList.toggle('done', k < step); });
   $('prevStep').classList.toggle('hide', step === 1); $('nextStep').classList.toggle('hide', step === 4); $('nextStep').textContent = 'Next: ' + (STEPS[step] || '');
-  $('stepBody').scrollTop = 0; if (step === 3) prev(); if (step === 4) summary();
+  $('stepBody').scrollTop = 0; if (step === 3) prev(); if (step === 4) summary(); syncPreview();
 }
 document.querySelectorAll('#steps button').forEach(b => b.onclick = () => goStep(+b.dataset.s));
 $('prevStep').onclick = () => goStep(step - 1); $('nextStep').onclick = () => goStep(step + 1);
@@ -163,6 +163,7 @@ function drawStems() {
 let fitLock = false;
 function fitFrame() {
   if (fitLock) return; const c = $('canvas'), w = c.clientWidth, h = c.clientHeight; if (!w || !h) return;
+  $('envBig').style.setProperty('--ez', clamp(Math.min((w - 36) / 320, (h - 190) / 210), .5, 1.7).toFixed(3));
   const pad = view ? 20 : (innerWidth <= 800 ? 14 : 40), k = clamp(Math.min((w - pad) / 340, (h - pad) / 520), .22, view ? 1.5 : 1.2);
   $('frame').style.setProperty('--fit', k.toFixed(3));
 }
@@ -201,7 +202,7 @@ function applyStyle() {
   const rk = RIB[S.rs] || ['band', 'twine', 'lace'].includes(S.rs) ? S.rs : 'bow'; $('bow').className = rk; $('bow').innerHTML = ribbon(rk, S.rib);
   { const v = S.bgImg ? `url("${S.bgImg}") center/cover no-repeat` : S.bg === 'blush' && S.bgc ? S.bgc : scene(S.bg); if (v !== _bg) { _bg = v; $('canvas').style.background = v; } }
   $('bgcRow').classList.toggle('hide', S.bg !== 'blush' || !!S.bgImg);
-  const r = document.documentElement.style; r.setProperty('--w', S.w); r.setProperty('--rib', S.rib); r.setProperty('--env', S.env); r.setProperty('--seal', S.sl); $('mini').dataset.em = S.se; envLook($('envPrev').firstChild);
+  const r = document.documentElement.style; r.setProperty('--w', S.w); r.setProperty('--rib', S.rib); r.setProperty('--env', S.env); r.setProperty('--seal', S.sl); $('mini').dataset.em = S.se; envLook($('envBig').firstChild);
   $('wrapFront').className = S.p || ''; document.body.classList.toggle('dark', S.dark); document.body.classList.toggle('pet', !!S.pet); $('petalBtn').textContent = 'Petals: ' + (S.pet ? 'on' : 'off');
   $('mini').classList.toggle('hide', !S.on); $('hint').classList.toggle('hide', !(S.on && view));
   $('tag').textContent = S.to ? 'For ' + S.to : ''; $('tag').classList.toggle('hide', !S.to);
@@ -232,7 +233,7 @@ choices('emChips', SEAL_EM, 'se'); choices('stChips', STAMPS, 'st'); choices('li
 $('sealC').oninput = e => { S.sl = e.target.value; applyStyle(); };
 $('nmOn').onchange = e => { S.nm = e.target.checked; applyStyle(); };
 $('envOpen').onclick = () => { if (!S.on) setLetter(true); openLetter(); };
-$('envPrev').innerHTML = '<div class="env"><div class="eb"></div><div class="ef"><span class="envTo"></span></div><div class="fl"></div><div class="seal"></div></div>';
+$('envBig').innerHTML = '<div class="env"><div class="eb"></div><div class="ef"><span class="envTo"></span></div><div class="fl"></div><div class="seal"></div></div>';
 // the envelope's look (seal, stamp, lining, trim, name). Used by the opening envelope and the preview in the editor.
 function envLook(e) {
   if (!e) return; e.className = ['env', 'em-' + S.se, 'st-' + S.st, 'li-' + S.li, 'tr-' + S.tr, S.nm ? '' : 'no-name'].filter(Boolean).join(' ');
@@ -251,7 +252,7 @@ $('bgPhotoDel').onclick = () => { S.bgImg = ''; $('bgPhotoDel').classList.add('h
 
 // ---- letter ----
 const L_KEYS = () => [S.lp, S.la, S.ph, S.pf].join(' ');
-function setLetter(on) { S.on = on; $('msgOn').checked = on; $('msgBox').classList.toggle('hide', !on); applyStyle(); if (on) prev(); }
+function setLetter(on) { S.on = on; $('msgOn').checked = on; $('msgBox').classList.toggle('hide', !on); applyStyle(); if (on) prev(); syncPreview(); }
 $('msgOn').onchange = e => setLetter(e.target.checked);
 $('to').oninput = e => { S.to = e.target.value; applyStyle(); prev(); };
 $('from').oninput = e => { S.from = e.target.value; prev(); };
@@ -268,6 +269,18 @@ choices('phSeg', PPOS, 'ph', () => { syncChoices(); prev(); });
 $('paperGrid').replaceChildren(...PAPERS.map(([v, l]) => el('button', { dataset: { v }, title: l, onclick: () => { S.lp = v; syncChoices(); prev(); } }, el('i', { className: v }), el('span', { textContent: l }))));
 $('pc').oninput = e => { S.pc = e.target.value; prev(); }; $('pcDel').onclick = () => { S.pc = ''; $('pc').value = '#fffdf9'; prev(); };
 $('ps').oninput = e => { S.ps = +e.target.value; $('psv').textContent = S.ps + '%'; prev(); }; $('pr').oninput = e => { S.pr = +e.target.value; $('prv').textContent = S.pr; prev(); };
+
+// stage preview: the letter or the envelope while you edit them (Letter step)
+let pvPick = 'letter';
+function setPreview(v) {
+  $('canvas').dataset.view = v; $('letterView').classList.toggle('hide', v !== 'letter'); $('envView').classList.toggle('hide', v !== 'env');
+  document.querySelectorAll('#viewSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  if (v === 'letter') prev(); if (v === 'env') fitFrame();
+}
+function syncPreview() { const on = step === 3 && S.on && !view; $('viewSeg').classList.toggle('hide', !on); setPreview(on ? pvPick : 'bouquet'); }
+document.querySelectorAll('#viewSeg button').forEach(b => b.onclick = () => { pvPick = b.dataset.v; setPreview(pvPick); });
+document.querySelectorAll('#msgBox details').forEach(d => d.addEventListener('toggle', () => { if (d.open && step === 3) { pvPick = d.id === 'envAcc' ? 'env' : 'letter'; setPreview(pvPick); } }));
+$('envBig').onclick = () => openLetter();
 
 // text styling
 const fnt = () => FONTS.find(x => x[0] === S.lf) || FONTS[0];
@@ -290,7 +303,7 @@ const mmss = n => Math.floor(n / 60) + ':' + String(Math.round(n % 60)).padStart
 const voiceLabel = () => (S.from ? 'A voice note from ' + S.from : 'A voice note for you') + (S.vd ? '  (' + mmss(S.vd) + ')' : '');
 function voiceBox(on) { const b = el('div', { className: 'vbox' }); b.innerHTML = '<div class="vlab"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="7.5" y="2.5" width="5" height="9" rx="2.5"/><path d="M4.5 9.5a5.5 5.5 0 0 0 11 0M10 15v3"/></svg><span></span></div>'; b.querySelector('span').textContent = voiceLabel(); b.append(el('audio', { controls: true, preload: 'metadata', src: on })); return b; }
 function prev() {
-  const p = $('lprev'); p.className = 'lprev ' + L_KEYS(); p.style.color = S.ink || ''; applyText(p); p.style.setProperty('--k', .62); p.style.backgroundColor = S.pc || '';
+  const p = $('lprev'); p.className = 'lprev ' + L_KEYS(); p.style.color = S.ink || ''; applyText(p); p.style.setProperty('--k', innerWidth <= 800 ? .82 : 1); p.style.backgroundColor = S.pc || '';
   const t = el('h4', { className: 'pTo', textContent: S.to ? 'Dear ' + S.to + ',' : 'Dear friend,' }), x = el('p', { className: 'pText', textContent: S.text || 'Your message will look like this.' }), f = el('p', { className: 'pfrom pFrom', textContent: '— ' + (S.from || 'You') });
   const parts = [t, x, f];
   if (S.photo) { const i = el('img', { src: S.photo, className: 'pimg' }); i.style.width = S.ps + '%'; if (S.pr) i.style.transform = 'rotate(' + S.pr + 'deg)'; parts.splice(S.ph === 'ph-below' ? 2 : 1, 0, i); }
@@ -430,7 +443,7 @@ function syncAll() {
   $('wrapC').value = S.w; $('ribC').value = S.rib; $('envC').value = S.env; $('sealC').value = S.sl; $('nmOn').checked = S.nm; $('bgc').value = S.bgc || '#e9dfcb'; $('pc').value = S.pc || '#fffdf9';
   $('msgOn').checked = S.on; $('msgBox').classList.toggle('hide', !S.on); $('musOn').checked = S.mus; $('meanOn').checked = S.mean;
   $('ps').value = S.ps; $('psv').textContent = S.ps + '%'; $('pr').value = S.pr; $('prv').textContent = S.pr; $('bgPhotoDel').classList.toggle('hide', !S.bgImg);
-  syncPhoto(); syncVoice(); syncText(); syncChoices(); prev();
+  syncPhoto(); syncVoice(); syncText(); syncChoices(); prev(); syncPreview();
 }
 function load(o) { S = clean(o); if (!S.from) S.from = lsRaw('bq_name') || ''; buildScene(); syncAll(); goStep(1); }
 
