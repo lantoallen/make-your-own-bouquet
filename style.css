@@ -412,10 +412,10 @@ body.view #toast{top:16px}
 #viewSeg button.on{background:var(--ac);color:#fff}
 body.dark #viewSeg button.on{color:#14201a}
 #canvas[data-view="letter"] #frame,#canvas[data-view="letter"] #hint,#canvas[data-view="env"] #frame,#canvas[data-view="env"] #hint{visibility:hidden}
-#letterView,#envView{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:58px 18px 70px;overflow:auto}
+#letterView,#envView{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:62px 18px 78px;overflow:auto}
 #letterView .lprev{width:min(100%,470px);max-height:100%;margin:0;padding:26px 28px;border-radius:10px;box-shadow:0 14px 40px rgba(44,42,37,.22);overflow:auto;flex:none}
 #envBig{cursor:pointer;flex:none}
 #envBig .env{width:320px;height:210px;animation:none;zoom:var(--ez,1.2);transition:transform .25s}
 #envBig:hover .env{transform:translateY(-4px) rotate(-1deg)}
-#envView .muted{margin-top:22px;text-align:center}
+#envView .muted{margin-top:14px;text-align:center}
 @media(max-width:800px) and (orientation:portrait){#viewSeg{bottom:10px}#letterView,#envView{padding:50px 12px 54px}#letterView .lprev{padding:18px 20px}}
