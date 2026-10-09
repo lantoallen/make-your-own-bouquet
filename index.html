@@ -136,7 +136,8 @@
     <div class="lbl">Unlock on <small>optional</small></div>
     <input type="datetime-local" id="sched" aria-label="Unlock date and time">
     <div class="lbl">Password <small>optional</small></div>
-    <input id="pw" type="password" placeholder="Password to open the gift" autocomplete="new-password" aria-label="Password">
+    <div class="pwbox"><input id="pw" type="password" placeholder="Password to open the gift" autocomplete="new-password" aria-label="Password"><button type="button" class="pwtoggle" data-for="pw" aria-pressed="false" aria-label="Show password">Show</button></div>
+    <p id="pwHint" class="muted">Leave empty for no password. If it is forgotten, nobody can recover the gift, so keep it somewhere safe.</p>
     <label class="switch"><input type="checkbox" id="musOn"><span>Play soft music when it opens</span></label>
     <button id="prevOpen" class="wide">Preview the opening animation</button>
     <button class="primary" id="share">Create gift link</button>
@@ -204,7 +205,7 @@
 
 <section id="landing"><div id="lbloom"></div><h1>Make Your Own Bouquet</h1><p id="ltag">Arrange flowers, wrap them, tuck in a message, and send it as a link.</p>
  <p id="lnote" class="gtag hide"></p>
- <input id="pwIn" type="password" placeholder="Password" class="hide" aria-label="Password" autocomplete="off"><div class="row"><button class="primary" id="go">Get started</button></div><div class="row"><button id="how">How it works</button><button id="about">About</button></div>
+ <div id="pwWrap" class="pwbox hide"><input id="pwIn" type="password" placeholder="Password" aria-label="Password" autocomplete="off"><button type="button" class="pwtoggle" data-for="pwIn" aria-pressed="false" aria-label="Show password">Show</button></div><div class="row"><button class="primary" id="go">Get started</button></div><div class="row"><button id="how">How it works</button><button id="about">About</button></div>
  <footer><span>© 2026 Allen</span><i>·</i><a data-k="terms">Terms</a><i>·</i><a data-k="privacy">Privacy</a><i>·</i><a data-k="about">About</a></footer></section>
 
 <section id="start" class="hide"><h2>How would you like to begin?</h2><p class="muted">Pick a ready-made bouquet (you can still change everything) or start from a blank canvas.</p>
