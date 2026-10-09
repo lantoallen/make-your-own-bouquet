@@ -97,5 +97,59 @@ revoke all on function public.get_replies(text[]) from public;
 grant execute on function public.get_gift(text)      to anon, authenticated;
 grant execute on function public.get_replies(text[]) to anon, authenticated;
 
--- Optional housekeeping: remove gifts older than a year.
--- delete from public.gifts where created_at < now() - interval '1 year';
+-- 4. Abuse protection -----------------------------------------------------------------------
+-- Visitors can add rows without signing in, so cap how fast the tables can grow: at most 60 new
+-- gifts and 240 replies/"opened" events in any one minute across the whole site. Real use is far
+-- below that. The app shows a friendly "try again in a minute" message if it is ever hit.
+create index if not exists gifts_created_at_idx   on public.gifts   (created_at);
+create index if not exists replies_created_at_idx on public.replies (created_at);
+
+create or replace function public.throttle_inserts()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  max_per_minute int := tg_argv[0]::int;
+  recent int;
+begin
+  execute format('select count(*) from %I.%I where created_at > now() - interval ''1 minute''',
+                 tg_table_schema, tg_table_name) into recent;
+  if recent >= max_per_minute then
+    raise exception 'Too many requests, please try again in a minute' using errcode = 'P0001';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists gifts_throttle   on public.gifts;
+drop trigger if exists replies_throttle on public.replies;
+create trigger gifts_throttle   before insert on public.gifts   for each row execute function public.throttle_inserts(60);
+create trigger replies_throttle before insert on public.replies for each row execute function public.throttle_inserts(240);
+
+-- 5. Housekeeping ---------------------------------------------------------------------------
+-- delete_old_gifts(): removes gifts (and their replies) older than the given age. Only the project
+-- owner can run it; visitors cannot. To run it automatically every night, enable the pg_cron
+-- extension (Database -> Extensions) and uncomment the schedule below.
+create or replace function public.delete_old_gifts(older_than interval default interval '1 year')
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  n integer;
+begin
+  with gone as (
+    delete from public.gifts where created_at < now() - older_than returning id
+  ), gone_replies as (
+    delete from public.replies where gift_id in (select id from gone) returning 1
+  )
+  select count(*) into n from gone;
+  return n;
+end;
+$$;
+revoke all on function public.delete_old_gifts(interval) from public, anon, authenticated;
+
+-- select cron.schedule('delete-old-gifts', '17 3 * * *', $$ select public.delete_old_gifts(interval '1 year') $$);
