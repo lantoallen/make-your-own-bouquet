@@ -418,4 +418,4 @@ body.dark #viewSeg button.on{color:#14201a}
 #envBig .env{width:320px;height:210px;animation:none;zoom:var(--ez,1.2);transition:transform .25s}
 #envBig:hover .env{transform:translateY(-4px) rotate(-1deg)}
 #envView .muted{margin-top:14px;text-align:center}
-@media(max-width:800px) and (orientation:portrait){#viewSeg{bottom:10px}#letterView,#envView{padding:50px 12px 54px}#letterView .lprev{padding:18px 20px}}
+@media(max-width:800px) and (orientation:portrait){#viewSeg{bottom:10px}#letterView,#envView{padding:58px 12px 68px}#letterView .lprev{padding:18px 20px}}
