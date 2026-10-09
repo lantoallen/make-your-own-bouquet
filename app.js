@@ -72,10 +72,15 @@ function clean(o) {
       .map(i => ({ t: i.t, c: hex(i.c, TYPES[i.t][2][0]), x: num(i.x, -400, 400, 0), y: num(i.y, -500, 400, 0), r: num(i.r, -720, 720, 0), s: num(i.s, .3, 3, 1), z: Math.round(num(i.z, -1, 6, 0)) })) };
 }
 
+// modal dialogs: the page behind is inert while one is open, focus moves in and comes back on close
+let modalReturn = null;
+const INERT = ['bar', 'app', 'landing', 'start', 'mk', 'menu'];
+function modalOpen(focusEl) { if (!modalReturn) modalReturn = document.activeElement; INERT.forEach(id => $(id).setAttribute('inert', '')); requestAnimationFrame(() => focusEl && focusEl.focus()); }
+function modalClose() { INERT.forEach(id => $(id).removeAttribute('inert')); const r = modalReturn; modalReturn = null; if (r && r.focus && document.contains(r)) r.focus(); }
 // ---- screens and steps ----
 let scr = 'landing';
 function show(s) {
-  scr = s; ['ov', 'info', 'menu'].forEach(i => $(i).classList.add('hide')); $('menuBtn').setAttribute('aria-expanded', 'false');
+  scr = s; if (!$('ov').classList.contains('hide') || !$('info').classList.contains('hide')) modalClose(); ['ov', 'info', 'menu'].forEach(i => $(i).classList.add('hide')); $('menuBtn').setAttribute('aria-expanded', 'false');
   $('landing').classList.toggle('hide', s !== 'landing'); $('start').classList.toggle('hide', s !== 'start'); $('backBtn').classList.toggle('hide', s === 'landing');
   $('resume').classList.toggle('hide', s !== 'start' || !(S.items.length || lsGet('bq_auto', null)));
   if (s === 'edit') requestAnimationFrame(fitFrame);
@@ -84,7 +89,7 @@ const STEPS = ['Flowers', 'Wrap', 'Letter', 'Share'];
 function goStep(n) {
   step = clamp(n, 1, 4); $('panel').dataset.step = step;
   document.querySelectorAll('.step').forEach(s => s.classList.toggle('hide', +s.dataset.s !== step));
-  document.querySelectorAll('#steps button').forEach(b => { const k = +b.dataset.s; b.classList.toggle('on', k === step); b.classList.toggle('done', k < step); });
+  document.querySelectorAll('#steps button').forEach(b => { const k = +b.dataset.s; b.classList.toggle('on', k === step); b.classList.toggle('done', k < step); if (k === step) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
   $('prevStep').classList.toggle('hide', step === 1); $('nextStep').classList.toggle('hide', step === 4); $('nextStep').textContent = 'Next: ' + (STEPS[step] || '');
   $('stepBody').scrollTop = 0; if (step === 3) prev(); if (step === 4) summary(); syncPreview();
 }
@@ -117,6 +122,8 @@ function add(t, c) {
 function place(it) { const e = els.get(it); e.style.transform = `translate(${it.x}px,${it.y}px) rotate(${it.r}deg) scale(${it.s})`; e.style.zIndex = it.z; if (it === sel) inv(it); if (S.cont === 'none') drawStems(); }
 function mk(it) {
   const e = el('div', { className: 'sp' }); e.innerHTML = TYPES[it.t].svg(it.c); els.set(it, e); place(it); $('bunch').append(e); $('count').textContent = S.items.length;
+  if (!view) { e.tabIndex = 0; e.setAttribute('role', 'button'); e.setAttribute('aria-label', TYPES[it.t][0] + ', stem on the bouquet. Arrow keys move it, Delete removes it.');
+    e.onfocus = () => { if (sel !== it) select(it); }; e.onkeydown = ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); select(it); } }; }
   let sx, sy, ox, oy, drag = false;
   e.onpointerdown = ev => { if (view) return; ev.preventDefault(); e.setPointerCapture(ev.pointerId); drag = true; sx = ev.clientX; sy = ev.clientY; ox = it.x; oy = it.y; select(it); };
   e.onpointermove = ev => { if (!drag) return; it.x = clamp(ox + (ev.clientX - sx) / fs(), -190, 190); it.y = clamp(oy + (ev.clientY - sy) / fs(), -240, 260); place(it); };
@@ -282,7 +289,7 @@ $('ps').oninput = e => { S.ps = +e.target.value; $('psv').textContent = S.ps + '
 let pvPick = 'letter';
 function setPreview(v) {
   $('canvas').dataset.view = v; $('letterView').classList.toggle('hide', v !== 'letter'); $('envView').classList.toggle('hide', v !== 'env');
-  document.querySelectorAll('#viewSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  document.querySelectorAll('#viewSeg button').forEach(b => { b.classList.toggle('on', b.dataset.v === v); b.setAttribute('aria-pressed', String(b.dataset.v === v)); });
   if (v === 'letter') prev(); if (v === 'env') fitFrame();
 }
 function syncPreview() { const on = step === 3 && S.on && !view; $('viewSeg').classList.toggle('hide', !on); setPreview(on ? pvPick : 'bouquet'); }
@@ -331,11 +338,11 @@ function openLetter() {
   $('lReply').classList.toggle('hide', !(view && SB.url && GID));
   const L = document.querySelector('.letter'); L.className = 'letter ' + L_KEYS(); L.style.color = S.ink || ''; applyText(L); L.style.setProperty('--k', 1); L.style.backgroundColor = S.pc || ''; L.scrollTop = 0;
   clearTimeout(openLetter.t1); clearTimeout(openLetter.t2);
-  envLook($('env')); $('ov').classList.remove('hide'); $('hint').classList.add('hide');
+  envLook($('env')); $('ov').classList.remove('hide'); $('hint').classList.add('hide'); modalOpen($('close'));
   openLetter.t1 = setTimeout(() => $('env').classList.add('open'), 150); openLetter.t2 = setTimeout(() => $('env').classList.add('gone'), 1900);
 }
-$('mini').onclick = openLetter; $('openPrev').onclick = () => { if (!S.on) setLetter(true); openLetter(); };
-$('close').onclick = () => { $('ov').classList.add('hide'); $('lVoice').pause(); if (view && S.on) $('hint').classList.remove('hide'); };
+$('mini').onclick = openLetter; [$('mini'), $('envBig')].forEach(b => b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLetter(); } })); $('openPrev').onclick = () => { if (!S.on) setLetter(true); openLetter(); };
+$('close').onclick = () => { if ($('ov').classList.contains('hide')) return; $('ov').classList.add('hide'); modalClose(); $('lVoice').pause(); if (view && S.on) $('hint').classList.remove('hide'); };
 $('ov').onclick = e => { if (e.target === $('ov')) $('close').click(); };
 function media() {
   const m = $('lMedia'); m.replaceChildren(); let u; try { u = new URL(S.media); } catch (e) { return; } if (!/^https?:$/.test(u.protocol)) return;
@@ -614,7 +621,7 @@ const INFO = {
 $('how').onclick = () => info('how'); $('about').onclick = () => info('about');
 function info(k) {
   const b = $('iB'); b.replaceChildren(); $('iS').textContent = '';
-  if (k === 'profile') { $('iT').textContent = 'Your profile'; const i = el('input', { placeholder: 'Your name (used as "From")', value: lsRaw('bq_name') || '' }); b.append(i, el('button', { textContent: 'Save', onclick: () => { try { localStorage.setItem('bq_name', i.value); } catch (e) { /* private mode */ } $('info').classList.add('hide'); } })); }
+  if (k === 'profile') { $('iT').textContent = 'Your profile'; const i = el('input', { placeholder: 'Your name (used as "From")', value: lsRaw('bq_name') || '' }); b.append(i, el('button', { textContent: 'Save', onclick: () => { try { localStorage.setItem('bq_name', i.value); } catch (e) { /* private mode */ } $('iX').click(); } })); }
   else if (k === 'drafts') { $('iT').textContent = 'My drafts'; const d = lsGet('bq', []); if (!d.length) b.textContent = 'No drafts yet. Use Save draft while you build.';
     d.forEach((x, n) => b.append(el('div', { className: 'item' }, el('button', { textContent: x.n, onclick: () => { load(x.s); show('edit'); } }), el('button', { textContent: 'Delete', onclick: () => { d.splice(n, 1); lsSet('bq', d); info('drafts'); } })))); }
   else if (k === 'gallery') { $('iT').textContent = 'Flower gallery'; $('iS').textContent = 'What every flower means in the language of flowers.';
@@ -628,9 +635,9 @@ function info(k) {
         rs.filter(y => y.kind === 'reply').forEach(y => d.append(el('p', { textContent: [y.emoji, y.body].filter(Boolean).join(' ') })));
         d.append(el('button', { textContent: 'Copy link', onclick: () => navigator.clipboard.writeText(x.link).then(() => toast('Link copied')) })); b.append(d); }); }).catch(() => b.textContent = 'Could not load. Check your connection.'); } }
   else { const [t, s, secs] = INFO[k]; $('iT').textContent = t; $('iS').textContent = s; secs.forEach(([hd, p]) => { const d = el('div', { className: 'sec' }); if (hd) d.append(el('h3', { textContent: hd })); d.append(el('p', { textContent: p })); b.append(d); }); }
-  $('info').classList.remove('hide');
+  $('info').classList.remove('hide'); modalOpen($('iX'));
 }
-$('iX').onclick = () => $('info').classList.add('hide'); $('info').onclick = e => { if (e.target === $('info')) $('iX').click(); };
+$('iX').onclick = () => { if ($('info').classList.contains('hide')) return; $('info').classList.add('hide'); modalClose(); }; $('info').onclick = e => { if (e.target === $('info')) $('iX').click(); };
 
 // ---- landing decoration ----
 { const w = el('div', { id: 'lspr' }); $('landing').prepend(w);
