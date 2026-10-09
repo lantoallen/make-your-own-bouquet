@@ -93,7 +93,6 @@
      </details>
 
      <details class="acc" id="envAcc"><summary>Envelope</summary>
-      <div id="envPrev" class="envPrev"></div>
       <div class="lbl">Color</div>
       <div class="row"><div class="sw" id="envsw"></div><input type="color" id="envC" value="#e8dcc8" aria-label="Envelope color"></div>
       <div class="lbl">Wax seal</div>
@@ -122,8 +121,7 @@
       <label class="switch"><input type="checkbox" id="meanOn"><span>Add a "flower meanings" card</span></label>
      </details>
 
-     <div class="lbl">Live preview</div>
-     <div id="lprev" class="lprev"></div>
+     <p class="muted">The stage shows your letter or envelope as you edit it.</p>
      <button id="openPrev" class="wide">Open the letter full size</button>
     </div>
    </section>
@@ -162,6 +160,9 @@
   <div id="toolbar"><button id="draft">Draft</button><button id="save">Picture</button><button id="dark">Dark</button><button id="petalBtn">Petals: off</button><button id="musicBtn">Music</button></div>
   <div id="canvas">
    <button id="sizeBtn">Bigger preview</button>
+   <div id="viewSeg" class="hide" role="group" aria-label="What to preview"><button data-v="bouquet">Bouquet</button><button data-v="letter">Letter</button><button data-v="env">Envelope</button></div>
+   <div id="letterView" class="hide"><div id="lprev" class="lprev"></div></div>
+   <div id="envView" class="hide"><div id="envBig" title="Tap to see it open"></div><p class="muted">Tap the envelope to see it open</p></div>
    <p id="hint" class="hide">Tap the envelope</p>
    <div id="frame">
     <div id="tag" class="hide"></div>
