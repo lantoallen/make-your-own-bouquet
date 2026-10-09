@@ -65,7 +65,7 @@ function show(s) {
 }
 const STEPS = ['Flowers', 'Wrap', 'Letter', 'Share'];
 function goStep(n) {
-  step = clamp(n, 1, 4);
+  step = clamp(n, 1, 4); $('panel').dataset.step = step;
   document.querySelectorAll('.step').forEach(s => s.classList.toggle('hide', +s.dataset.s !== step));
   document.querySelectorAll('#steps button').forEach(b => { const k = +b.dataset.s; b.classList.toggle('on', k === step); b.classList.toggle('done', k < step); });
   $('prevStep').classList.toggle('hide', step === 1); $('nextStep').classList.toggle('hide', step === 4); $('nextStep').textContent = 'Next: ' + (STEPS[step] || '');
