@@ -1,0 +1,15 @@
+{
+  "name": "make-your-own-bouquet",
+  "private": true,
+  "description": "Build a digital bouquet, tuck in a letter and send it as a link. The app itself has no build step; this file only holds the dev tools.",
+  "scripts": {
+    "serve": "node tests/serve.js",
+    "lint": "node scripts/lint.mjs",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "eslint": "^9.12.0",
+    "globals": "^15.11.0"
+  }
+}
