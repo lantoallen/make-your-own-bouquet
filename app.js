@@ -45,7 +45,7 @@ const RIBC = ['#8f3b4a', '#d4af37', '#1f3d2b', '#2b3a5c', '#f7f2ea', '#c9a0a0', 
 const WRAPS = ['#d2a679', '#e6cdb8', '#f1e6d2', '#b9c9b0', '#c9bfe0', '#2b2b33', '#2b3a5c', '#f7f2ea'];
 
 // ---- state ----
-const D = () => ({ sl: '#b3382c', se: 'flower', st: 'rose', li: 'diamond', tr: 'none', nm: true, ev: '', ps: 100, pr: 0, bgImg: '', pc: '', at: '', atu: '', voice: '', vd: 0, mean: false, items: [], w: '#e6cdb8', p: '', rib: '#8f3b4a', env: '#e8dcc8', on: false, mus: false, ink: '', tz: 20, tl: 1.5, tk: 0, tg: 120, tb: false, ti: null, tu: false, lp: 'pp-plain', lf: 'f-serif', la: 'a-left', ph: 'ph-top', pf: 'pf-round', pet: false, cont: 'paper', rs: 'bow', bg: 'blush', bgc: '', pw: '', media: '', to: '', from: '', text: '', photo: '', dark: false });
+const D = () => ({ sl: '#b3382c', se: 'flower', st: 'rose', li: 'diamond', tr: 'none', nm: true, ev: '', ps: 100, pr: 0, bgImg: '', pc: '', at: '', atu: '', voice: '', vd: 0, mean: false, items: [], w: '#e6cdb8', p: '', rib: '#8f3b4a', env: '#e8dcc8', on: false, mus: false, ink: '', tz: 20, tl: 1.5, tk: 0, tg: 120, tb: false, ti: null, tu: false, lp: 'pp-plain', lf: 'f-serif', la: 'a-left', ph: 'ph-top', pf: 'pf-round', pet: false, cont: 'paper', rs: 'bow', bg: 'blush', bgc: '', pw: '', media: '', to: '', from: '', text: '', photo: '' });
 let S = D(), view = false, sel = null, step = 1, GID = '';
 const els = new Map();
 
@@ -64,7 +64,7 @@ function clean(o) {
     bgImg: media(o.bgImg) && IMG.test(o.bgImg) ? o.bgImg : '', photo: media(o.photo) && IMG.test(o.photo) ? o.photo : '',
     voice: audio(o.voice), vd: num(o.vd, 0, 600, 0),
     sl: hex(o.sl, '#b3382c'), se: oneOf(o.se, SEAL_EM.map(x => x[0]), 'flower'), st: oneOf(o.st, STAMPS.map(x => x[0]), 'rose'), li: oneOf(o.li, LINERS.map(x => x[0]), 'diamond'), tr: oneOf(o.tr, TRIMS.map(x => x[0]), 'none'), nm: o.nm !== false,
-    mean: !!o.mean, on: !!o.on, mus: !!o.mus, pet: !!o.pet, dark: !!o.dark, tb: !!o.tb, tu: !!o.tu, ti: o.ti === null || o.ti === undefined ? null : !!o.ti,
+    mean: !!o.mean, on: !!o.on, mus: !!o.mus, pet: !!o.pet, tb: !!o.tb, tu: !!o.tu, ti: o.ti === null || o.ti === undefined ? null : !!o.ti,
     w: hex(o.w, d.w), rib: hex(o.rib, d.rib), env: hex(o.env, d.env), ink: hex(o.ink), pc: hex(o.pc), bgc: hex(o.bgc),
     p: pats.includes(o.p) ? o.p : '', cont: oneOf(o.cont, CONT.map(x => x[0]), 'paper'), rs: oneOf(o.rs, RSTYLES.map(x => x[0]), 'bow'), bg: oneOf(o.bg, BGS.map(x => x[0]), 'blush'),
     lp: oneOf(o.lp, PAPERS.map(x => x[0]), 'pp-plain'), lf: oneOf(o.lf, FONTS.map(x => x[0]), 'f-serif'), la: oneOf(o.la, ALIGN.map(x => x[0]), 'a-left'), ph: oneOf(o.ph, PPOS.map(x => x[0]), 'ph-top'), pf: oneOf(o.pf, PFRAMES.map(x => x[0]), 'pf-round'),
@@ -244,7 +244,7 @@ function applyStyle() {
   // plain colors for everything inside the exported frame: html2canvas can not read CSS color-mix()
   r.setProperty('--env-l', sh(S.env, .24)); r.setProperty('--env-d', sh(S.env, -.15)); r.setProperty('--env-f1', sh(S.env, -.08)); r.setProperty('--env-f2', sh(S.env, -.22));
   r.setProperty('--seal-l', sh(S.sl, .28)); r.setProperty('--seal-d', sh(S.sl, -.38)); r.setProperty('--glass', glass(S.w, .38, .2)); r.setProperty('--frost', glass(S.w, .6, .55)); $('mini').dataset.em = S.se; envLook($('envBig').firstChild);
-  $('wrapFront').className = S.p || ''; document.body.classList.toggle('dark', S.dark); document.body.classList.toggle('pet', !!S.pet); $('petalBtn').textContent = 'Petals: ' + (S.pet ? 'on' : 'off');
+  $('wrapFront').className = S.p || ''; document.body.classList.toggle('dark', isDark()); $('dark').textContent = isDark() ? 'Light' : 'Dark'; document.body.classList.toggle('pet', !!S.pet); $('petalBtn').textContent = 'Petals: ' + (S.pet ? 'on' : 'off');
   $('mini').classList.toggle('hide', !S.on); $('hint').classList.toggle('hide', !(S.on && view));
   $('tag').textContent = S.to ? 'For ' + S.to : ''; $('tag').classList.toggle('hide', !S.to);
   $('wrapOpts').classList.toggle('hide', S.cont === 'none' || S.cont === 'easel'); $('ribRow').classList.toggle('hide', S.rs === 'nobow');
@@ -286,7 +286,11 @@ $('ribC').oninput = e => { S.rib = e.target.value; applyStyle(); };
 $('bgc').oninput = e => { S.bgc = e.target.value; applyStyle(); };
 $('envC').oninput = e => { S.env = e.target.value; applyStyle(); };
 $('petalBtn').onclick = () => { S.pet = !S.pet; applyStyle(); };
-$('dark').onclick = () => { S.dark = !S.dark; applyStyle(); };
+// light or dark is a preference of this device (it follows the system until you choose), not part of a gift
+let darkPref = lsGet('bq_dark', null);
+const isDark = () => darkPref === null ? matchMedia('(prefers-color-scheme: dark)').matches : !!darkPref;
+$('dark').onclick = () => { darkPref = !isDark(); lsSet('bq_dark', darkPref); applyStyle(); };
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (darkPref === null) applyStyle(); });
 const fitImg = (f, mx, q, cb) => { const url = URL.createObjectURL(f), im = new Image(); im.onload = () => { const k = Math.min(1, mx / Math.max(im.width, im.height)), c = el('canvas', { width: Math.round(im.width * k), height: Math.round(im.height * k) }); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url); cb(c.toDataURL('image/jpeg', q)); }; im.onerror = () => toast('That image could not be read. Try a JPG or PNG.'); im.src = url; };
 $('bgPhoto').onchange = e => { const f = e.target.files[0]; if (f) fitImg(f, 1000, .7, d => { S.bgImg = d; $('bgPhotoDel').classList.remove('hide'); applyStyle(); }); e.target.value = ''; };
 $('bgPhotoDel').onclick = () => { S.bgImg = ''; $('bgPhotoDel').classList.add('hide'); applyStyle(); };
