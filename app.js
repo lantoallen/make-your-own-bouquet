@@ -460,7 +460,15 @@ function syncAll() {
   $('ps').value = S.ps; $('psv').textContent = S.ps + '%'; $('pr').value = S.pr; $('prv').textContent = S.pr; $('bgPhotoDel').classList.toggle('hide', !S.bgImg);
   syncPhoto(); syncVoice(); syncText(); syncChoices(); prev(); syncPreview();
 }
-function load(o) { S = clean(o); if (!S.from) S.from = lsRaw('bq_name') || ''; buildScene(); syncAll(); goStep(1); }
+// Starting something new never throws away work in progress: if the bouquet was changed, it goes to My drafts first.
+let baseline = '';
+function stash() {
+  if (view || !S.items.length) return; const j = JSON.stringify(snap()); if (j === baseline) return;
+  const d = lsGet('bq', []); if (d.length && JSON.stringify(d[0].s) === j) return;
+  d.unshift({ n: 'Auto-saved · ' + (S.to ? 'For ' + S.to + ' · ' : '') + new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }), s: snap() });
+  if (lsSet('bq', d.slice(0, 8))) toast('Your previous bouquet was saved to My drafts.');
+}
+function load(o) { stash(); S = clean(o); if (!S.from) S.from = lsRaw('bq_name') || ''; buildScene(); syncAll(); goStep(1); baseline = JSON.stringify(snap()); }
 
 // ---- sharing ----
 const b64 = buf => new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result.split(',')[1].replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')); f.readAsDataURL(new Blob([buf])); });
