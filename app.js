@@ -11,6 +11,14 @@ const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); retu
 let tT; const toast = m => { const t = $('toast'); t.replaceChildren(el('span', { className: 'ti' }), el('span', { textContent: m })); t.classList.remove('hide'); clearTimeout(tT); tT = setTimeout(() => t.classList.add('hide'), 4200); };
 $('toast').onclick = () => $('toast').classList.add('hide');
 
+// color swatches are real buttons with a plain-language name (keyboard and screen-reader friendly)
+const cname = h => { const n = parseInt(h.slice(1), 16), r = (n >> 16) / 255, g = (n >> 8 & 255) / 255, b = (n & 255) / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
+  if (l > .93) return 'white'; if (l < .14) return 'black'; if (d < .08) return l > .6 ? 'light gray' : 'gray';
+  let hu = mx === r ? ((g - b) / d + 6) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; hu *= 60;
+  const base = hu < 15 || hu >= 345 ? 'red' : hu < 40 ? 'orange' : hu < 70 ? 'yellow' : hu < 160 ? 'green' : hu < 200 ? 'teal' : hu < 255 ? 'blue' : hu < 290 ? 'purple' : 'pink';
+  return (l > .8 ? 'pale ' : l < .3 ? 'dark ' : '') + (base === 'red' && l > .6 ? 'pink' : base); };
+const dot = (c, on, fn, label) => { const b = el('button', { type: 'button', className: 'dot', onclick: fn, title: label || cname(c) }); b.style.background = c; b.dataset.c = c; b.setAttribute('aria-label', label || cname(c)); setOn(b, on); return b; };
+const setOn = (b, on) => { b.classList.toggle('on', !!on); b.setAttribute('aria-pressed', String(!!on)); };
 // ---- options ----
 const CONT = [['paper', 'Paper wrap'], ['none', 'Tied with ribbon'], ['vase', 'Glass vase'], ['basket', 'Basket'], ['easel', 'Easel']];
 const CW = { paper: '#e6cdb8', vase: '#bfe0ea', basket: '#b8864b', none: '#e6cdb8', easel: '#8a6a3c' };
@@ -89,8 +97,8 @@ const tone = k => col[TYPES[k][1]] || TYPES[k][2][0];
 function drawPicker() {
   const tabs = $('tabs'); tabs.replaceChildren(...Object.entries(CATS).map(([k, [l]]) => el('button', { textContent: l, className: !q && k === cat ? 'on' : '', onclick: () => { cat = k; q = ''; $('search').value = ''; drawPicker(); } })));
   const cur = col[cat] || null, list = cat === 'f' ? [...GRN, '#c9a227', '#b8c4bb', '#8a5a2b'] : PALETTE;
-  $('sw').replaceChildren(el('i', { className: 'nat' + (cur ? '' : ' on'), title: 'Natural colors', onclick: () => { col[cat] = null; drawPicker(); } }),
-    ...list.map(c => { const i = el('i', { className: c === cur ? 'on' : '', title: c, onclick: () => { col[cat] = c; drawPicker(); } }); i.style.background = c; return i; }));
+  const nat = el('button', { type: 'button', className: 'dot nat', title: 'Natural colors', onclick: () => { col[cat] = null; drawPicker(); } }); nat.setAttribute('aria-label', 'Natural colors'); setOn(nat, !cur);
+  $('sw').replaceChildren(nat, ...list.map(c => dot(c, c === cur, () => { col[cat] = c; drawPicker(); })));
   $('colName').textContent = cur ? 'Custom' : 'Natural';
   const needle = q.trim().toLowerCase(), ids = Object.keys(TYPES).filter(k => needle ? TYPES[k][0].toLowerCase().includes(needle) || (MEAN[k] || '').includes(needle) : TYPES[k][1] === cat);
   $('grid').replaceChildren(...(ids.length ? ids.map(k => { const t = TYPES[k], c = tone(k), b = el('button', { title: t[0] + (MEAN[k] ? ': ' + MEAN[k] : ''), onclick: () => add(k, c) }); b.innerHTML = t.svg(c); b.append(el('span', { textContent: t[0] })); return b; })
@@ -118,7 +126,7 @@ const swatchesFor = t => [...new Set([...TYPES[t][2], ...(TYPES[t][1] === 'f' ? 
 function select(it) {
   sel = it; drawH(it); els.forEach((e, i) => e.classList.toggle('sel', i === it)); $('selbar').classList.toggle('empty', !it || view);
   $('selName').textContent = it ? TYPES[it.t][0] : ''; $('mean').textContent = it && MEAN[it.t] ? MEAN[it.t] : '';
-  $('isw').replaceChildren(...(it ? swatchesFor(it.t).map(c => { const i = el('i', { className: c === it.c ? 'on' : '', onclick: () => { it.c = c; els.get(it).innerHTML = TYPES[it.t].svg(c); select(it); } }); i.style.background = c; return i; }) : []));
+  $('isw').replaceChildren(...(it ? swatchesFor(it.t).map(c => dot(c, c === it.c, () => { it.c = c; els.get(it).innerHTML = TYPES[it.t].svg(c); select(it); })) : []));
   requestAnimationFrame(fitFrame);
 }
 function removeItem(it) { els.get(it).remove(); els.delete(it); S.items = S.items.filter(i => i !== it); $('count').textContent = S.items.length; if (sel === it) select(null); drawStems(); }
@@ -213,11 +221,11 @@ function applyStyle() {
 function choices(id, list, key, after) {
   const box = $(id); box.replaceChildren(...list.map(([v, l]) => el('button', { textContent: l, dataset: { v }, onclick: () => { S[key] = v; after ? after(v) : applyStyle(); } })));
 }
-function mark(id, v) { $(id).querySelectorAll('[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === v)); }
+function mark(id, v) { $(id).querySelectorAll('[data-v]').forEach(b => { const on = b.dataset.v === v; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }); }
 function syncChoices() {
   mark('contSeg', S.cont); mark('rsChips', S.rs); mark('bgGrid', S.bg); mark('paperGrid', S.lp); mark('pfSeg', S.pf); mark('phSeg', S.ph); mark('patChips', S.p); mark('emChips', S.se); mark('stChips', S.st); mark('liChips', S.li); mark('trChips', S.tr);
-  document.querySelectorAll('#envsw i').forEach(i => i.classList.toggle('on', i.dataset.c === S.env)); document.querySelectorAll('#sealsw i').forEach(i => i.classList.toggle('on', i.dataset.c === S.sl)); $('sealRow').classList.toggle('hide', S.se === 'none');
-  document.querySelectorAll('#wsw i').forEach(i => i.classList.toggle('on', i.dataset.c === S.w)); document.querySelectorAll('#rsw i').forEach(i => i.classList.toggle('on', i.dataset.c === S.rib));
+  document.querySelectorAll('#envsw .dot').forEach(i => setOn(i, i.dataset.c === S.env)); document.querySelectorAll('#sealsw .dot').forEach(i => setOn(i, i.dataset.c === S.sl)); $('sealRow').classList.toggle('hide', S.se === 'none');
+  document.querySelectorAll('#wsw .dot').forEach(i => setOn(i, i.dataset.c === S.w)); document.querySelectorAll('#rsw .dot').forEach(i => setOn(i, i.dataset.c === S.rib));
 }
 function fillPat() {
   const L = PAT[S.cont] || []; if (L.length && !L.some(x => x[0] === S.p)) S.p = L[0][0];
@@ -227,7 +235,7 @@ function fillPat() {
 choices('contSeg', CONT, 'cont', v => { S.w = $('wrapC').value = CW[v]; fillPat(); applyStyle(); });
 choices('rsChips', RSTYLES, 'rs');
 $('bgGrid').replaceChildren(...BGS.map(([v, l]) => { const b = el('button', { dataset: { v }, title: l, onclick: () => { S.bg = v; S.bgImg = ''; $('bgPhotoDel').classList.add('hide'); applyStyle(); } }, el('span', { textContent: l })); b.style.backgroundImage = v === 'blush' ? 'none' : scene(v).replace(/ center bottom\/cover$/, ''); if (v === 'blush') b.style.backgroundColor = '#e9dfcb'; return b; }));
-const swatch = (id, list, key, input) => $(id).replaceChildren(...list.map(c => { const i = el('i', { title: c, onclick: () => { S[key] = $(input).value = c; applyStyle(); } }); i.dataset.c = c; i.style.background = c; return i; }));
+const swatch = (id, list, key, input) => $(id).replaceChildren(...list.map(c => dot(c, false, () => { S[key] = $(input).value = c; applyStyle(); })));
 swatch('wsw', WRAPS, 'w', 'wrapC'); swatch('rsw', RIBC, 'rib', 'ribC'); swatch('envsw', ENVC, 'env', 'envC'); swatch('sealsw', WAX, 'sl', 'sealC');
 choices('emChips', SEAL_EM, 'se'); choices('stChips', STAMPS, 'st'); choices('liChips', LINERS, 'li'); choices('trChips', TRIMS, 'tr');
 $('sealC').oninput = e => { S.sl = e.target.value; applyStyle(); };
@@ -296,7 +304,7 @@ document.querySelectorAll('#aseg button').forEach(b => b.onclick = () => { S.la 
 document.querySelectorAll('#bseg [data-st]').forEach(b => b.onclick = () => { const k = b.dataset.st; S[k] = k === 'ti' ? !(S.ti ?? !!fnt()[4]) : !S[k]; syncText(); prev(); });
 $('tReset').onclick = () => { Object.assign(S, { tz: 20, tl: 1.5, tk: 0, tg: 120, tb: false, ti: null, tu: false, la: 'a-left', ink: '' }); syncText(); prev(); };
 $('ink').oninput = e => { S.ink = e.target.value; prev(); };
-INK.forEach(c => { const i = el('i', { title: c, onclick: () => { S.ink = c; syncText(); prev(); } }); i.style.background = c; $('tsw').append(i); });
+INK.forEach(c => $('tsw').append(dot(c, false, () => { S.ink = c; syncText(); prev(); })));
 
 // voice note: where it lands is spelled out in the editor, the preview and the receiver's letter
 const mmss = n => Math.floor(n / 60) + ':' + String(Math.round(n % 60)).padStart(2, '0');
