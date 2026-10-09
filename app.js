@@ -652,17 +652,17 @@ $('landing').querySelector('footer').onclick = e => { const k = e.target.dataset
   let raw = null, failed = false; const p = new URLSearchParams(location.search), g = p.get('g'), h = location.hash.startsWith('#d=') ? location.hash.slice(3) : '';
   GID = g || '';
   if (g || h) {
-    view = true;
+    view = true; document.body.classList.add('view', 'opening'); $('landing').querySelector('h1').textContent = 'Opening your gift…';
     try { raw = g && SB.url ? await fetchGift(g) : h ? JSON.parse(await unpack(h)) : null; } catch (e) { console.error('Bad gift link', e); }
     failed = !raw || typeof raw !== 'object';
   }
   if (view) {
-    document.body.classList.add('view');
+    document.body.classList.remove('opening');
     if (failed) { S = D(); $('landing').querySelector('h1').textContent = 'We could not find this gift'; $('ltag').textContent = 'The link may be incomplete, or the gift is no longer available. Ask the sender to share it again.'; $('go').textContent = 'Make a bouquet'; $('go').onclick = () => location.href = location.href.split(/[?#]/)[0]; $('how').classList.add('hide'); $('about').classList.add('hide'); $('lbloom').classList.add('hide'); return; }
     serverLocked = !!raw.locked; if (raw.enc) { sealed = raw; S = clean(raw); } else S = clean(raw);
     if (S.voice) { $('lnote').textContent = 'Includes a voice note'; $('lnote').classList.remove('hide'); }
     if (sealed || serverLocked) $('lnote').classList.add('hide');
-    buildScene(); recvCover(); fitFrame(); return;
+    document.title = S.to ? 'A bouquet for ' + S.to : 'A bouquet for you'; buildScene(); recvCover(); fitFrame(); return;
   }
   S = D(); buildScene(); drawPicker(); syncAll(); goStep(1); fitFrame();
 })();
