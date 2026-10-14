@@ -224,15 +224,23 @@ body.locked #frame,body.locked #hint{visibility:hidden}
 /* ===== the letter ===== */
 #ov{position:fixed;inset:0;z-index:400;background:rgba(30,15,25,.7);display:flex;align-items:flex-end;justify-content:center;padding-bottom:6vh}
 #close{position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;z-index:5}
-.env{position:relative;width:min(320px,88vw);height:210px}
-.eb,.ef,.fl{position:absolute;inset:0;background:var(--env)}.eb{filter:brightness(.9);border-radius:8px}
-.ef{clip-path:polygon(0 0,50% 55%,100% 0,100% 100%,0 100%);z-index:3;border-radius:8px;filter:brightness(1.03)}
-.fl{filter:brightness(.8);clip-path:polygon(0 0,100% 0,50% 60%);transform-origin:top;transition:transform .6s;z-index:4;height:210px}
+.env{position:relative;width:min(320px,88vw);height:210px;perspective:1100px;animation:envIn .55s cubic-bezier(.2,1.2,.4,1)}
+@keyframes envIn{from{transform:translateY(46px) scale(.92);opacity:0}}
+.eb,.ef,.fl{position:absolute;inset:0}
+.eb{border-radius:10px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Cpath d='M9 0L18 9L9 18L0 9Z' fill='none' stroke='%23fff' stroke-opacity='.16'/%3E%3C/svg%3E"),linear-gradient(180deg,color-mix(in srgb,var(--env) 80%,#000),color-mix(in srgb,var(--env) 90%,#000));box-shadow:0 24px 46px rgba(0,0,0,.42)}
+.ef{z-index:3;border-radius:10px;clip-path:polygon(0 0,50% 55%,100% 0,100% 100%,0 100%);background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 210' preserveAspectRatio='none'%3E%3Cpath d='M0 210L160 116M320 210L160 116' stroke='%23000' stroke-opacity='.12' stroke-width='1.2' fill='none'/%3E%3Cpath d='M0 0L160 116L320 0' stroke='%23fff' stroke-opacity='.45' stroke-width='1.4' fill='none'/%3E%3C/svg%3E") center/100% 100% no-repeat,linear-gradient(170deg,color-mix(in srgb,var(--env) 80%,#fff),var(--env) 48%,color-mix(in srgb,var(--env) 90%,#000))}
+.ef:after{content:'';position:absolute;right:20px;bottom:18px;width:34px;height:40px;border-radius:3px;transform:rotate(4deg);background:radial-gradient(circle at 50% 42%,#fff 0 5px,transparent 5.6px),linear-gradient(160deg,#f6bfca,#e08a9a);outline:2px dotted rgba(255,255,255,.92);outline-offset:-3px;box-shadow:0 1px 3px rgba(0,0,0,.22)}
+#envTo{position:absolute;left:22px;right:70px;bottom:26px;font:400 1.9rem/1.1 'Great Vibes',cursive;color:var(--envink,#3a2c22);opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transform:rotate(-2deg)}
+.fl{z-index:4;height:210px;border-radius:10px 10px 0 0;clip-path:polygon(0 0,100% 0,50% 60%);transform-origin:top;transition:transform .7s cubic-bezier(.5,0,.2,1);background:linear-gradient(180deg,color-mix(in srgb,var(--env) 94%,#000),color-mix(in srgb,var(--env) 78%,#000))}
+.seal{position:absolute;left:50%;top:60%;width:42px;height:42px;margin:-21px 0 0 -21px;z-index:5;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e0675b,#b3382c 55%,#7d1f19);box-shadow:0 3px 7px rgba(0,0,0,.4),inset 0 0 0 3px rgba(255,255,255,.12);transition:opacity .25s,transform .25s;pointer-events:none}
+.seal:before{content:'';position:absolute;inset:6px;border-radius:50%;border:1.5px solid rgba(0,0,0,.18)}
+.seal:after{content:'';position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:rgba(255,255,255,.55);box-shadow:0 -7px 0 0 rgba(255,255,255,.4),6.7px -2.2px 0 0 rgba(255,255,255,.4),4.1px 5.7px 0 0 rgba(255,255,255,.4),-4.1px 5.7px 0 0 rgba(255,255,255,.4),-6.7px -2.2px 0 0 rgba(255,255,255,.4)}
 .letter{position:absolute;left:14px;right:14px;bottom:10px;height:150px;background:#fffdf9;color:#4a333a;border-radius:6px;padding:18px;z-index:2;overflow-y:auto;overscroll-behavior:contain;transition:height 1s .5s,transform 1s .5s;box-shadow:0 4px 14px rgba(0,0,0,.25);font-family:var(--ff,'Playfair Display',serif);display:flex;flex-direction:column}
 .letter>*{flex:none}
 .open .fl{transform:rotateX(180deg);z-index:1}
+.open .seal{opacity:0;transform:scale(.4) translateY(-10px)}
 .open .letter{height:min(70vh,520px);transform:translateY(-20px)}
-.gone .ef,.gone .eb,.gone .fl{opacity:0;transition:opacity .6s}
+.gone .ef,.gone .eb,.gone .fl,.gone .seal{opacity:0;transition:opacity .6s}
 .gone .letter{left:50%;right:auto;z-index:5;width:min(92vw,600px);height:min(calc(100vh - 116px),760px);height:min(calc(100dvh - 116px),760px);transform:translateX(-50%);padding:34px 38px;font-size:1.08em;transition:all .8s ease}
 .letter h4,.letter p{margin-bottom:12px;white-space:pre-wrap;line-height:1.5}
 .letter img{width:100%;border-radius:6px;margin-bottom:12px}
