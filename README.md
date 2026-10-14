@@ -27,16 +27,26 @@ Build a digital bouquet, tuck in a letter, and send it as a link, QR code or ema
 ## Project structure
 
 ```
-index.html    Page markup: the four builder steps, stage, landing and letter overlay
-style.css     All styles, including paper, font and theme variables
-flowers.js    Every flower, spike, filler, foliage and wreath drawing, plus flower meanings
-app.js        App logic: editor, rendering, sharing, gift opening, replies
-config.js     Supabase URL and publishable key
-supabase.sql  Database tables, row-level security and the two read functions
-favicon.svg   App icon
+index.html          Page markup: the four builder steps, stage, landing and letter overlay
+style.css           All styles, including paper, font and theme variables
+config.js           Supabase URL and publishable key
+supabase.sql        Database tables, row-level security, read functions and rate limits
+vercel.json         Security headers, including the Content-Security-Policy
+manifest.webmanifest, icon-*.png, apple-touch-icon.png, og.png   Home-screen and link-preview assets
+js/flowers.js       Every flower, spike, filler, foliage and wreath drawing, plus flower meanings
+js/core.js          Helpers, options, state and validation of incoming gift data
+js/editor.js        Steps, flower picker, undo/redo, stems on the stage, fitting the stage
+js/look.js          Wrap, ribbon, backdrop, envelope styling and light/dark theme
+js/letter.js        Letter editing and preview, text style, voice notes, music, picture export
+js/bouquets.js      Drafts, autosave, presets and occasions, building the scene
+js/share.js         Gift links, encryption, Supabase calls, QR code, email
+js/receiver.js      Opening animation, unlocking, replies, saving
+js/app.js           Menu, info pages, landing decoration and boot
 ```
 
-To add a flower, add one `addT(...)` line (and a `MEAN` entry) in `flowers.js`.
+The scripts are classic (not modules) and share one global scope, so keep them in the load order used in `index.html`.
+
+To add a flower, add one `addT(...)` line (and a `MEAN` entry) in `js/flowers.js`.
 
 ## Running locally
 
