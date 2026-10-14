@@ -60,6 +60,18 @@ Then open http://localhost:8000.
 
 Opening `index.html` straight from disk (`file://`) mostly works too, but microphone recording and some browser APIs need `http://localhost` or HTTPS.
 
+## Development checks
+
+The app has no build step, but there are two optional checks (they need Node 18+):
+
+```bash
+npm install
+npm run lint     # checks all scripts together, catching undefined names across files
+npm test         # browser tests: bouquet, undo, picture export, password gift, voice note, phone layouts
+```
+
+The tests run the real app in Chromium with Supabase replaced by an in-memory stand-in, so they never touch your project. Set `PW_CHANNEL=chrome` to use an installed Google Chrome instead of downloading Chromium. GitHub runs both on every push (see `.github/workflows/ci.yml`).
+
 ## Backend setup (Supabase)
 
 1. Create a Supabase project.
