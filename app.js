@@ -498,6 +498,12 @@ function stash() {
 }
 function load(o) { stash(); S = clean(o); if (!S.from) S.from = lsRaw('bq_name') || ''; buildScene(); syncAll(); goStep(1); baseline = JSON.stringify(snap()); }
 
+// ---- password fields: show/hide, and a gentle strength hint ----
+document.querySelectorAll('.pwtoggle').forEach(b => b.onclick = () => { const i = $(b.dataset.for), show = i.type === 'password'; i.type = show ? 'text' : 'password'; b.textContent = show ? 'Hide' : 'Show'; b.setAttribute('aria-pressed', String(show)); b.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); });
+const PW_HINT = 'Leave empty for no password. If it is forgotten, nobody can recover the gift, so keep it somewhere safe.';
+$('pw').oninput = e => { const v = e.target.value, h = $('pwHint'), kinds = [/[a-z]/, /[A-Z]/, /\d/, /[^A-Za-z0-9]/].filter(r => r.test(v)).length;
+  h.className = 'muted' + (!v ? '' : v.length < 6 ? ' weak' : v.length >= 10 && kinds >= 2 || v.length >= 14 ? ' strong' : ' ok');
+  h.textContent = !v ? PW_HINT : v.length < 6 ? 'Too short. Use at least 6 characters, because anyone holding the link could try to guess it.' : h.classList.contains('strong') ? 'Strong password. Remember it: it cannot be recovered.' : 'Okay. A longer one with mixed characters is stronger.'; };
 // ---- sharing ----
 const b64 = buf => new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result.split(',')[1].replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')); f.readAsDataURL(new Blob([buf])); });
 const unb64 = h => { const bin = atob(h.replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(bin, c => c.charCodeAt(0)); };
@@ -575,7 +581,8 @@ $('share').onclick = async () => {
   if (!S.items.length) return toast('Add a few flowers first.');
   if (S.voice && !S.on) return toast('Your voice note lives inside the letter. Turn the letter on in step 3, or remove the voice note.');
   if ((S.voice || S.bgImg) && !SB.url) return toast('Voice notes and photo backdrops need Supabase short links. Add your keys in config.js.');
-  const pw = $('pw').value, btn = $('share'); btn.disabled = true; $('linkOut').textContent = 'Creating link…';
+  const pw = $('pw').value; if (pw && pw.length < 6) return toast('Please use a password with at least 6 characters, or leave it empty.');
+  const btn = $('share'); btn.disabled = true; $('linkOut').textContent = 'Creating link…';
   try {
     const data = snap(); data.atu = S.at ? new Date(S.at).toISOString() : '';
     const body = pw ? { ...(await seal(data, pw)), to: S.to, from: S.from, ev: S.ev, at: S.at, atu: data.atu } : data;
@@ -616,7 +623,7 @@ function recvCover() {
   const needPw = !!(S.pw || sealed);
   $('landing').querySelector('h1').textContent = 'A gift has arrived';
   $('ltag').textContent = (S.from ? S.from + ' made' : 'Someone made') + ' a bouquet just for you.' + (needPw ? ' Enter the password to open it.' : ' Tap below to open it.');
-  $('go').textContent = 'Open your gift'; if (needPw) $('pwIn').classList.remove('hide'); $('how').classList.add('hide'); $('about').classList.add('hide'); lockCheck(); landFx();
+  $('go').textContent = 'Open your gift'; if (needPw) $('pwWrap').classList.remove('hide'); $('how').classList.add('hide'); $('about').classList.add('hide'); lockCheck(); landFx();
 }
 function lockCheck() {
   const at = S.atu || S.at; if (!at || !view) return; const t = new Date(at) - Date.now();
