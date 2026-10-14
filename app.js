@@ -91,7 +91,7 @@ function goStep(n) {
   document.querySelectorAll('.step').forEach(s => s.classList.toggle('hide', +s.dataset.s !== step));
   document.querySelectorAll('#steps button').forEach(b => { const k = +b.dataset.s; b.classList.toggle('on', k === step); b.classList.toggle('done', k < step); if (k === step) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
   $('prevStep').classList.toggle('hide', step === 1); $('nextStep').classList.toggle('hide', step === 4); $('nextStep').textContent = 'Next: ' + (STEPS[step] || '');
-  $('stepBody').scrollTop = 0; if (step === 3) prev(); if (step === 4) summary(); syncPreview();
+  $('stepBody').scrollTop = 0; if (step === 3) prev(); if (step === 4) { summary(); $('sched').min = new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 16); } syncPreview();
 }
 document.querySelectorAll('#steps button').forEach(b => b.onclick = () => goStep(+b.dataset.s));
 $('prevStep').onclick = () => goStep(step - 1); $('nextStep').onclick = () => goStep(step + 1);
@@ -179,7 +179,7 @@ let fitLock = false;
 function fitFrame() {
   if (fitLock) return; const c = $('canvas'), w = c.clientWidth, h = c.clientHeight; if (!w || !h) return;
   $('envBig').style.setProperty('--ez', clamp(Math.min((w - 36) / 320, (h - 190) / 210), .5, 1.7).toFixed(3));
-  const pad = view ? 20 : (innerWidth <= 800 ? 14 : 40), k = clamp(Math.min((w - pad) / 340, (h - pad) / 520), .22, view ? 1.5 : 1.2);
+  const pad = view ? 20 : (innerWidth <= 800 ? 14 : 40), k = clamp(Math.min((w - pad) / 340, (h - pad) / 520), .22, view ? 1.5 : 1.4);
   $('frame').style.setProperty('--fit', k.toFixed(3));
 }
 new ResizeObserver(fitFrame).observe($('canvas')); addEventListener('resize', fitFrame);
