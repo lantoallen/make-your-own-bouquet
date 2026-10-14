@@ -440,3 +440,11 @@ body.opening #landing h1{animation:pl 1.4s infinite}
  #stepBody{padding-top:10px}
  #viewSeg{bottom:auto;top:10px}
 }
+
+/* undo / redo */
+#histBar{position:absolute;left:16px;top:16px;z-index:20;display:flex;gap:6px}
+#histBar button{display:flex;align-items:center;gap:6px;padding:7px 12px;font-size:.8rem;border-radius:999px;background:var(--surface);box-shadow:var(--sh1)}
+#histBar svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#histBar button:disabled{opacity:.4;box-shadow:none}
+body.view #histBar,#canvas[data-view="letter"] #histBar,#canvas[data-view="env"] #histBar{display:none}
+@media(max-width:800px) and (orientation:portrait){#histBar{left:auto;right:12px;top:12px}#histBar span{display:none}#histBar button{padding:9px 11px}}
