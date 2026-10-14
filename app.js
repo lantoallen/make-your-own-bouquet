@@ -593,7 +593,8 @@ $('share').onclick = async () => {
     const base = location.href.split(/[?#]/)[0];
     if (SB.url) {
       const id = newId(), r = await fetch(SB.url + '/rest/v1/gifts', { method: 'POST', headers: { ...H(), 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify({ id, data: body }) });
-      if (!r.ok) throw new Error(r.status === 413 ? 'The gift is too large. Try a smaller photo or a shorter voice note.' : (await r.text()).slice(0, 160));
+      if (!r.ok) { let m = ''; try { m = (await r.json()).message || ''; } catch (e) { /* not JSON */ }
+        throw new Error(/too many/i.test(m) ? 'Lots of gifts are being made right now. Please try again in a minute.' : r.status === 413 ? 'The gift is too large. Try a smaller photo or a shorter voice note.' : m || 'Something went wrong (' + r.status + '). Please try again.'); }
       link = `${base}?g=${id}`; const sent = lsGet('bq_sent', []); sent.unshift({ id, to: S.to || '', t: Date.now(), link }); lsSet('bq_sent', sent.slice(0, 30));
     } else link = `${base}#d=${await pack(JSON.stringify(body))}`;
     $('linkOut').textContent = 'Link ready. Copy it, scan the QR, or email it.'; $('shareBox').classList.remove('hide'); $('linkTxt').value = link; navigator.clipboard.writeText(link).catch(() => {}); drawQR();
