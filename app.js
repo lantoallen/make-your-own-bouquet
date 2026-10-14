@@ -399,7 +399,9 @@ $('musicBtn').onclick = () => music(!playing);
 async function savePicture() {
   select(null); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   const f = $('frame'); fitLock = true; f.style.setProperty('--fit', 1); await new Promise(r => setTimeout(r, 80));
-  try { const c = await html2canvas(f, { backgroundColor: null }); el('a', { download: 'my-bouquet.png', href: c.toDataURL() }).click(); } catch (e) { toast('Could not save the picture.'); }
+  // html2canvas copies the whole page, so skip everything except the bouquet (38s down to about 2s)
+  const skip = n => n.matches && n.matches('#start,#landing,#panel,#bar,#menu,#info,#ov,#petals,#toolbar,#selbar,#bloomScreen,#toast,#letterView,#envView,#viewSeg,#sizeBtn,#hint,.bp');
+  try { const c = await html2canvas(f, { backgroundColor: null, ignoreElements: skip }); el('a', { download: 'my-bouquet.png', href: c.toDataURL() }).click(); } catch (e) { toast('Could not save the picture.'); }
   fitLock = false; fitFrame();
 }
 $('save').onclick = savePicture;
