@@ -19,6 +19,12 @@ const RSTYLES = [['bow', 'Classic bow'], ['flow', 'Flowy'], ['double', 'Double b
 const BGS = [['blush', 'Plain'], ['garden', 'Garden'], ['meadow', 'Meadow'], ['greenhouse', 'Greenhouse'], ['blossom', 'Blossom'], ['table', 'Table'], ['dusk', 'Dusk'], ['night', 'Midnight']];
 const PAPERS = [['pp-plain', 'Plain'], ['pp-lined', 'Lined'], ['pp-parch', 'Parchment'], ['pp-kraft', 'Kraft'], ['pp-floral', 'Floral dots'], ['pp-dark', 'Dark'], ['pp-water', 'Watercolor'], ['pp-linen', 'Linen'], ['pp-rice', 'Rice paper'], ['pp-leaves', 'Leaves'], ['pp-vintage', 'Vintage'], ['pp-grid', 'Graph grid'], ['pp-blush', 'Blush'], ['pp-sage', 'Sage'], ['pp-navy', 'Midnight'], ['pp-stripe', 'Stripes'], ['pp-hearts', 'Hearts'], ['pp-stars', 'Stars'], ['pp-marble', 'Marble'], ['pp-burlap', 'Burlap'], ['pp-foil', 'Gold foil'], ['pp-frame', 'Postcard'], ['pp-canvas', 'Canvas'], ['pp-lilac', 'Lilac'], ['pp-peach', 'Peach'], ['pp-mint', 'Mint'], ['pp-butter', 'Butter']];
 const FONTS = [["f-serif", "Elegant", "'Playfair Display',serif", 1, 1], ["f-bask", "Classic", "'Libre Baskerville',serif", 0.9, 1], ["f-lora", "Lora", "Lora,serif", 1, 1], ["f-hand", "Cormorant", "'Cormorant Garamond',serif", 1.15, 1], ["f-cinzel", "Cinzel", "Cinzel,serif", 0.9, 0], ["f-vibes", "Great Vibes", "'Great Vibes',cursive", 1.55, 0], ["f-pari", "Parisienne", "Parisienne,cursive", 1.4, 0], ["f-dancing", "Dancing", "'Dancing Script',cursive", 1.2, 0], ["f-sat", "Satisfy", "Satisfy,cursive", 1.2, 0], ["f-pacifico", "Pacifico", "Pacifico,cursive", 0.9, 0], ["f-script", "Caveat", "Caveat,cursive", 1.3, 0], ["f-indie", "Indie Flower", "'Indie Flower',cursive", 1.15, 0], ["f-shadow", "Handwritten", "'Shadows Into Light',cursive", 1.25, 0], ["f-type", "Typewriter", "'Special Elite',monospace", 0.95, 0], ["f-sans", "Clean", "Quicksand,sans-serif", 1, 0], ["f-mont", "Modern", "Montserrat,sans-serif", 0.92, 0]];
+const SEAL_EM = [['flower', 'Flower'], ['heart', 'Heart'], ['star', 'Star'], ['letter', 'Initial'], ['none', 'No seal']];
+const STAMPS = [['rose', 'Rose'], ['gold', 'Gold'], ['sage', 'Sage'], ['none', 'None']];
+const LINERS = [['diamond', 'Diamonds'], ['dots', 'Dots'], ['stripes', 'Stripes'], ['floral', 'Floral'], ['plain', 'Plain']];
+const TRIMS = [['none', 'Plain edge'], ['airmail', 'Airmail'], ['gold', 'Gold line']];
+const WAX = ['#b3382c', '#c9a227', '#3d6b4f', '#2b3a5c', '#6b3a6e', '#2b2b33', '#e0709a'];
+const ENVC = ['#e8dcc8', '#f6e3e6', '#dfe9dc', '#e3e0f1', '#f7edc8', '#2b3a5c', '#3d5a47', '#8f3b4a'];
 const ALIGN = [['a-left', 'Left'], ['a-center', 'Center'], ['a-right', 'Right'], ['a-justify', 'Justify']];
 const PFRAMES = [['pf-round', 'Rounded'], ['pf-polaroid', 'Polaroid'], ['pf-none', 'Square']];
 const PPOS = [['ph-top', 'Above the text'], ['ph-below', 'Below the text']];
@@ -27,7 +33,7 @@ const RIBC = ['#8f3b4a', '#d4af37', '#1f3d2b', '#2b3a5c', '#f7f2ea', '#c9a0a0', 
 const WRAPS = ['#d2a679', '#e6cdb8', '#f1e6d2', '#b9c9b0', '#c9bfe0', '#2b2b33', '#2b3a5c', '#f7f2ea'];
 
 // ---- state ----
-const D = () => ({ ev: '', ps: 100, pr: 0, bgImg: '', pc: '', at: '', atu: '', voice: '', vd: 0, mean: false, items: [], w: '#e6cdb8', p: '', rib: '#8f3b4a', env: '#e8dcc8', on: false, mus: false, ink: '', tz: 20, tl: 1.5, tk: 0, tg: 120, tb: false, ti: null, tu: false, lp: 'pp-plain', lf: 'f-serif', la: 'a-left', ph: 'ph-top', pf: 'pf-round', pet: false, cont: 'paper', rs: 'bow', bg: 'blush', bgc: '', pw: '', media: '', to: '', from: '', text: '', photo: '', dark: false });
+const D = () => ({ sl: '#b3382c', se: 'flower', st: 'rose', li: 'diamond', tr: 'none', nm: true, ev: '', ps: 100, pr: 0, bgImg: '', pc: '', at: '', atu: '', voice: '', vd: 0, mean: false, items: [], w: '#e6cdb8', p: '', rib: '#8f3b4a', env: '#e8dcc8', on: false, mus: false, ink: '', tz: 20, tl: 1.5, tk: 0, tg: 120, tb: false, ti: null, tu: false, lp: 'pp-plain', lf: 'f-serif', la: 'a-left', ph: 'ph-top', pf: 'pf-round', pet: false, cont: 'paper', rs: 'bow', bg: 'blush', bgc: '', pw: '', media: '', to: '', from: '', text: '', photo: '', dark: false });
 let S = D(), view = false, sel = null, step = 1, GID = '';
 const els = new Map();
 
@@ -45,6 +51,7 @@ function clean(o) {
     ev: str(o.ev, 40), ps: num(o.ps, 30, 100, 100), pr: num(o.pr, -15, 15, 0), at: str(o.at, 32), atu: str(o.atu, 40), pw: /^[0-9a-f]{64}$/.test(o.pw) ? o.pw : '',
     bgImg: media(o.bgImg) && IMG.test(o.bgImg) ? o.bgImg : '', photo: media(o.photo) && IMG.test(o.photo) ? o.photo : '',
     voice: audio(o.voice), vd: num(o.vd, 0, 600, 0),
+    sl: hex(o.sl, '#b3382c'), se: oneOf(o.se, SEAL_EM.map(x => x[0]), 'flower'), st: oneOf(o.st, STAMPS.map(x => x[0]), 'rose'), li: oneOf(o.li, LINERS.map(x => x[0]), 'diamond'), tr: oneOf(o.tr, TRIMS.map(x => x[0]), 'none'), nm: o.nm !== false,
     mean: !!o.mean, on: !!o.on, mus: !!o.mus, pet: !!o.pet, dark: !!o.dark, tb: !!o.tb, tu: !!o.tu, ti: o.ti === null || o.ti === undefined ? null : !!o.ti,
     w: hex(o.w, d.w), rib: hex(o.rib, d.rib), env: hex(o.env, d.env), ink: hex(o.ink), pc: hex(o.pc), bgc: hex(o.bgc),
     p: pats.includes(o.p) ? o.p : '', cont: oneOf(o.cont, CONT.map(x => x[0]), 'paper'), rs: oneOf(o.rs, RSTYLES.map(x => x[0]), 'bow'), bg: oneOf(o.bg, BGS.map(x => x[0]), 'blush'),
@@ -192,7 +199,7 @@ function applyStyle() {
   const rk = RIB[S.rs] || ['band', 'twine', 'lace'].includes(S.rs) ? S.rs : 'bow'; $('bow').className = rk; $('bow').innerHTML = ribbon(rk, S.rib);
   { const v = S.bgImg ? `url("${S.bgImg}") center/cover no-repeat` : S.bg === 'blush' && S.bgc ? S.bgc : scene(S.bg); if (v !== _bg) { _bg = v; $('canvas').style.background = v; } }
   $('bgcRow').classList.toggle('hide', S.bg !== 'blush' || !!S.bgImg);
-  const r = document.documentElement.style; r.setProperty('--w', S.w); r.setProperty('--rib', S.rib); r.setProperty('--env', S.env);
+  const r = document.documentElement.style; r.setProperty('--w', S.w); r.setProperty('--rib', S.rib); r.setProperty('--env', S.env); r.setProperty('--seal', S.sl); $('mini').dataset.em = S.se; envLook($('envPrev').firstChild);
   $('wrapFront').className = S.p || ''; document.body.classList.toggle('dark', S.dark); document.body.classList.toggle('pet', !!S.pet); $('petalBtn').textContent = 'Petals: ' + (S.pet ? 'on' : 'off');
   $('mini').classList.toggle('hide', !S.on); $('hint').classList.toggle('hide', !(S.on && view));
   $('tag').textContent = S.to ? 'For ' + S.to : ''; $('tag').classList.toggle('hide', !S.to);
@@ -205,7 +212,8 @@ function choices(id, list, key, after) {
 }
 function mark(id, v) { $(id).querySelectorAll('[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === v)); }
 function syncChoices() {
-  mark('contSeg', S.cont); mark('rsChips', S.rs); mark('bgGrid', S.bg); mark('paperGrid', S.lp); mark('pfSeg', S.pf); mark('phSeg', S.ph); mark('patChips', S.p);
+  mark('contSeg', S.cont); mark('rsChips', S.rs); mark('bgGrid', S.bg); mark('paperGrid', S.lp); mark('pfSeg', S.pf); mark('phSeg', S.ph); mark('patChips', S.p); mark('emChips', S.se); mark('stChips', S.st); mark('liChips', S.li); mark('trChips', S.tr);
+  document.querySelectorAll('#envsw i').forEach(i => i.classList.toggle('on', i.dataset.c === S.env)); document.querySelectorAll('#sealsw i').forEach(i => i.classList.toggle('on', i.dataset.c === S.sl)); $('sealRow').classList.toggle('hide', S.se === 'none');
   document.querySelectorAll('#wsw i').forEach(i => i.classList.toggle('on', i.dataset.c === S.w)); document.querySelectorAll('#rsw i').forEach(i => i.classList.toggle('on', i.dataset.c === S.rib));
 }
 function fillPat() {
@@ -217,7 +225,18 @@ choices('contSeg', CONT, 'cont', v => { S.w = $('wrapC').value = CW[v]; fillPat(
 choices('rsChips', RSTYLES, 'rs');
 $('bgGrid').replaceChildren(...BGS.map(([v, l]) => { const b = el('button', { dataset: { v }, title: l, onclick: () => { S.bg = v; S.bgImg = ''; $('bgPhotoDel').classList.add('hide'); applyStyle(); } }, el('span', { textContent: l })); b.style.backgroundImage = v === 'blush' ? 'none' : scene(v).replace(/ center bottom\/cover$/, ''); if (v === 'blush') b.style.backgroundColor = '#e9dfcb'; return b; }));
 const swatch = (id, list, key, input) => $(id).replaceChildren(...list.map(c => { const i = el('i', { title: c, onclick: () => { S[key] = $(input).value = c; applyStyle(); } }); i.dataset.c = c; i.style.background = c; return i; }));
-swatch('wsw', WRAPS, 'w', 'wrapC'); swatch('rsw', RIBC, 'rib', 'ribC');
+swatch('wsw', WRAPS, 'w', 'wrapC'); swatch('rsw', RIBC, 'rib', 'ribC'); swatch('envsw', ENVC, 'env', 'envC'); swatch('sealsw', WAX, 'sl', 'sealC');
+choices('emChips', SEAL_EM, 'se'); choices('stChips', STAMPS, 'st'); choices('liChips', LINERS, 'li'); choices('trChips', TRIMS, 'tr');
+$('sealC').oninput = e => { S.sl = e.target.value; applyStyle(); };
+$('nmOn').onchange = e => { S.nm = e.target.checked; applyStyle(); };
+$('envOpen').onclick = () => { if (!S.on) setLetter(true); openLetter(); };
+$('envPrev').innerHTML = '<div class="env"><div class="eb"></div><div class="ef"><span class="envTo"></span></div><div class="fl"></div><div class="seal"></div></div>';
+// the envelope's look (seal, stamp, lining, trim, name). Used by the opening envelope and the preview in the editor.
+function envLook(e) {
+  if (!e) return; e.className = ['env', 'em-' + S.se, 'st-' + S.st, 'li-' + S.li, 'tr-' + S.tr, S.nm ? '' : 'no-name'].filter(Boolean).join(' ');
+  e.querySelector('.envTo').textContent = 'For ' + (S.to || 'you'); e.style.setProperty('--envink', lum(S.env) > .58 ? '#3a2c22' : '#f6efe4');
+  e.querySelector('.seal').textContent = S.se === 'letter' ? (S.from || S.to || 'B').trim().charAt(0).toUpperCase() : '';
+}
 $('wrapC').oninput = e => { S.w = e.target.value; applyStyle(); };
 $('ribC').oninput = e => { S.rib = e.target.value; applyStyle(); };
 $('bgc').oninput = e => { S.bgc = e.target.value; applyStyle(); };
@@ -278,7 +297,6 @@ function prev() {
 }
 const lum = c => { const n = parseInt(c.slice(1), 16); return (.299 * (n >> 16) + .587 * (n >> 8 & 255) + .114 * (n & 255)) / 255; };
 function openLetter() {
-  $('envTo').textContent = S.to ? 'For ' + S.to : ''; $('env').style.setProperty('--envink', lum(S.env) > .58 ? '#3a2c22' : '#f6efe4');
   $('lTo').textContent = S.to ? 'Dear ' + S.to + ',' : ''; $('lText').textContent = S.text; $('lFrom').textContent = S.from ? '— ' + S.from : '';
   $('lImg').classList.toggle('hide', !S.photo); if (S.photo) $('lImg').src = S.photo; $('lImg').style.width = S.ps + '%'; $('lImg').style.transform = S.pr ? 'rotate(' + S.pr + 'deg)' : '';
   media();
@@ -290,7 +308,7 @@ function openLetter() {
   $('lReply').classList.toggle('hide', !(view && SB.url && GID));
   const L = document.querySelector('.letter'); L.className = 'letter ' + L_KEYS(); L.style.color = S.ink || ''; applyText(L); L.style.setProperty('--k', 1); L.style.backgroundColor = S.pc || ''; L.scrollTop = 0;
   clearTimeout(openLetter.t1); clearTimeout(openLetter.t2);
-  $('env').className = 'env'; $('ov').classList.remove('hide'); $('hint').classList.add('hide');
+  envLook($('env')); $('ov').classList.remove('hide'); $('hint').classList.add('hide');
   openLetter.t1 = setTimeout(() => $('env').classList.add('open'), 150); openLetter.t2 = setTimeout(() => $('env').classList.add('gone'), 1900);
 }
 $('mini').onclick = openLetter; $('openPrev').onclick = () => { if (!S.on) setLetter(true); openLetter(); };
@@ -407,7 +425,7 @@ function buildScene() {
 }
 function syncAll() {
   ['to', 'from', 'text', 'media', 'sched'].forEach(k => $(k).value = S[k === 'sched' ? 'at' : k]); $('tcount').textContent = S.text.length; $('pw').value = '';
-  $('wrapC').value = S.w; $('ribC').value = S.rib; $('envC').value = S.env; $('bgc').value = S.bgc || '#e9dfcb'; $('pc').value = S.pc || '#fffdf9';
+  $('wrapC').value = S.w; $('ribC').value = S.rib; $('envC').value = S.env; $('sealC').value = S.sl; $('nmOn').checked = S.nm; $('bgc').value = S.bgc || '#e9dfcb'; $('pc').value = S.pc || '#fffdf9';
   $('msgOn').checked = S.on; $('msgBox').classList.toggle('hide', !S.on); $('musOn').checked = S.mus; $('meanOn').checked = S.mean;
   $('ps').value = S.ps; $('psv').textContent = S.ps + '%'; $('pr').value = S.pr; $('prv').textContent = S.pr; $('bgPhotoDel').classList.toggle('hide', !S.bgImg);
   syncPhoto(); syncVoice(); syncText(); syncChoices(); prev();
