@@ -404,9 +404,18 @@ body.view #toast{top:16px}
 .li-stripes{--liner:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Crect width='6' height='12' fill='%23fff' fill-opacity='.14'/%3E%3C/svg%3E")}
 .li-floral{--liner:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30'%3E%3Cg fill='%23fff' fill-opacity='.24'%3E%3Ccircle cx='15' cy='8' r='3'/%3E%3Ccircle cx='21' cy='13' r='3'/%3E%3Ccircle cx='19' cy='20' r='3'/%3E%3Ccircle cx='11' cy='20' r='3'/%3E%3Ccircle cx='9' cy='13' r='3'/%3E%3C/g%3E%3Ccircle cx='15' cy='14' r='2.2' fill='%23fff' fill-opacity='.4'/%3E%3C/svg%3E")}
 .li-plain{--liner:none}
-.envPrev{margin-top:12px;padding:18px;border-radius:16px;background:linear-gradient(180deg,#fffdfa,#f5ede2)}
-body.dark .envPrev{background:linear-gradient(180deg,#2a352e,#1b221e)}
-.envPrev .env{width:100%;height:auto;aspect-ratio:320/210;animation:none}
-.envPrev .eb{box-shadow:0 10px 22px rgba(0,0,0,.22)}
-.envPrev .envTo{font-size:1.45rem;bottom:20px}
 .acc .chips button:not(.on){background:var(--surface)}
+
+/* stage preview: the letter or the envelope while you edit them */
+#viewSeg{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:21;display:flex;gap:4px;padding:4px;background:var(--surface);border-radius:999px;box-shadow:var(--sh2)}
+#viewSeg button{padding:8px 14px;font-size:.8rem;border-radius:999px;background:none}
+#viewSeg button.on{background:var(--ac);color:#fff}
+body.dark #viewSeg button.on{color:#14201a}
+#canvas[data-view="letter"] #frame,#canvas[data-view="letter"] #hint,#canvas[data-view="env"] #frame,#canvas[data-view="env"] #hint{visibility:hidden}
+#letterView,#envView{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:58px 18px 70px;overflow:auto}
+#letterView .lprev{width:min(100%,470px);max-height:100%;margin:0;padding:26px 28px;border-radius:10px;box-shadow:0 14px 40px rgba(44,42,37,.22);overflow:auto;flex:none}
+#envBig{cursor:pointer;flex:none}
+#envBig .env{width:320px;height:210px;animation:none;zoom:var(--ez,1.2);transition:transform .25s}
+#envBig:hover .env{transform:translateY(-4px) rotate(-1deg)}
+#envView .muted{margin-top:22px;text-align:center}
+@media(max-width:800px) and (orientation:portrait){#viewSeg{bottom:10px}#letterView,#envView{padding:50px 12px 54px}#letterView .lprev{padding:18px 20px}}
