@@ -213,13 +213,18 @@ const scene = k => { if (SC[k] !== undefined) return SC[k]; let sd = 7; const r 
   return SC[k] = B[k] ? `url("data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">' + B[k] + '</svg>')}") center bottom/cover` : ''; };
 RIB.nobow = () => '';
 
+// the colour a wrap shows through glass: kw of the wrap colour mixed with (1 - kw) of white at opacity wa
+const glass = (c, kw, wa) => { const n = parseInt(c.slice(1), 16), a = kw + (1 - kw) * wa; return `rgba(${[n >> 16, n >> 8 & 255, n & 255].map(v => Math.round((kw * v + (1 - kw) * wa * 255) / a)).join(',')},${a.toFixed(3)})`; };
 let _bg = '';
 function applyStyle() {
   $('frame').className = (S.cont || 'paper') + ($('frame').classList.contains('reveal') ? ' reveal' : ''); drawStems();
   const rk = RIB[S.rs] || ['band', 'twine', 'lace'].includes(S.rs) ? S.rs : 'bow'; $('bow').className = rk; $('bow').innerHTML = ribbon(rk, S.rib);
   { const v = S.bgImg ? `url("${S.bgImg}") center/cover no-repeat` : S.bg === 'blush' && S.bgc ? S.bgc : scene(S.bg); if (v !== _bg) { _bg = v; $('canvas').style.background = v; } }
   $('bgcRow').classList.toggle('hide', S.bg !== 'blush' || !!S.bgImg);
-  const r = document.documentElement.style; r.setProperty('--w', S.w); r.setProperty('--rib', S.rib); r.setProperty('--env', S.env); r.setProperty('--seal', S.sl); $('mini').dataset.em = S.se; envLook($('envBig').firstChild);
+  const r = document.documentElement.style; r.setProperty('--w', S.w); r.setProperty('--rib', S.rib); r.setProperty('--env', S.env); r.setProperty('--seal', S.sl);
+  // plain colors for everything inside the exported frame: html2canvas can not read CSS color-mix()
+  r.setProperty('--env-l', sh(S.env, .24)); r.setProperty('--env-d', sh(S.env, -.15)); r.setProperty('--env-f1', sh(S.env, -.08)); r.setProperty('--env-f2', sh(S.env, -.22));
+  r.setProperty('--seal-l', sh(S.sl, .28)); r.setProperty('--seal-d', sh(S.sl, -.38)); r.setProperty('--glass', glass(S.w, .38, .2)); r.setProperty('--frost', glass(S.w, .6, .55)); $('mini').dataset.em = S.se; envLook($('envBig').firstChild);
   $('wrapFront').className = S.p || ''; document.body.classList.toggle('dark', S.dark); document.body.classList.toggle('pet', !!S.pet); $('petalBtn').textContent = 'Petals: ' + (S.pet ? 'on' : 'off');
   $('mini').classList.toggle('hide', !S.on); $('hint').classList.toggle('hide', !(S.on && view));
   $('tag').textContent = S.to ? 'For ' + S.to : ''; $('tag').classList.toggle('hide', !S.to);
