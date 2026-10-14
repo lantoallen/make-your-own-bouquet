@@ -365,7 +365,7 @@ function openLetter() {
   if (S.voice) { $('lVoiceTxt').textContent = voiceLabel(); a.src = S.voice; const bad = () => { er.textContent = 'This browser can not play the voice note. Try opening the gift in Chrome or Safari.'; er.classList.remove('hide'); };
     if (!a.canPlayType(S.voice.slice(5, S.voice.indexOf(';')))) bad(); a.onerror = bad; }
   const ms = S.mean ? [...new Set(S.items.map(i => i.t))].map(t => TYPES[t][0] + ' — ' + (MEAN[t] || '')).join('  ·  ') : ''; $('lMean').textContent = ms ? 'In the language of flowers: ' + ms : ''; $('lMean').classList.toggle('hide', !ms);
-  $('lReply').classList.toggle('hide', !(view && SB.url && GID));
+  $('lReply').classList.toggle('hide', !(view && SB.url && GID)); $('lActions').classList.toggle('hide', !(view && S.text));
   const L = document.querySelector('.letter'); L.className = 'letter ' + L_KEYS(); L.style.color = S.ink || ''; applyText(L); L.style.setProperty('--k', 1); L.style.backgroundColor = S.pc || ''; L.scrollTop = 0;
   clearTimeout(openLetter.t1); clearTimeout(openLetter.t2);
   envLook($('env')); $('ov').classList.remove('hide'); $('hint').classList.add('hide'); modalOpen($('close'));
@@ -420,11 +420,11 @@ const music = on => { playing = on; $('musicBtn').textContent = on ? 'Pause musi
   p(); mT = setInterval(p, 700); };
 $('musicBtn').onclick = () => music(!playing);
 async function savePicture() {
-  select(null); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  select(null); await new Promise(r => { let d = false; const go = () => { if (!d) { d = true; r(); } }; requestAnimationFrame(() => requestAnimationFrame(go)); setTimeout(go, 150); }); // the timer covers hidden tabs, where frames are paused
   const f = $('frame'); fitLock = true; f.style.setProperty('--fit', 1); await new Promise(r => setTimeout(r, 80));
   // html2canvas copies the whole page, so skip everything except the bouquet (38s down to about 2s)
   const skip = n => n.matches && n.matches('#start,#landing,#panel,#bar,#menu,#info,#ov,#petals,#toolbar,#selbar,#bloomScreen,#toast,#letterView,#envView,#viewSeg,#sizeBtn,#hint,.bp');
-  try { const c = await html2canvas(f, { backgroundColor: null, ignoreElements: skip }); el('a', { download: 'my-bouquet.png', href: c.toDataURL() }).click(); } catch (e) { toast('Could not save the picture.'); }
+  try { const c = await html2canvas(f, { backgroundColor: null, ignoreElements: skip }); el('a', { download: view && S.to ? 'bouquet-for-' + S.to.replace(/[^\w-]+/g, '-').toLowerCase() + '.png' : 'my-bouquet.png', href: c.toDataURL() }).click(); } catch (e) { toast('Could not save the picture.'); }
   fitLock = false; fitFrame();
 }
 $('save').onclick = savePicture;
@@ -642,9 +642,11 @@ $('go').onclick = async () => {
     buildScene(); }
   else if (S.pw && await sha(pwIn.value) !== S.pw) return wrong();
   $('landing').classList.add('hide');
-  curtain(() => { document.body.classList.remove('locked'); $('frame').classList.add('reveal'); fitFrame(); burst(); if (S.mus) music(true); $('mk').classList.remove('hide'); }, S.ev);
+  curtain(() => { document.body.classList.remove('locked'); $('frame').classList.add('reveal'); fitFrame(); burst(); if (S.mus) music(true); $('recvBar').classList.remove('hide'); }, S.ev);
   if (SB.url && GID) rpost({ gift_id: GID, kind: 'opened' }).catch(() => {});
 };
+$('saveRecv').onclick = savePicture;
+$('saveTxt').onclick = () => { const t = [S.to ? 'Dear ' + S.to + ',' : '', '', S.text, '', S.from ? '— ' + S.from : ''].join('\n').trim() + '\n'; el('a', { download: 'letter.txt', href: 'data:text/plain;charset=utf-8,' + encodeURIComponent(t) }).click(); };
 $('mk').onclick = () => location.href = location.href.split(/[?#]/)[0];
 const REACT = ['Love it', 'Thank you', 'So sweet', 'Beautiful', 'Made my day']; let emo = '';
 $('lReply').querySelector('.em').replaceChildren(...REACT.map(t => el('span', { textContent: t, onclick: e => { emo = t; document.querySelectorAll('#lReply .em span').forEach(x => x.classList.toggle('on', x === e.target)); } })));
