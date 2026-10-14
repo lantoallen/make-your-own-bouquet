@@ -309,7 +309,7 @@ body.locked #frame,body.locked #hint{visibility:hidden}
 body.dark #lbloom:before{background:radial-gradient(closest-side,rgba(156,202,172,.18),transparent)}
 .lb{position:absolute;left:45px;bottom:0;width:130px;height:208px;transform-origin:50% 100%;transform:rotate(var(--r));animation:sway 4s ease-in-out infinite alternate;filter:drop-shadow(0 8px 8px rgba(0,0,0,.16))}.lb svg{width:100%;height:100%;overflow:visible}
 @keyframes sway{from{transform:rotate(calc(var(--r) - 2deg))}to{transform:rotate(calc(var(--r) + 2deg))}}
-#pwIn{width:min(280px,82vw);padding:13px 16px;border-radius:999px;background:var(--surface);margin:0 0 6px;box-shadow:var(--sh1);text-align:center}
+#pwWrap{width:min(280px,82vw);margin:0 0 6px}#pwIn{width:100%;margin:0;padding:13px 62px 13px 16px;border-radius:999px;background:var(--surface);box-shadow:var(--sh1);text-align:center}
 #landing footer{display:flex;gap:12px;justify-content:center;width:min(420px,86vw);padding-top:10px;margin-top:26px;font-size:.8rem;color:var(--mut)}
 #landing footer a{cursor:pointer;text-underline-offset:3px}#landing footer a:hover{color:var(--ac);text-decoration:underline}#landing footer i{font-style:normal;opacity:.5}
 body.view #landing h1{font:400 3.4rem/1.1 'Great Vibes',cursive}body.view #lbloom{transform:scale(1.2);margin-bottom:56px}
@@ -426,7 +426,7 @@ body.dark #viewSeg button.on{color:#14201a}
 #envBig:focus-visible,#mini:focus-visible{outline:3px solid var(--ac);outline-offset:6px;border-radius:12px}
 
 /* opening a gift link: show a calm placeholder until the gift arrives */
-body.opening #ltag,body.opening #landing .row,body.opening #landing footer,body.opening #pwIn,body.opening #lnote{visibility:hidden}
+body.opening #ltag,body.opening #landing .row,body.opening #landing footer,body.opening #pwWrap,body.opening #lnote{visibility:hidden}
 body.opening #landing h1{animation:pl 1.4s infinite}
 
 /* long words and names never break out of the letter, tag or envelope */
@@ -448,3 +448,11 @@ body.opening #landing h1{animation:pl 1.4s infinite}
 #histBar button:disabled{opacity:.4;box-shadow:none}
 body.view #histBar,#canvas[data-view="letter"] #histBar,#canvas[data-view="env"] #histBar{display:none}
 @media(max-width:800px) and (orientation:portrait){#histBar{left:auto;right:12px;top:12px}#histBar span{display:none}#histBar button{padding:9px 11px}}
+
+/* password fields with a show/hide button */
+.pwbox{position:relative}
+.pwbox input{padding-right:70px}
+.pwtoggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);margin-top:4px;padding:6px 12px;font-size:.78rem;border-radius:999px;background:var(--soft2);min-height:0!important}
+.pwtoggle:hover{transform:translateY(-50%)}
+#pwWrap .pwtoggle{margin-top:0}
+#pwHint.weak{color:#b23f33}#pwHint.ok{color:var(--mut)}#pwHint.strong{color:var(--ac)}
