@@ -12,6 +12,8 @@ let tT; const toast = m => { const t = $('toast'); t.replaceChildren(el('span', 
 $('toast').onclick = () => $('toast').classList.add('hide');
 
 // color swatches are real buttons with a plain-language name (keyboard and screen-reader friendly)
+// small thumbnails skip the hand-drawn displacement filter: it is costly and invisible at that size
+const flat = svg => svg.split(' filter="url(#rg)"').join('');
 const cname = h => { const n = parseInt(h.slice(1), 16), r = (n >> 16) / 255, g = (n >> 8 & 255) / 255, b = (n & 255) / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
   if (l > .93) return 'white'; if (l < .14) return 'black'; if (d < .08) return l > .6 ? 'light gray' : 'gray';
   let hu = mx === r ? ((g - b) / d + 6) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; hu *= 60;
@@ -106,7 +108,7 @@ function drawPicker() {
   $('sw').replaceChildren(nat, ...list.map(c => dot(c, c === cur, () => { col[cat] = c; drawPicker(); })));
   $('colName').textContent = cur ? 'Custom' : 'Natural';
   const needle = q.trim().toLowerCase(), ids = Object.keys(TYPES).filter(k => needle ? TYPES[k][0].toLowerCase().includes(needle) || (MEAN[k] || '').includes(needle) : TYPES[k][1] === cat);
-  $('grid').replaceChildren(...(ids.length ? ids.map(k => { const t = TYPES[k], c = tone(k), b = el('button', { title: t[0] + (MEAN[k] ? ': ' + MEAN[k] : ''), onclick: () => add(k, c) }); b.innerHTML = t.svg(c); b.append(el('span', { textContent: t[0] })); return b; })
+  $('grid').replaceChildren(...(ids.length ? ids.map(k => { const t = TYPES[k], c = tone(k), b = el('button', { title: t[0] + (MEAN[k] ? ': ' + MEAN[k] : ''), onclick: () => add(k, c) }); b.innerHTML = flat(t.svg(c)); b.append(el('span', { textContent: t[0] })); return b; })
     : [el('p', { className: 'none', textContent: 'No flowers match that search.' })]));
 }
 $('search').oninput = e => { q = e.target.value; drawPicker(); };
@@ -348,7 +350,7 @@ function media() {
   const m = $('lMedia'); m.replaceChildren(); let u; try { u = new URL(S.media); } catch (e) { return; } if (!/^https?:$/.test(u.protocol)) return;
   const y = S.media.match(/(?:youtu\.be\/|v=)([\w-]{11})/); let s = '';
   if (y && /(^|\.)(youtube\.com|youtu\.be)$/.test(u.hostname)) s = 'https://www.youtube.com/embed/' + y[1]; else if (u.hostname === 'open.spotify.com') s = 'https://open.spotify.com/embed' + u.pathname;
-  if (s) { const f = el('iframe', { src: s, allow: 'autoplay;encrypted-media' }); f.style.cssText = 'width:100%;height:' + (y ? 180 : 152) + 'px;border:0;border-radius:8px;margin-bottom:12px'; m.append(f); }
+  if (s) { const f = el('iframe', { src: s, allow: 'autoplay;encrypted-media', loading: 'lazy', referrerPolicy: 'strict-origin-when-cross-origin', title: y ? 'Video player' : 'Song player' }); f.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox'); f.style.cssText = 'width:100%;height:' + (y ? 180 : 152) + 'px;border:0;border-radius:8px;margin-bottom:12px'; m.append(f); }
   else m.append(el('a', { href: u.href, target: '_blank', rel: 'noopener noreferrer', textContent: 'Open the song / video' }));
 }
 
@@ -441,7 +443,7 @@ Object.assign(PRE, {
 function presetButton(name, p) {
   const items = p.l.map(([t, c]) => Object.assign(mkIt(t, c), (p.fix || {})[t] || {})), { l, fix, occ, ...q } = p;
   const v = el('div', { className: 'pv' }), bx = el('div', { className: 'pvb' }), w = el('div', { className: 'pvw' }); w.style.background = q.w || '#f1e6d2'; if (q.cont === 'easel' || q.cont === 'none') w.style.display = 'none';
-  [...items].sort((x, y) => x.z - y.z).forEach(it => { const e = el('div', { className: 'sp' }); e.innerHTML = TYPES[it.t].svg(it.c); e.style.transform = `translate(${it.x}px,${it.y}px) rotate(${it.r}deg) scale(${it.s})`; bx.append(e); });
+  [...items].sort((x, y) => x.z - y.z).forEach(it => { const e = el('div', { className: 'sp' }); e.innerHTML = flat(TYPES[it.t].svg(it.c)); e.style.transform = `translate(${it.x}px,${it.y}px) rotate(${it.r}deg) scale(${it.s})`; bx.append(e); });
   v.append(bx, w);
   return el('button', { onclick: () => { load({ ...FRESH, ...q, ev: occ ? name : '', items: items.map(i => ({ ...i })) }); show('edit'); } }, v, el('b', { textContent: name }));
 }
@@ -634,7 +636,7 @@ function info(k) {
     d.forEach((x, n) => b.append(el('div', { className: 'item' }, el('button', { textContent: x.n, onclick: () => { load(x.s); show('edit'); } }), el('button', { textContent: 'Delete', onclick: () => { d.splice(n, 1); lsSet('bq', d); info('drafts'); } })))); }
   else if (k === 'gallery') { $('iT').textContent = 'Flower gallery'; $('iS').textContent = 'What every flower means in the language of flowers.';
     Object.entries(CATS).forEach(([c, [nm]]) => { const g = el('div', { className: 'gal' });
-      Object.keys(TYPES).filter(t => TYPES[t][1] === c).forEach(t => { const d = el('div'); d.innerHTML = TYPES[t].svg(TYPES[t][2][0]); d.append(el('b', { textContent: TYPES[t][0] }), el('small', { textContent: MEAN[t] || '' })); g.append(d); }); b.append(el('h3', { textContent: nm }), g); }); }
+      Object.keys(TYPES).filter(t => TYPES[t][1] === c).forEach(t => { const d = el('div'); d.innerHTML = flat(TYPES[t].svg(TYPES[t][2][0])); d.append(el('b', { textContent: TYPES[t][0] }), el('small', { textContent: MEAN[t] || '' })); g.append(d); }); b.append(el('h3', { textContent: nm }), g); }); }
   else if (k === 'sent') { $('iT').textContent = 'My sent gifts'; const L = lsGet('bq_sent', []);
     if (!L.length) b.textContent = 'Gifts you send from this device will show up here.'; else if (!SB.url) b.textContent = 'Connect Supabase to see replies.';
     else { b.textContent = 'Loading…'; fetchReplies(L.map(x => x.id)).then(R => { b.replaceChildren();
