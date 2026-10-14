@@ -1,7 +1,7 @@
 /* Make Your Own Bouquet: soft studio look. Pastel washes, floating white surfaces, pill controls. */
 /* ===== tokens ===== */
 :root{--noise:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='160'%20height='160'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='.8'%20numOctaves='3'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20values='0%200%200%200%20.35%200%200%200%200%20.27%200%200%200%200%20.18%200%200%200%20.14%200'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url%28%23n%29'/%3E%3C/svg%3E");
- --bg:#f8f4ee;--surface:#ffffff;--soft:#f3efe7;--soft2:#e9e3d6;--tx:#2c2a25;--mut:#7b766b;--ac:#3d6b4f;--ac-soft:#e2efe5;--pop:#e5766a;
+ --bg:#f8f4ee;--surface:#ffffff;--soft:#f3efe7;--soft2:#e9e3d6;--tx:#2c2a25;--mut:#686358;--ac:#3d6b4f;--ac-soft:#e2efe5;--pop:#e5766a;
  --line:rgba(44,42,37,.09);--sh1:0 1px 2px rgba(44,42,37,.06),0 4px 12px rgba(44,42,37,.06);--sh2:0 2px 4px rgba(44,42,37,.05),0 14px 36px rgba(44,42,37,.12);
  --tint:#fbe4e8;--wash:radial-gradient(60vmax 60vmax at 0% 0%,#fde9e4 0,transparent 62%),radial-gradient(55vmax 55vmax at 100% 8%,#e3f0e1 0,transparent 62%),radial-gradient(60vmax 50vmax at 70% 112%,#f8edd5 0,transparent 62%);
  --w:#e6cdb8;--rib:#8f3b4a;--env:#e8dcc8;--bar:60px}
@@ -134,7 +134,7 @@ body.dark .fgrid button.on span,body.dark .fgrid button.on small{color:#14201a}
 .bgrid button.on{box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--ac)}
 .summary{margin-top:14px;border-radius:18px;padding:6px 16px;background:var(--soft);font-size:.88rem}
 .summary div{display:flex;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}.summary div:last-child{border:0}
-.summary b{flex:none;width:90px;color:var(--mut);font-weight:600}.summary em{font-style:normal}.summary .warn{color:var(--pop);font-weight:700}
+.summary b{flex:none;width:90px;color:var(--mut);font-weight:600}.summary em{font-style:normal}.summary .warn{color:#b23f33;font-weight:700}
 #recPrev{width:100%;margin-top:10px}#linkTxt{font-size:.78rem}
 #qr{display:flex;justify-content:center;margin:14px 0}#qr canvas{max-width:100%;height:auto;border-radius:20px;box-shadow:var(--sh2)}
 #rec.live{background:var(--pop);color:#fff;animation:rec 1.2s infinite}@keyframes rec{50%{opacity:.7}}
@@ -424,3 +424,7 @@ body.dark #viewSeg button.on{color:#14201a}
 .sp:focus{outline:none}
 .sp:focus-visible{outline:2px solid var(--ac);outline-offset:-14px;border-radius:14px}
 #envBig:focus-visible,#mini:focus-visible{outline:3px solid var(--ac);outline-offset:6px;border-radius:12px}
+
+/* opening a gift link: show a calm placeholder until the gift arrives */
+body.opening #ltag,body.opening #landing .row,body.opening #landing footer,body.opening #pwIn,body.opening #lnote{visibility:hidden}
+body.opening #landing h1{animation:pl 1.4s infinite}
