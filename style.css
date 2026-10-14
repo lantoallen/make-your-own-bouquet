@@ -247,7 +247,8 @@ body.locked #frame,body.locked #hint{visibility:hidden}
 .letter img{width:100%;border-radius:6px;margin-bottom:12px}
 #lTo{order:1}.vbox{order:2}#lImg{order:3}#lText{order:4}#lMedia{order:5}#lMean{order:6}#lFrom{order:7}#lReply{order:8}
 .ph-below #lImg{order:5}.ph-below #lMedia{order:6}.ph-below #lMean{order:7}.ph-below #lFrom{order:8}.ph-below #lReply{order:9}
-#lFrom,.pFrom{text-align:right}.a-center #lFrom,.a-center .pFrom{text-align:center}
+#lFrom,.pFrom{text-align:right}
+#lActions{order:10;margin-top:12px}#lActions button{font-size:.82rem;padding:9px 14px}.a-center #lFrom,.a-center .pFrom{text-align:center}
 .a-left{text-align:left}.a-center{text-align:center}.a-right{text-align:right}.a-justify{text-align:justify}
 .letter .pText,.lprev .pText,.letter .pTo,.lprev .pTo,.letter .pFrom,.lprev .pFrom{font-family:var(--ff,inherit);font-size:calc(var(--fs,18px)*var(--k,1));line-height:var(--lh,1.5);letter-spacing:var(--ls,0);font-weight:var(--fw,400);font-style:var(--fst,inherit);text-decoration:var(--td,none)}
 .letter .pTo,.lprev .pTo,.letter .pFrom,.lprev .pFrom{font-size:calc(var(--fs,18px)*var(--gs,1.2)*var(--k,1))}
@@ -328,8 +329,8 @@ body.view #go{padding:16px 36px;font-size:1.1rem;animation:glow 2s infinite}@key
 #presets button b,#occ button b{font:700 .88rem Quicksand,sans-serif;margin-top:8px}
 .pv{position:relative;width:100%;height:176px;overflow:hidden;margin-bottom:2px;border-radius:16px;background:linear-gradient(180deg,#fffdfa,#f5ede2)}.pvb{position:absolute;left:50%;top:100px;width:0;height:0;transform:scale(.5);transform-origin:0 0}.pvb .sp{filter:none}
 .pvw{position:absolute;left:50%;margin-left:-45px;top:100px;width:90px;height:80px;clip-path:polygon(0 0,100% 0,62% 100%,38% 100%)}
-#mk{position:fixed;bottom:max(16px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:20;white-space:nowrap;border-radius:999px;padding:12px 22px;background:var(--surface);box-shadow:var(--sh2)}
-#mk:hover{transform:translateX(-50%) translateY(-2px);background:var(--surface)}
+#recvBar{position:fixed;bottom:max(16px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:20;display:flex;gap:8px;white-space:nowrap}
+#recvBar button{border-radius:999px;padding:12px 20px;background:var(--surface);box-shadow:var(--sh2)}
 #info{position:fixed;inset:0;z-index:450;background:rgba(30,25,25,.45);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px}
 .card{position:relative;max-width:560px;width:100%;max-height:calc(100dvh - 32px);overflow-y:auto;background:var(--surface);padding:34px 36px;border-radius:28px;line-height:1.6;box-shadow:var(--sh2)}
 .card h2{font:italic 400 2rem 'Playfair Display',serif;color:var(--ac);margin-bottom:2px;padding-right:80px}.card button{margin-top:12px}.card .x{position:absolute;top:16px;right:16px;margin:0;padding:8px 14px;border-radius:999px}.card input{margin-bottom:8px}
