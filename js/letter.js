@@ -89,30 +89,48 @@ function media() {
 
 // recording
 const REC_MAX = 30;
-let mr, recJob = null, recTick = 0;
-const recMime = () => ['audio/mp4;codecs=mp4a.40.2', 'audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'].find(t => window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || '';
+let mr, recJob = null, recTick = 0, recStarting = false, recWanted = false;
+// Formats to try in order: MP4/AAC first (plays on iPhones), then WebM/Opus. Some encoders reject a forced
+// bitrate (Chrome's AAC refuses exactly 32 kbps), so each format is tried with and without one.
+const recOptions = () => { if (!window.MediaRecorder) return []; const ok = t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t), out = [];
+  ['audio/mp4;codecs=mp4a.40.2', 'audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'].filter(ok).forEach(t => out.push({ mimeType: t, audioBitsPerSecond: 64000 }, { mimeType: t }));
+  out.push({}); return out; };
 function syncVoice() {
   const has = !!S.voice; $('recPrev').classList.toggle('hide', !has); $('recDel').classList.toggle('hide', !has); if (has) $('recPrev').src = S.voice;
   $('rec').textContent = has ? 'Record again' : 'Record voice note'; $('rec').classList.remove('live'); $('recStat').classList.toggle('hide', !has);
   $('recStat').textContent = has ? 'Saved' + (S.vd ? ' (' + mmss(S.vd) + ')' : '') + '. It will play at the top of the letter.' : ''; $('voiceTag').textContent = has ? 'attached' : '';
 }
-const stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); return recJob || Promise.resolve(); };
+const stopRec = () => { recWanted = false; if (mr && mr.state === 'recording') mr.stop(); return recJob || Promise.resolve(); };
 $('rec').onclick = async () => {
+  if (recStarting) return;                       // the microphone is still starting: a second tap must not start a second recorder
   if (mr && mr.state === 'recording') return stopRec();
   if (!navigator.mediaDevices || !window.MediaRecorder) return toast('Voice notes need a recent browser and a secure (https) page.');
-  let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (e) { return toast('Microphone access was blocked. Allow it in your browser settings and try again.'); }
-  const mime = recMime(), chunks = [], t0 = Date.now(); mr = new MediaRecorder(stream, mime ? { mimeType: mime, audioBitsPerSecond: 32000 } : { audioBitsPerSecond: 32000 });
+  let stream; recStarting = true; $('rec').disabled = true; $('rec').textContent = 'Starting microphone…';
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (e) { recStarting = false; $('rec').disabled = false; syncVoice(); return toast('Microphone access was blocked. Allow it in your browser settings and try again.'); }
+  recStarting = false; $('rec').disabled = false;
+  const tries = recOptions(), t0 = Date.now(); recWanted = true;
   recJob = new Promise(resolve => {
-    const done = () => { recJob = null; resolve(); };
-    mr.ondataavailable = e => e.data && e.data.size && chunks.push(e.data);
-    mr.onstop = () => { clearInterval(recTick); stream.getTracks().forEach(t => t.stop());
-      const type = (mr.mimeType || mime || 'audio/webm').split(';')[0], blob = new Blob(chunks, { type });
+    const done = () => { recJob = null; recWanted = false; resolve(); };
+    const finish = (type, chunks) => {
+      clearInterval(recTick); stream.getTracks().forEach(t => t.stop());
+      const blob = new Blob(chunks, { type });
       if (!blob.size) { toast('That recording was empty. Please try again.'); syncVoice(); return done(); }
       const f = new FileReader(); f.onerror = () => { toast('Could not save the recording.'); done(); };
       f.onload = () => { S.voice = f.result.replace(/^data:[^,]*/, 'data:' + type + ';base64'); S.vd = clamp(Math.round((Date.now() - t0) / 1000), 1, REC_MAX); setLetter(true); syncVoice(); prev(); toast('Voice note saved. It will play at the top of the letter.'); done(); };
-      f.readAsDataURL(blob); };
+      f.readAsDataURL(blob);
+    };
+    const attempt = i => {
+      let rec; try { rec = new MediaRecorder(stream, tries[i]); } catch (e) { return i + 1 < tries.length ? attempt(i + 1) : finish('audio/webm', []); }
+      mr = rec; const chunks = []; let broke = false;
+      rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+      rec.onerror = () => { broke = true; };
+      // if the encoder failed on its own (the user did not stop it), quietly move on to the next format
+      rec.onstop = () => { if ((broke || !chunks.length) && recWanted && i + 1 < tries.length) return attempt(i + 1); finish((rec.mimeType || tries[i].mimeType || 'audio/webm').split(';')[0], chunks); };
+      rec.start();
+    };
+    attempt(0);
   });
-  mr.start(); $('rec').textContent = 'Stop recording'; $('rec').classList.add('live'); $('recStat').classList.remove('hide');
+  $('rec').textContent = 'Stop recording'; $('rec').classList.add('live'); $('recStat').classList.remove('hide');
   recTick = setInterval(() => { const s = (Date.now() - t0) / 1000; $('recStat').textContent = 'Recording ' + mmss(s) + ' of ' + mmss(REC_MAX) + '. Tap stop when you are done.'; if (s >= REC_MAX) stopRec(); }, 250);
 };
 $('recDel').onclick = () => { S.voice = ''; S.vd = 0; syncVoice(); prev(); };
