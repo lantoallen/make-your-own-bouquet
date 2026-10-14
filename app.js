@@ -23,6 +23,8 @@ const SEAL_EM = [['flower', 'Flower'], ['heart', 'Heart'], ['star', 'Star'], ['l
 const STAMPS = [['rose', 'Rose'], ['gold', 'Gold'], ['sage', 'Sage'], ['none', 'None']];
 const LINERS = [['diamond', 'Diamonds'], ['dots', 'Dots'], ['stripes', 'Stripes'], ['floral', 'Floral'], ['plain', 'Plain']];
 const TRIMS = [['none', 'Plain edge'], ['airmail', 'Airmail'], ['gold', 'Gold line']];
+// what a brand-new bouquet starts with; older gifts and drafts keep the envelope they were saved with
+const FRESH = { env: '#f6e3e6', tr: 'airmail' };
 const WAX = ['#b3382c', '#c9a227', '#3d6b4f', '#2b3a5c', '#6b3a6e', '#2b2b33', '#e0709a'];
 const ENVC = ['#e8dcc8', '#f6e3e6', '#dfe9dc', '#e3e0f1', '#f7edc8', '#2b3a5c', '#3d5a47', '#8f3b4a'];
 const ALIGN = [['a-left', 'Left'], ['a-center', 'Center'], ['a-right', 'Right'], ['a-justify', 'Justify']];
@@ -413,10 +415,10 @@ function presetButton(name, p) {
   const v = el('div', { className: 'pv' }), bx = el('div', { className: 'pvb' }), w = el('div', { className: 'pvw' }); w.style.background = q.w || '#f1e6d2'; if (q.cont === 'easel' || q.cont === 'none') w.style.display = 'none';
   [...items].sort((x, y) => x.z - y.z).forEach(it => { const e = el('div', { className: 'sp' }); e.innerHTML = TYPES[it.t].svg(it.c); e.style.transform = `translate(${it.x}px,${it.y}px) rotate(${it.r}deg) scale(${it.s})`; bx.append(e); });
   v.append(bx, w);
-  return el('button', { onclick: () => { load({ ...q, ev: occ ? name : '', items: items.map(i => ({ ...i })) }); show('edit'); } }, v, el('b', { textContent: name }));
+  return el('button', { onclick: () => { load({ ...FRESH, ...q, ev: occ ? name : '', items: items.map(i => ({ ...i })) }); show('edit'); } }, v, el('b', { textContent: name }));
 }
 Object.entries(PRE).forEach(([n, p]) => { if (p.l.length) $(p.occ ? 'occ' : 'presets').append(presetButton(n, p)); });
-$('scratch').onclick = () => { load({}); show('edit'); };
+$('scratch').onclick = () => { load({ ...FRESH }); show('edit'); };
 $('resume').onclick = () => { if (!S.items.length) { const a = lsGet('bq_auto', null); if (a) load(a); } show('edit'); };
 
 // ---- building the scene from S ----
