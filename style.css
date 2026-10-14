@@ -428,3 +428,15 @@ body.dark #viewSeg button.on{color:#14201a}
 /* opening a gift link: show a calm placeholder until the gift arrives */
 body.opening #ltag,body.opening #landing .row,body.opening #landing footer,body.opening #pwIn,body.opening #lnote{visibility:hidden}
 body.opening #landing h1{animation:pl 1.4s infinite}
+
+/* long words and names never break out of the letter, tag or envelope */
+.letter h4,.letter p,.lprev h4,.lprev p,#lTo,#lFrom,#lText,.summary em,.selhead span{overflow-wrap:anywhere}
+/* short landscape phones: the selection bar floats over the stage instead of taking its own strip */
+@media(max-height:520px) and (orientation:landscape){
+ #selbar{position:absolute;left:10px;right:10px;bottom:10px;z-index:15;min-height:0;padding:8px 12px;box-shadow:var(--sh2)}
+ #selbar.empty{display:none}
+ #tools button{min-height:40px;padding:4px 0}
+ .step h2{display:none}
+ #stepBody{padding-top:10px}
+ #viewSeg{bottom:auto;top:10px}
+}
