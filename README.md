@@ -8,6 +8,7 @@ Build a digital bouquet, tuck in a letter, and send it as a link, QR code or ema
 - **80+ stems**: blooms, tall spikes, fillers, foliage and memorial wreaths. Search by name or by meaning, recolor any stem, up to 40 per bouquet. Drag, resize, rotate, layer and copy them, with the tools right under the bouquet.
 - **Wrapping**: paper wrap, vase, basket, easel or ribbon only. Wrap patterns, eight ribbon styles, backdrops (or your own photo).
 - **Letter**: To/From, message, photo, a customizable envelope (color, wax seal and emblem, stamp, lining, edge trim, name on the front), 27 paper styles, 16 fonts, text styling (size, spacing, alignment, bold/italic/underline, ink color), a song or video link, a **voice note** and an optional flower meanings card.
+- **Live preview while you edit**: on the Letter step the stage shows your letter at real size, and switches to a large envelope when you open the Envelope section. Tap the envelope to watch it open.
 - **Voice note**: record up to 30 seconds. It plays from a labeled card at the top of the letter, right under the greeting. The editor shows a live preview of that card, and the receiver's cover page says the gift includes a voice note.
 - **Sharing**: gift link, styled QR code (download as an image) and "Send by email" through your own mail app.
 - **Gift options**: unlock date, optional password, soft music and an opening animation.
