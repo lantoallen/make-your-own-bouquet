@@ -502,7 +502,7 @@ $('share').onclick = async () => {
       link = `${base}?g=${id}`; const sent = lsGet('bq_sent', []); sent.unshift({ id, to: S.to || '', t: Date.now(), link }); lsSet('bq_sent', sent.slice(0, 30));
     } else link = `${base}#d=${await pack(JSON.stringify(body))}`;
     $('linkOut').textContent = 'Link ready. Copy it, scan the QR, or email it.'; $('shareBox').classList.remove('hide'); $('linkTxt').value = link; navigator.clipboard.writeText(link).catch(() => {}); drawQR();
-    $('shareBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    { const sb = $('stepBody'); sb.scrollTo({ top: $('shareBox').getBoundingClientRect().top - sb.getBoundingClientRect().top + sb.scrollTop - 12, behavior: 'smooth' }); }
   } catch (e) { $('linkOut').textContent = 'Could not create link: ' + e.message; } finally { btn.disabled = false; }
 };
 
