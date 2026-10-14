@@ -89,4 +89,5 @@ The app is fully static, so any static host works (GitHub Pages, Netlify, Vercel
 - **Unlock dates are enforced by the server.** Until the unlock time, `get_gift` returns only To/From, never the contents.
 - **Visitors cannot list gifts.** Without the `supabase.sql` policies, anyone with the public key could download every gift. With them, a gift is only readable by someone who has its link.
 - Everything that arrives in a gift link is validated before it is drawn (colors, images, audio, fonts, flower types), so a hand-made gift cannot inject styles or markup.
+- The site sends a strict Content-Security-Policy and other security headers (see `vercel.json`), and the two CDN libraries are pinned with integrity hashes. If you add a new external service (analytics, another font host, a different backend), allow it in that policy or the browser will block it.
 - Not covered: anyone can still create gifts and replies (they are size-limited). If you see abuse, add rate limiting in Supabase.
