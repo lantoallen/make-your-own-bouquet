@@ -17,3 +17,8 @@ Thumbs.db
 *.sw?
 # Claude Code local config
 .claude/
+
+# dev tools
+node_modules/
+test-results/
+playwright-report/
