@@ -60,3 +60,6 @@ $('landing').querySelector('footer').onclick = e => { const k = e.target.dataset
   }
   S = D(); buildScene(); drawPicker(); syncAll(); goStep(1); fitFrame();
 })();
+  // arriving from "Remix this bouquet" on a received gift
+  let remix = null; try { remix = sessionStorage.getItem('bq_remix'); sessionStorage.removeItem('bq_remix'); } catch (e) { /* storage blocked */ }
+  if (remix) { try { load(JSON.parse(remix)); show('edit'); toast('Here is the bouquet. Change anything you like, then add your own letter.'); } catch (e) { /* bad data: stay on the landing page */ } }

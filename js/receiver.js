@@ -46,7 +46,10 @@ $('go').onclick = async () => {
 };
 $('saveRecv').onclick = savePicture;
 $('saveTxt').onclick = () => { const t = [S.to ? 'Dear ' + S.to + ',' : '', '', S.text, '', S.from ? '— ' + S.from : ''].join('\n').trim() + '\n'; el('a', { download: 'letter.txt', href: 'data:text/plain;charset=utf-8,' + encodeURIComponent(t) }).click(); };
-$('mk').onclick = () => location.href = location.href.split(/[?#]/)[0];
+// "Remix this bouquet": carry the arrangement and styling into a fresh editor. The message, names,
+// photo, voice note, links, dates and password stay behind.
+const REMIX_KEYS = ['items', 'ev', 'cont', 'w', 'p', 'rib', 'rs', 'bg', 'bgc', 'env', 'sl', 'se', 'st', 'li', 'tr', 'nm', 'lp', 'lf', 'la', 'ph', 'pf', 'pc', 'ink', 'tz', 'tl', 'tk', 'tg', 'tb', 'ti', 'tu'];
+$('mk').onclick = () => { const r = {}; REMIX_KEYS.forEach(k => r[k] = S[k]); try { sessionStorage.setItem('bq_remix', JSON.stringify(r)); } catch (e) { /* storage blocked: a blank editor still opens */ } location.href = location.href.split(/[?#]/)[0]; };
 const REACT = ['Love it', 'Thank you', 'So sweet', 'Beautiful', 'Made my day']; let emo = '';
 $('lReply').querySelector('.em').replaceChildren(...REACT.map(t => el('span', { textContent: t, onclick: e => { emo = t; document.querySelectorAll('#lReply .em span').forEach(x => x.classList.toggle('on', x === e.target)); } })));
 $('rSend').onclick = async () => {
