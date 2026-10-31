@@ -12,7 +12,8 @@ Build a digital bouquet, tuck in a letter, and send it as a link, QR code or ema
 - **Voice note**: record up to 30 seconds. It plays from a labeled card at the top of the letter, right under the greeting. The editor shows a live preview of that card, and the receiver's cover page says the gift includes a voice note.
 - **Sharing**: gift link, styled QR code (download as an image) and "Send by email" through your own mail app.
 - **Gift options**: unlock date, optional password, soft music and an opening animation.
-- **Receiver side**: opening animation, plus replies and "opened" tracking that the sender can see under *Sent gifts*.
+- **Receiver side**: opening animation, replies and "opened" tracking that the sender sees under *Sent gifts*, saving the picture or letter text, and *Remix this bouquet* to make one like it (the personal letter is not copied).
+- **Deleting a gift**: senders can delete any gift from *Sent gifts* on the device they sent it from. The link stops working.
 - **Phones**: the preview always fits above the controls, the preview shrinks while you type, and the receiver's view uses the whole screen.
 - **Local extras**: autosave, drafts, profile name, sent-gift history, dark mode and PNG export, all kept in the browser's `localStorage`.
 
@@ -87,6 +88,8 @@ The tests run the real app in Chromium with Supabase replaced by an in-memory st
    ```
 
    A trailing `/` or `/rest/v1/` on the URL is stripped automatically.
+
+4. Optional: set `CONTACT` in `config.js` to an email address. It adds a *Report this gift* link for receivers and a contact line in the About, Terms and Privacy pages. Leave it empty to hide them.
 
 If you have not run the new `supabase.sql` yet, the app still works. It falls back to reading the tables directly, which is how older versions behaved, so run it to get the protections below.
 
