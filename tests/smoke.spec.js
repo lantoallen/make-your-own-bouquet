@@ -1,15 +1,17 @@
 // End-to-end smoke tests. They run the real app in Chromium against tests/serve.js (same headers as
 // production) and replace Supabase with an in-memory stand-in, so nothing here touches a real project.
 const { test, expect } = require('@playwright/test');
+const crypto = require('crypto');
 
 async function mockSupabase(context) {
-  const gifts = {}, replies = [];
+  const gifts = {}, replies = [], hashes = {};
   await context.route('**/rest/v1/**', async route => {
     const req = route.request(), p = new URL(req.url()).pathname, body = req.postData() ? JSON.parse(req.postData()) : {};
     const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': '*' };
     const json = (status, data) => route.fulfill({ status, headers: { ...cors, 'content-type': 'application/json' }, body: JSON.stringify(data) });
     if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
-    if (p.endsWith('/gifts') && req.method() === 'POST') { gifts[body.id] = body.data; return route.fulfill({ status: 201, headers: cors }); }
+    if (p.endsWith('/gifts') && req.method() === 'POST') { gifts[body.id] = body.data; hashes[body.id] = body.del_hash; return route.fulfill({ status: 201, headers: cors }); }
+    if (p.endsWith('/rpc/delete_gift')) { const ok = !!gifts[body.gid] && hashes[body.gid] === crypto.createHash('sha256').update(body.code).digest('hex'); if (ok) delete gifts[body.gid]; return json(200, ok); }
     if (p.endsWith('/replies') && req.method() === 'POST') { replies.push(body); return route.fulfill({ status: 201, headers: cors }); }
     if (p.endsWith('/rpc/get_gift')) return json(200, gifts[body.gid] ?? null);
     if (p.endsWith('/rpc/get_replies')) return json(200, replies.filter(r => (body.ids || []).includes(r.gift_id)));
@@ -130,3 +132,61 @@ for (const [w, h] of [[320, 568], [360, 640], [390, 844]]) {
     }
   });
 }
+
+test('an empty stage points to the flower picker until a flower is added', async ({ page }) => {
+  await start(page);
+  await expect(page.locator('#emptyHint')).toBeVisible();
+  await addFlowers(page, 1);
+  await expect(page.locator('#emptyHint')).toBeHidden();
+  await page.click('#undoBtn');
+  await expect(page.locator('#emptyHint')).toBeVisible();
+});
+
+test('a receiver can remix the bouquet without the personal letter', async ({ page, context }) => {
+  await mockSupabase(context);
+  await start(page);
+  const link = await makeGift(page, { to: 'Mia', text: 'Private words' });
+  const rx = await context.newPage();
+  await rx.goto(link);
+  await rx.click('#go');
+  await expect(rx.locator('#recvBar')).toBeVisible({ timeout: 20000 });
+  await rx.click('#mk');
+  await expect(rx.locator('#steps')).toBeVisible();
+  await expect(rx.locator('#count')).toHaveText('2');
+  expect(await rx.evaluate(() => ({ to: S.to, text: S.text, on: S.on }))).toEqual({ to: '', text: '', on: false });
+});
+
+test('the report link only appears when a contact address is set', async ({ page, context }) => {
+  await mockSupabase(context);
+  await start(page);
+  const link = await makeGift(page);
+  const open = async () => { const rx = await context.newPage(); await rx.goto(link); await rx.click('#go');
+    await expect(rx.locator('#recvBar')).toBeVisible({ timeout: 20000 }); await rx.locator('#mini').press('Enter'); await expect(rx.locator('#lText')).toBeVisible(); return rx; };
+  let rx = await open();
+  await expect(rx.locator('#reportLink')).toBeHidden();
+  // same gift, with a contact configured
+  await context.route('**/config.js', async route => { const r = await route.fetch(); route.fulfill({ response: r, body: (await r.text()).replace("const CONTACT = '';", "const CONTACT = 'help@example.com';") }); });
+  rx = await open();
+  await expect(rx.locator('#reportLink')).toBeVisible();
+  await expect(rx.locator('#reportLink')).toHaveAttribute('href', /^mailto:help@example\.com\?subject=/);
+});
+
+test('a sender can delete a gift, after confirming, and the link stops working', async ({ page, context }) => {
+  const db = await mockSupabase(context);
+  await start(page);
+  const link = await makeGift(page);
+  const id = new URL(link).searchParams.get('g');
+  expect(db.gifts[id]).toBeTruthy();
+  await page.click('#menuBtn');
+  await page.click('#menu [data-k="sent"]');
+  const del = page.locator('.gift-actions .danger');
+  await del.click();
+  await expect(del).toHaveText('Tap again to delete for good');
+  expect(db.gifts[id]).toBeTruthy();                       // one tap is not enough
+  await del.click();
+  await expect(page.locator('#toast')).toContainText('Gift deleted');
+  expect(db.gifts[id]).toBeUndefined();
+  const rx = await context.newPage();
+  await rx.goto(link);
+  await expect(rx.locator('#landing h1')).toHaveText('We could not find this gift');
+});
