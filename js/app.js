@@ -13,6 +13,19 @@ const INFO = {
   how: ['How it works', 'Four easy steps', [['1. Flowers', 'Choose a ready-made bouquet or start from scratch, then add flowers, spikes, fillers and foliage. Drag, resize, rotate and recolor each stem.'], ['2. Wrap', 'Pick paper, a glass vase, a basket or an easel, plus a ribbon and a backdrop.'], ['3. Letter', 'Write a message, add a photo or a voice note, choose paper, font and ink, and watch the live preview.'], ['4. Share', 'Add a password or an unlock date if you like, then send the gift by link, QR code or email. Your person opens it and taps the envelope.']]],
   about: ['About', 'Make Your Own Bouquet', [['', 'A little digital gift you build, wrap and send as a link. Choose flowers, fillers and foliage, tuck a letter inside, and let someone special open it.'], ['Made by', 'Allen, 2026.']]] };
 $('how').onclick = () => info('how'); $('about').onclick = () => info('about');
+// Deleting a sent gift can't be undone, so it takes a second tap within a few seconds.
+function deleteButton(x) {
+  const btn = el('button', { textContent: 'Delete gift', className: 'danger' }); let armed = 0;
+  btn.onclick = async () => {
+    if (!armed) { btn.textContent = 'Tap again to delete for good'; armed = setTimeout(() => { armed = 0; btn.textContent = 'Delete gift'; }, 4000); return; }
+    clearTimeout(armed); armed = 0; btn.disabled = true; btn.textContent = 'Deleting…';
+    try {
+      const ok = await deleteGift(x.id, x.del); lsSet('bq_sent', lsGet('bq_sent', []).filter(y => y.id !== x.id));
+      toast(ok ? 'Gift deleted. Its link no longer opens.' : 'That gift was already gone, so it was removed from this list.'); info('sent');
+    } catch (e) { btn.disabled = false; btn.textContent = 'Delete gift'; toast(e.message === 'setup' ? 'Deleting needs the latest supabase.sql. Run it in Supabase first.' : 'Could not delete. Check your connection and try again.'); }
+  };
+  return btn;
+}
 function info(k) {
   const b = $('iB'); b.replaceChildren(); $('iS').textContent = '';
   if (k === 'profile') { $('iT').textContent = 'Your profile'; const i = el('input', { placeholder: 'Your name (used as "From")', value: lsRaw('bq_name') || '' }); b.append(i, el('button', { textContent: 'Save', onclick: () => { try { localStorage.setItem('bq_name', i.value); } catch (e) { /* private mode */ } $('iX').click(); } })); }
@@ -27,7 +40,9 @@ function info(k) {
       L.forEach(x => { const rs = R.filter(y => y.gift_id === x.id), d = el('div', { className: 'sec' });
         d.append(el('h3', { textContent: (x.to ? 'For ' + x.to : 'Gift') + ' · ' + new Date(x.t).toLocaleDateString() + (rs.some(y => y.kind === 'opened') ? ' · Opened' : ' · Not opened yet') }));
         rs.filter(y => y.kind === 'reply').forEach(y => d.append(el('p', { textContent: [y.emoji, y.body].filter(Boolean).join(' ') })));
-        d.append(el('button', { textContent: 'Copy link', onclick: () => navigator.clipboard.writeText(x.link).then(() => toast('Link copied')) })); b.append(d); }); }).catch(() => b.textContent = 'Could not load. Check your connection.'); } }
+        const row = el('div', { className: 'gift-actions' }, el('button', { textContent: 'Copy link', onclick: () => navigator.clipboard.writeText(x.link).then(() => toast('Link copied')) }));
+        if (x.del) row.append(deleteButton(x)); else row.append(el('small', { className: 'muted', textContent: 'Sent before deleting was possible.' }));
+        d.append(row); b.append(d); }); }).catch(() => b.textContent = 'Could not load. Check your connection.'); } }
   else { const [t, s, secs] = INFO[k]; $('iT').textContent = t; $('iS').textContent = s; secs.forEach(([hd, p]) => { const d = el('div', { className: 'sec' }); if (hd) d.append(el('h3', { textContent: hd })); d.append(el('p', { textContent: p })); b.append(d); }); }
   $('info').classList.remove('hide'); modalOpen($('iX'));
 }

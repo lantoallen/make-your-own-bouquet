@@ -28,6 +28,13 @@ async function fetchReplies(ids) {
   try { const r = await fetch(`${SB.url}/rest/v1/rpc/get_replies`, { method: 'POST', headers: { ...H(), 'Content-Type': 'application/json' }, body: JSON.stringify({ ids }) }); if (r.ok) return await r.json(); if (r.status !== 404) throw 0; } catch (e) { if (e === 0) throw e; }
   const r = await fetch(`${SB.url}/rest/v1/replies?gift_id=in.(${ids.map(encodeURIComponent).join(',')})&order=created_at.desc`, { headers: H() }); if (!r.ok) throw 0; return r.json();
 }
+const postGift = b => fetch(SB.url + '/rest/v1/gifts', { method: 'POST', headers: { ...H(), 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(b) });
+const newCode = () => Array.from(crypto.getRandomValues(new Uint8Array(24)), b => 'abcdefghijkmnpqrstuvwxyz23456789'[b & 31]).join('');
+// true when deleted, false when nothing matched; throws 'setup' if supabase.sql has not been updated yet
+async function deleteGift(id, code) {
+  const r = await fetch(`${SB.url}/rest/v1/rpc/delete_gift`, { method: 'POST', headers: { ...H(), 'Content-Type': 'application/json' }, body: JSON.stringify({ gid: id, code }) });
+  if (r.status === 404) throw new Error('setup'); if (!r.ok) throw new Error('network'); return (await r.json()) === true;
+}
 const rpost = b => fetch(SB.url + '/rest/v1/replies', { method: 'POST', headers: { ...H(), 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(b) });
 
 function summary() {
@@ -90,10 +97,12 @@ $('share').onclick = async () => {
     const body = pw ? { ...(await seal(data, pw)), to: S.to, from: S.from, ev: S.ev, at: S.at, atu: data.atu } : data;
     const base = location.href.split(/[?#]/)[0];
     if (SB.url) {
-      const id = newId(), r = await fetch(SB.url + '/rest/v1/gifts', { method: 'POST', headers: { ...H(), 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify({ id, data: body }) });
+      // a secret delete code stays on this device; the database only keeps its hash
+      const id = newId(); let del = newCode(), r = await postGift({ id, data: body, del_hash: await sha(del) });
+      if (!r.ok && r.status === 400 && /del_hash/.test(await r.clone().text())) { del = ''; r = await postGift({ id, data: body }); }   // database not updated yet: gift works, just can't be deleted
       if (!r.ok) { let m = ''; try { m = (await r.json()).message || ''; } catch (e) { /* not JSON */ }
         throw new Error(/too many/i.test(m) ? 'Lots of gifts are being made right now. Please try again in a minute.' : r.status === 413 ? 'The gift is too large. Try a smaller photo or a shorter voice note.' : m || 'Something went wrong (' + r.status + '). Please try again.'); }
-      link = `${base}?g=${id}`; const sent = lsGet('bq_sent', []); sent.unshift({ id, to: S.to || '', t: Date.now(), link }); lsSet('bq_sent', sent.slice(0, 30));
+      link = `${base}?g=${id}`; const sent = lsGet('bq_sent', []); sent.unshift({ id, to: S.to || '', t: Date.now(), link, del }); lsSet('bq_sent', sent.slice(0, 30));
     } else link = `${base}#d=${await pack(JSON.stringify(body))}`;
     $('linkOut').textContent = 'Link ready. Copy it, scan the QR, or email it.'; $('shareBox').classList.remove('hide'); $('linkTxt').value = link; navigator.clipboard.writeText(link).catch(() => {}); drawQR();
     { const sb = $('stepBody'); sb.scrollTo({ top: $('shareBox').getBoundingClientRect().top - sb.getBoundingClientRect().top + sb.scrollTop - 12, behavior: 'smooth' }); }
