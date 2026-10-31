@@ -466,6 +466,10 @@ body.view #histBar,#canvas[data-view="letter"] #histBar,#canvas[data-view="env"]
 @keyframes ehBob{50%{transform:translateX(-50%) translateY(-4px)}}
 body.view #emptyHint,#canvas[data-view="letter"] #emptyHint,#canvas[data-view="env"] #emptyHint{display:none}
 @media(max-width:800px) and (orientation:portrait){#emptyHint{top:18%;font-size:.84rem}#emptyHint .eh-wide{display:none}#emptyHint .eh-narrow{display:inline}}
+/* report link in the receiver's letter */
+#lActions{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+#reportLink{font:500 .8rem Quicksand,sans-serif;color:inherit;opacity:.7;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+#reportLink:hover{opacity:1}
 /* sent gifts: copy and delete */
 .gift-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
 .gift-actions button{margin:0}

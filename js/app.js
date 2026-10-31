@@ -54,7 +54,7 @@ $('iX').onclick = () => { if ($('info').classList.contains('hide')) return; $('i
     const d = el('div', { className: 'lb' }); d.innerHTML = TYPES[t].svg(c); d.style.cssText = `--r:${r}deg;animation-delay:${i * .3}s`; $('lbloom').append(d); });
   [['fern', '#3f5a3a', -35, 'left:-30px;bottom:-20px'], ['eucalyptus', '#7a9a82', 35, 'right:-30px;bottom:-20px'], ['olive', '#8a9a5b', 150, 'left:-20px;top:70px'], ['ruscus', '#4e6b45', -150, 'right:-20px;top:70px']].forEach(([t, c, r, pos]) => {
     const d = el('div', { className: 'sprig' }); d.innerHTML = TYPES[t].svg(c); d.style.cssText = `--r:${r}deg;${pos}`; w.append(d); }); }
-$('landing').querySelector('footer').onclick = e => { const k = e.target.dataset.k; if (k) info(k); };
+$('landing').querySelector('footer').onclick = e => { const k = e.target.dataset.k; if (k === 'report') location.href = reportHref(); else if (k) info(k); };
 
 // ---- boot ----
 (async () => {
@@ -71,6 +71,7 @@ $('landing').querySelector('footer').onclick = e => { const k = e.target.dataset
     serverLocked = !!raw.locked; if (raw.enc) { sealed = raw; S = clean(raw); } else S = clean(raw);
     if (S.voice) { $('lnote').textContent = 'Includes a voice note'; $('lnote').classList.remove('hide'); }
     if (sealed || serverLocked) $('lnote').classList.add('hide');
+    document.querySelectorAll('#landing .rp').forEach(x => x.classList.toggle('hide', !contact()));
     document.title = S.to ? 'A bouquet for ' + S.to : 'A bouquet for you'; buildScene(); recvCover(); fitFrame(); return;
   }
   S = D(); buildScene(); drawPicker(); syncAll(); goStep(1); fitFrame();

@@ -3,6 +3,7 @@
 SB.url = (SB.url || '').trim().replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, ''); SB.key = (SB.key || '').trim();
 
 const $ = id => document.getElementById(id);
+const contact = () => typeof CONTACT === 'string' ? CONTACT.trim() : '';
 const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const el = (tag, { dataset, ...props } = {}, ...kids) => { const e = document.createElement(tag); Object.assign(e, props); if (dataset) Object.assign(e.dataset, dataset); e.append(...kids); return e; };

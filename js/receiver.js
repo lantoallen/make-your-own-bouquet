@@ -50,6 +50,9 @@ $('saveTxt').onclick = () => { const t = [S.to ? 'Dear ' + S.to + ',' : '', '', 
 // photo, voice note, links, dates and password stay behind.
 const REMIX_KEYS = ['items', 'ev', 'cont', 'w', 'p', 'rib', 'rs', 'bg', 'bgc', 'env', 'sl', 'se', 'st', 'li', 'tr', 'nm', 'lp', 'lf', 'la', 'ph', 'pf', 'pc', 'ink', 'tz', 'tl', 'tk', 'tg', 'tb', 'ti', 'tu'];
 $('mk').onclick = () => { const r = {}; REMIX_KEYS.forEach(k => r[k] = S[k]); try { sessionStorage.setItem('bq_remix', JSON.stringify(r)); } catch (e) { /* storage blocked: a blank editor still opens */ } location.href = location.href.split(/[?#]/)[0]; };
+// "Report this gift": only shown when a contact address is set in config.js
+function reportHref() { const link = GID ? location.href.split('#')[0] : '(please paste the gift link here)';
+  return 'mailto:' + contact() + '?subject=' + encodeURIComponent('Report a gift') + '&body=' + encodeURIComponent('I would like to report this gift:\n' + link + '\n\nWhat is wrong with it:\n'); }
 const REACT = ['Love it', 'Thank you', 'So sweet', 'Beautiful', 'Made my day']; let emo = '';
 $('lReply').querySelector('.em').replaceChildren(...REACT.map(t => el('span', { textContent: t, onclick: e => { emo = t; document.querySelectorAll('#lReply .em span').forEach(x => x.classList.toggle('on', x === e.target)); } })));
 $('rSend').onclick = async () => {

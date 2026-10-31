@@ -70,7 +70,7 @@ function openLetter() {
   if (S.voice) { $('lVoiceTxt').textContent = voiceLabel(); a.src = S.voice; const bad = () => { er.textContent = 'This browser can not play the voice note. Try opening the gift in Chrome or Safari.'; er.classList.remove('hide'); };
     if (!a.canPlayType(S.voice.slice(5, S.voice.indexOf(';')))) bad(); a.onerror = bad; }
   const ms = S.mean ? [...new Set(S.items.map(i => i.t))].map(t => TYPES[t][0] + ' — ' + (MEAN[t] || '')).join('  ·  ') : ''; $('lMean').textContent = ms ? 'In the language of flowers: ' + ms : ''; $('lMean').classList.toggle('hide', !ms);
-  $('lReply').classList.toggle('hide', !(view && SB.url && GID)); $('lActions').classList.toggle('hide', !(view && S.text));
+  $('lReply').classList.toggle('hide', !(view && SB.url && GID)); $('lActions').classList.toggle('hide', !(view && (S.text || contact()))); $('saveTxt').classList.toggle('hide', !S.text); $('reportLink').classList.toggle('hide', !(view && contact())); if (view && contact()) $('reportLink').href = reportHref();
   const L = document.querySelector('.letter'); L.className = 'letter ' + L_KEYS(); L.style.color = S.ink || ''; applyText(L); L.style.setProperty('--k', 1); L.style.backgroundColor = S.pc || ''; L.scrollTop = 0;
   clearTimeout(openLetter.t1); clearTimeout(openLetter.t2);
   envLook($('env')); $('ov').classList.remove('hide'); $('hint').classList.add('hide'); modalOpen($('close'));
