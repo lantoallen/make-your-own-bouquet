@@ -457,3 +457,12 @@ body.view #histBar,#canvas[data-view="letter"] #histBar,#canvas[data-view="env"]
 .pwtoggle:hover{transform:translateY(-50%)}
 #pwWrap .pwtoggle{margin-top:0}
 #pwHint.weak{color:#b23f33}#pwHint.ok{color:var(--mut)}#pwHint.strong{color:var(--ac)}
+
+/* empty stage: point to where flowers come from */
+#emptyHint{position:absolute;left:50%;top:24%;transform:translateX(-50%);z-index:9;max-width:calc(100% - 40px);padding:10px 18px;border-radius:999px;background:var(--surface);box-shadow:var(--sh2);color:var(--tx);font-weight:600;font-size:.9rem;text-align:center;pointer-events:none;animation:ehIn .5s ease both,ehBob 2.6s ease-in-out .5s infinite}
+#emptyHint .eh-narrow{display:none}
+@media(min-width:801px){#emptyHint{white-space:nowrap}}
+@keyframes ehIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}}
+@keyframes ehBob{50%{transform:translateX(-50%) translateY(-4px)}}
+body.view #emptyHint,#canvas[data-view="letter"] #emptyHint,#canvas[data-view="env"] #emptyHint{display:none}
+@media(max-width:800px) and (orientation:portrait){#emptyHint{top:18%;font-size:.84rem}#emptyHint .eh-wide{display:none}#emptyHint .eh-narrow{display:inline}}

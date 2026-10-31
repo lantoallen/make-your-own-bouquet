@@ -45,12 +45,14 @@ function checkpoint(key) {
 }
 // call after a drag or resize with the state captured when it began
 function commitIfChanged(before) { if (before !== itemsJSON() && hist.undo[hist.undo.length - 1] !== before) { hist.undo.push(before); trimHist(); hist.redo = []; syncHist(); } }
-function restore(j) { sel = null; els.forEach(e => e.remove()); els.clear(); S.items = JSON.parse(j); S.items.forEach(mk); select(null); drawStems(); $('count').textContent = S.items.length; }
+function restore(j) { sel = null; els.forEach(e => e.remove()); els.clear(); S.items = JSON.parse(j); S.items.forEach(mk); select(null); drawStems(); setCount(); }
 function undo() { if (!hist.undo.length) return; hist.redo.push(itemsJSON()); restore(hist.undo.pop()); syncHist(); ckKey = ''; }
 function redo() { if (!hist.redo.length) return; hist.undo.push(itemsJSON()); restore(hist.redo.pop()); syncHist(); ckKey = ''; }
 function syncHist() { $('undoBtn').disabled = !hist.undo.length; $('redoBtn').disabled = !hist.redo.length; }
 $('undoBtn').onclick = undo; $('redoBtn').onclick = redo;
 // ---- bouquet items ----
+// the stem counter and the "pick a flower" hint on an empty stage always change together
+const setCount = () => { $('count').textContent = S.items.length; $('emptyHint').classList.toggle('hide', view || S.items.length > 0); };
 const mkIt = (t, c) => { const k = TYPES[t][1], sp = k === 'b' ? 55 : 90, x = rnd(-sp, sp); return { t, c, x, y: -(k === 'b' ? rnd(40, 120) : rnd(70, 150)), r: Math.round(x / 5), s: 1, z: k === 'b' || k === 'x' ? 2 : k === 'i' || k === 's' ? 1 : 0 }; };
 const fs = () => $('frame').getBoundingClientRect().width / $('frame').offsetWidth || 1;
 function add(t, c) {
@@ -60,7 +62,7 @@ function add(t, c) {
 }
 function place(it) { const e = els.get(it); e.style.transform = `translate(${it.x}px,${it.y}px) rotate(${it.r}deg) scale(${it.s})`; e.style.zIndex = it.z; if (it === sel) inv(it); if (S.cont === 'none') drawStems(); }
 function mk(it) {
-  const e = el('div', { className: 'sp' }); e.innerHTML = TYPES[it.t].svg(it.c); els.set(it, e); place(it); $('bunch').append(e); $('count').textContent = S.items.length;
+  const e = el('div', { className: 'sp' }); e.innerHTML = TYPES[it.t].svg(it.c); els.set(it, e); place(it); $('bunch').append(e); setCount();
   if (!view) { e.tabIndex = 0; e.setAttribute('role', 'button'); e.setAttribute('aria-label', TYPES[it.t][0] + ', stem on the bouquet. Arrow keys move it, Delete removes it.');
     e.onfocus = () => { if (sel !== it) select(it); }; e.onkeydown = ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); select(it); } }; }
   let sx, sy, ox, oy, drag = false, before = '';
@@ -75,7 +77,7 @@ function select(it) {
   $('isw').replaceChildren(...(it ? swatchesFor(it.t).map(c => dot(c, c === it.c, () => { checkpoint('color'); it.c = c; els.get(it).innerHTML = TYPES[it.t].svg(c); select(it); })) : []));
   requestAnimationFrame(fitFrame);
 }
-function removeItem(it) { checkpoint(); els.get(it).remove(); els.delete(it); S.items = S.items.filter(i => i !== it); $('count').textContent = S.items.length; if (sel === it) select(null); drawStems(); }
+function removeItem(it) { checkpoint(); els.get(it).remove(); els.delete(it); S.items = S.items.filter(i => i !== it); setCount(); if (sel === it) select(null); drawStems(); }
 $('tools').onclick = ev => {
   const b = ev.target.closest('[data-a]'), a = b && b.dataset.a; if (!a || !sel) return;
   if (a === 'd') return removeItem(sel);

@@ -53,7 +53,7 @@ $('resume').onclick = () => { if (!S.items.length) { const a = lsGet('bq_auto', 
 
 // ---- building the scene from S ----
 function buildScene() {
-  els.forEach(e => e.remove()); els.clear(); sel = null; select(null); S.items.forEach(mk); $('count').textContent = S.items.length; fillPat(); applyStyle(); hist.undo = []; hist.redo = []; syncHist();
+  els.forEach(e => e.remove()); els.clear(); sel = null; select(null); S.items.forEach(mk); setCount(); fillPat(); applyStyle(); hist.undo = []; hist.redo = []; syncHist();
 }
 function syncAll() {
   ['to', 'from', 'text', 'media', 'sched'].forEach(k => $(k).value = S[k === 'sched' ? 'at' : k]); $('tcount').textContent = S.text.length; $('pw').value = '';
