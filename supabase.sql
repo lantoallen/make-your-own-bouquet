@@ -15,6 +15,9 @@ create table if not exists public.gifts (
   created_at timestamptz not null default now()
 );
 
+-- del_hash: SHA-256 of a secret delete code that only the sender's browser keeps. get_gift never returns it.
+alter table public.gifts add column if not exists del_hash text;
+
 create table if not exists public.replies (
   id         bigint generated always as identity primary key,
   gift_id    text not null,
@@ -36,7 +39,8 @@ drop policy if exists "anyone can read replies"  on public.replies; -- old: let 
 
 create policy "anyone can create a gift" on public.gifts
   for insert to anon
-  with check (length(id) between 8 and 40 and octet_length(data::text) < 3000000);
+  with check (length(id) between 8 and 40 and octet_length(data::text) < 3000000
+              and (del_hash is null or del_hash ~ '^[0-9a-f]{64}$'));
 
 create policy "anyone can reply" on public.replies
   for insert to anon
@@ -153,3 +157,29 @@ $$;
 revoke all on function public.delete_old_gifts(interval) from public, anon, authenticated;
 
 -- select cron.schedule('delete-old-gifts', '17 3 * * *', $$ select public.delete_old_gifts(interval '1 year') $$);
+
+-- 6. Senders can delete their own gifts ---------------------------------------------------------
+-- delete_gift(gid, code): removes the gift and its replies when the code matches the stored hash.
+-- Returns true if something was deleted. Without the code nobody can delete a gift.
+create or replace function public.delete_gift(gid text, code text)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  ok boolean;
+begin
+  delete from public.gifts
+   where id = gid
+     and del_hash is not null
+     and del_hash = encode(sha256(convert_to(code, 'UTF8')), 'hex');
+  ok := found;
+  if ok then
+    delete from public.replies where gift_id = gid;
+  end if;
+  return ok;
+end;
+$$;
+revoke all on function public.delete_gift(text, text) from public;
+grant execute on function public.delete_gift(text, text) to anon, authenticated;
