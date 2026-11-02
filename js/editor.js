@@ -14,7 +14,8 @@ function goStep(n) {
   document.querySelectorAll('.step').forEach(s => s.classList.toggle('hide', +s.dataset.s !== step));
   document.querySelectorAll('#steps button').forEach(b => { const k = +b.dataset.s; b.classList.toggle('on', k === step); b.classList.toggle('done', k < step); if (k === step) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
   $('prevStep').classList.toggle('hide', step === 1); $('nextStep').classList.toggle('hide', step === 4); $('nextStep').textContent = 'Next: ' + (STEPS[step] || '');
-  $('stepBody').scrollTop = 0; if (step === 3) prev(); if (step === 4) { summary(); $('sched').min = new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 16); } syncPreview();
+  $('share').classList.toggle('hide', step !== 4); $('share').textContent = link ? 'Create a new link' : 'Create gift link';   // the main action always sits in the bottom bar
+  $('stepBody').scrollTop = 0; if (step === 3) prev(); if (step === 4) { summary(); optTag(); $('sched').min = new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 16); } syncPreview();
 }
 document.querySelectorAll('#steps button').forEach(b => b.onclick = () => goStep(+b.dataset.s));
 $('prevStep').onclick = () => goStep(step - 1); $('nextStep').onclick = () => goStep(step + 1);

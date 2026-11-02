@@ -136,32 +136,37 @@
    <section class="step hide" data-s="4">
     <h2>Share it</h2>
     <div id="summary" class="summary"></div>
-    <div class="lbl">Unlock on <small>optional</small></div>
-    <input type="datetime-local" id="sched" aria-label="Unlock date and time">
-    <div class="lbl">Password <small>optional</small></div>
-    <div class="pwbox"><input id="pw" type="password" placeholder="Password to open the gift" autocomplete="new-password" aria-label="Password"><button type="button" class="pwtoggle" data-for="pw" aria-pressed="false" aria-label="Show password">Show</button></div>
-    <p id="pwHint" class="muted">Leave empty for no password. If it is forgotten, nobody can recover the gift, so keep it somewhere safe.</p>
-    <label class="switch"><input type="checkbox" id="musOn"><span>Play soft music when it opens</span></label>
-    <button id="prevOpen" class="wide">Preview the opening animation</button>
-    <button class="primary" id="share">Create gift link</button>
+    <details class="acc" id="moreOpts"><summary>More options <small id="optTag"></small></summary>
+     <div class="lbl">Unlock on <small>optional</small></div>
+     <input type="datetime-local" id="sched" aria-label="Unlock date and time">
+     <div class="lbl">Password <small>optional</small></div>
+     <div class="pwbox"><input id="pw" type="password" placeholder="Password to open the gift" autocomplete="new-password" aria-label="Password"><button type="button" class="pwtoggle" data-for="pw" aria-pressed="false" aria-label="Show password">Show</button></div>
+     <p id="pwHint" class="muted">Leave empty for no password. If it is forgotten, nobody can recover the gift, so keep it somewhere safe.</p>
+     <label class="switch"><input type="checkbox" id="musOn"><span>Play soft music when it opens</span></label>
+     <button id="prevOpen" class="wide">Preview the opening animation</button>
+    </details>
     <p id="linkOut" class="muted"></p>
     <div id="shareBox" class="hide">
-     <input id="linkTxt" readonly aria-label="Gift link"><div class="row"><button id="copy">Copy link</button></div>
+     <input id="linkTxt" readonly aria-label="Gift link">
+     <div class="row"><button id="nativeShare" class="hide">Share…</button><button id="copy">Copy link</button></div>
      <div id="qr"></div>
+     <div class="row"><button id="qrDl">Download QR</button></div>
+     <details class="acc"><summary>Customize the QR code</summary>
      <div class="row"><select id="qrStyle" aria-label="QR module style"><option value="round">Modules: Rounded</option><option value="heart">Hearts</option><option value="dots">Dots</option><option value="petal">Petals</option><option value="square">Classic squares</option></select><select id="qrFrame" aria-label="QR frame"><option value="card">Frame: Card</option><option value="heart">Heart</option><option value="flower">Flower</option><option value="circle">Circle</option></select></div>
      <div class="row"><select id="qrS" aria-label="QR colors"></select><select id="qrBg" aria-label="QR background"><option value="auto">Background: Theme</option><option value="#ffffff">White</option><option value="#f7f1e6">Cream</option><option value="#fbe4e8">Blush</option><option value="#e3ecdc">Sage</option><option value="#ece6f7">Lavender</option><option value="#fbf0c9">Butter</option></select></div>
      <label class="switch"><input type="checkbox" id="qrLogo" checked><span>Logo in the center</span></label>
      <label class="switch"><input type="checkbox" id="qrCap" checked><span>Caption under the code</span></label>
-     <div class="row"><button id="qrDl">Download QR</button></div>
-     <div class="lbl">Send by email</div>
+     </details>
+     <details class="acc"><summary>Send by email</summary>
      <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="Receiver's email" aria-label="Receiver's email">
      <label class="switch"><input type="checkbox" id="qrAtt" checked><span>Also download the QR to attach</span></label>
      <button class="primary" id="mail">Send by email</button>
+     </details>
     </div>
    </section>
   </div>
 
-  <div id="stepNav"><button id="prevStep">Back</button><button class="primary" id="nextStep">Next: Wrap</button></div>
+  <div id="stepNav"><button id="prevStep">Back</button><button class="primary" id="nextStep">Next: Wrap</button><button class="primary hide" id="share">Create gift link</button></div>
  </aside>
 
  <main id="stage">

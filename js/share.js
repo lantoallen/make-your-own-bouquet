@@ -77,6 +77,11 @@ async function drawQR() {
 }
 ['qrS', 'qrStyle', 'qrFrame', 'qrBg', 'qrLogo', 'qrCap'].forEach(k => $(k).onchange = drawQR);
 $('qrDl').onclick = () => { const c = $('qr').querySelector('canvas'); if (c) el('a', { download: 'bouquet-qr.png', href: c.toDataURL() }).click(); };
+// phones and some desktops: hand the link straight to WhatsApp, Messages, Mail and so on
+$('nativeShare').onclick = () => navigator.share({ title: S.to ? 'A bouquet for ' + S.to : 'A bouquet for you', text: (S.from || 'Someone') + ' made you a bouquet.', url: link }).catch(() => { /* closed the share sheet */ });
+// "More options" shows which ones are in use while folded
+const optTag = () => { $('optTag').textContent = [S.at && 'unlock date', $('pw').value && 'password', S.mus && 'music'].filter(Boolean).join(', '); };
+['sched', 'pw', 'musOn'].forEach(id => $(id).addEventListener('change', optTag)); $('pw').addEventListener('input', optTag);
 $('copy').onclick = () => navigator.clipboard.writeText(link).then(() => toast('Link copied'), () => toast('Select the link and copy it by hand.'));
 $('mail').onclick = () => {
   if (!link) return; if (link.length > 1500) return toast('Email links need to be short. Connect Supabase first (see supabase.sql).');
@@ -105,6 +110,7 @@ $('share').onclick = async () => {
       link = `${base}?g=${id}`; const sent = lsGet('bq_sent', []); sent.unshift({ id, to: S.to || '', t: Date.now(), link, del }); lsSet('bq_sent', sent.slice(0, 30));
     } else link = `${base}#d=${await pack(JSON.stringify(body))}`;
     $('linkOut').textContent = 'Link ready. Copy it, scan the QR, or email it.'; $('shareBox').classList.remove('hide'); $('linkTxt').value = link; navigator.clipboard.writeText(link).catch(() => {}); drawQR();
-    { const sb = $('stepBody'); sb.scrollTo({ top: $('shareBox').getBoundingClientRect().top - sb.getBoundingClientRect().top + sb.scrollTop - 12, behavior: 'smooth' }); }
+    $('share').textContent = 'Create a new link'; $('nativeShare').classList.toggle('hide', !navigator.share);
+    { const sb = $('stepBody'); sb.scrollTo({ top: $('linkOut').getBoundingClientRect().top - sb.getBoundingClientRect().top + sb.scrollTop - 12, behavior: 'smooth' }); }
   } catch (e) { $('linkOut').textContent = 'Could not create link: ' + e.message; } finally { btn.disabled = false; }
 };

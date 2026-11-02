@@ -45,7 +45,7 @@ async function makeGift(page, { to = 'Mia', from = 'Allen', text = 'Hello Mia', 
     await expect(page.locator('#voiceTag')).toHaveText('attached', { timeout: 10000 });
   }
   await step(page, 4);
-  if (password) await page.fill('#pw', password);
+  if (password) { await page.click('#moreOpts summary'); await page.fill('#pw', password); }
   await page.click('#share');
   await expect(page.locator('#shareBox')).toBeVisible();
   return page.inputValue('#linkTxt');
