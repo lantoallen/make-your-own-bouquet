@@ -1,0 +1,27 @@
+name: Keep database awake
+
+# Free Supabase projects pause after about 7 days without activity, which silently breaks every
+# gift link. This makes one read-only request every 3 days. If the database does not answer, the
+# run fails and GitHub emails the repository owner, so it doubles as an outage alert.
+on:
+  schedule:
+    - cron: '17 6 */3 * *'   # 06:17 UTC on every third day of the month
+  workflow_dispatch:         # lets you run it by hand from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ask the database for a gift that does not exist
+        run: |
+          url=$(grep -o "https://[a-z0-9]*\.supabase\.co" config.js)
+          key=$(grep -o "sb_publishable_[A-Za-z0-9_]*" config.js)
+          code=$(curl -s -o /dev/null -w '%{http_code}' -m 30 --retry 3 --retry-delay 20 \
+            -H "apikey: $key" -H "Authorization: Bearer $key" -H 'Content-Type: application/json' \
+            -d '{"gid":"keepalive000"}' "$url/rest/v1/rpc/get_gift")
+          echo "Database answered with HTTP $code"
+          if [ "$code" != "200" ]; then
+            echo "::error::The database did not answer. Check the project in the Supabase dashboard (it may be paused)."
+            exit 1
+          fi
