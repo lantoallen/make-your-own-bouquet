@@ -112,5 +112,5 @@ $('share').onclick = async () => {
     $('linkOut').textContent = 'Link ready. Copy it, scan the QR, or email it.'; $('shareBox').classList.remove('hide'); $('linkTxt').value = link; navigator.clipboard.writeText(link).catch(() => {}); drawQR();
     $('share').textContent = 'Create a new link'; $('nativeShare').classList.toggle('hide', !navigator.share);
     { const sb = $('stepBody'); sb.scrollTo({ top: $('linkOut').getBoundingClientRect().top - sb.getBoundingClientRect().top + sb.scrollTop - 12, behavior: 'smooth' }); }
-  } catch (e) { $('linkOut').textContent = 'Could not create link: ' + e.message; } finally { btn.disabled = false; }
+  } catch (e) { $('linkOut').textContent = e instanceof TypeError ? 'We could not reach the gift service. Check your connection and try again in a minute. Your bouquet is safe here.' : 'Could not create the link: ' + e.message; } finally { btn.disabled = false; }
 };
