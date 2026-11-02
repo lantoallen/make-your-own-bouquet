@@ -58,7 +58,7 @@ function buildScene() {
 function syncAll() {
   ['to', 'from', 'text', 'media', 'sched'].forEach(k => $(k).value = S[k === 'sched' ? 'at' : k]); $('tcount').textContent = S.text.length; $('pw').value = '';
   $('wrapC').value = S.w; $('ribC').value = S.rib; $('envC').value = S.env; $('sealC').value = S.sl; $('nmOn').checked = S.nm; $('bgc').value = S.bgc || '#e9dfcb'; $('pc').value = S.pc || '#fffdf9';
-  $('msgOn').checked = S.on; $('msgBox').classList.toggle('hide', !S.on); $('musOn').checked = S.mus; $('meanOn').checked = S.mean;
+  $('msgOn').checked = S.on; $('msgBox').classList.toggle('hide', !S.on); $('letterIntro').classList.toggle('hide', S.on); $('musOn').checked = S.mus; $('meanOn').checked = S.mean;
   $('ps').value = S.ps; $('psv').textContent = S.ps + '%'; $('pr').value = S.pr; $('prv').textContent = S.pr; $('bgPhotoDel').classList.toggle('hide', !S.bgImg);
   syncPhoto(); syncVoice(); syncText(); syncChoices(); prev(); syncPreview();
 }

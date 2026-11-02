@@ -481,3 +481,6 @@ body.view #emptyHint,#canvas[data-view="letter"] #emptyHint,#canvas[data-view="e
 @media(max-width:800px) and (orientation:portrait){#selbar{left:8px;right:8px;bottom:calc(var(--navh,64px) + 8px);border-radius:20px;padding-bottom:10px}}
 .sp.pop{animation:spPop .5s ease}
 @keyframes spPop{0%{scale:.6}60%{scale:1.12}100%{scale:1}}
+
+/* letter step while the letter is off */
+.intro{margin-top:12px;padding:14px 16px;border-radius:16px;background:var(--soft);color:var(--mut);font-size:.88rem;line-height:1.55}

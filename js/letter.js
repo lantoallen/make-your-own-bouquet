@@ -2,7 +2,7 @@
 // Classic scripts share one global scope, so these files rely on being loaded in the order listed in index.html.
 // ---- letter ----
 const L_KEYS = () => [S.lp, S.la, S.ph, S.pf].join(' ');
-function setLetter(on) { S.on = on; $('msgOn').checked = on; $('msgBox').classList.toggle('hide', !on); applyStyle(); if (on) prev(); syncPreview(); }
+function setLetter(on) { S.on = on; $('msgOn').checked = on; $('msgBox').classList.toggle('hide', !on); $('letterIntro').classList.toggle('hide', on); applyStyle(); if (on) prev(); syncPreview(); }
 $('msgOn').onchange = e => setLetter(e.target.checked);
 $('to').oninput = e => { S.to = e.target.value; applyStyle(); prev(); };
 $('from').oninput = e => { S.from = e.target.value; prev(); };
