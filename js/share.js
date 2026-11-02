@@ -77,11 +77,19 @@ async function drawQR() {
 }
 ['qrS', 'qrStyle', 'qrFrame', 'qrBg', 'qrLogo', 'qrCap'].forEach(k => $(k).onchange = drawQR);
 $('qrDl').onclick = () => { const c = $('qr').querySelector('canvas'); if (c) el('a', { download: 'bouquet-qr.png', href: c.toDataURL() }).click(); };
+// Once a link exists for exactly this bouquet, the big button shares it instead of quietly making a duplicate gift.
+let linkFor = '';
+const linkKey = () => JSON.stringify(snap()) + '|' + $('pw').value;
+function syncShareBtn() {
+  const fresh = !!link && linkFor === linkKey(), b = $('share'); b.dataset.mode = fresh ? 'send' : 'create';
+  b.textContent = fresh ? (navigator.share ? 'Share…' : 'Copy link') : link ? 'Create a new link' : 'Create gift link';
+  if (link && !fresh) $('linkOut').textContent = 'You changed something after making the link below. Create a new link to include the changes.';
+}
 // phones and some desktops: hand the link straight to WhatsApp, Messages, Mail and so on
 $('nativeShare').onclick = () => navigator.share({ title: S.to ? 'A bouquet for ' + S.to : 'A bouquet for you', text: (S.from || 'Someone') + ' made you a bouquet.', url: link }).catch(() => { /* closed the share sheet */ });
 // "More options" shows which ones are in use while folded
 const optTag = () => { $('optTag').textContent = [S.at && 'unlock date', $('pw').value && 'password', S.mus && 'music'].filter(Boolean).join(', '); };
-['sched', 'pw', 'musOn'].forEach(id => $(id).addEventListener('change', optTag)); $('pw').addEventListener('input', optTag);
+['sched', 'pw', 'musOn'].forEach(id => $(id).addEventListener('change', () => { optTag(); syncShareBtn(); })); $('pw').addEventListener('input', () => { optTag(); syncShareBtn(); });
 $('copy').onclick = () => navigator.clipboard.writeText(link).then(() => toast('Link copied'), () => toast('Select the link and copy it by hand.'));
 $('mail').onclick = () => {
   if (!link) return; if (link.length > 1500) return toast('Email links need to be short. Connect Supabase first (see supabase.sql).');
@@ -91,6 +99,7 @@ $('mail').onclick = () => {
   location.href = `mailto:${encodeURIComponent($('email').value)}?subject=${encodeURIComponent('A gift has arrived for you')}&body=${encodeURIComponent(body)}`;
 };
 $('share').onclick = async () => {
+  if ($('share').dataset.mode === 'send') return navigator.share ? $('nativeShare').click() : $('copy').click();   // link already made for exactly this bouquet
   await stopRec();
   if (!S.items.length) return toast('Add a few flowers first.');
   if (S.voice && !S.on) return toast('Your voice note lives inside the letter. Turn the letter on in step 3, or remove the voice note.');
@@ -110,7 +119,7 @@ $('share').onclick = async () => {
       link = `${base}?g=${id}`; const sent = lsGet('bq_sent', []); sent.unshift({ id, to: S.to || '', t: Date.now(), link, del }); lsSet('bq_sent', sent.slice(0, 30));
     } else link = `${base}#d=${await pack(JSON.stringify(body))}`;
     $('linkOut').textContent = 'Link ready. Copy it, scan the QR, or email it.'; $('shareBox').classList.remove('hide'); $('linkTxt').value = link; navigator.clipboard.writeText(link).catch(() => {}); drawQR();
-    $('share').textContent = 'Create a new link'; $('nativeShare').classList.toggle('hide', !navigator.share);
+    linkFor = linkKey(); syncShareBtn(); $('nativeShare').classList.toggle('hide', !navigator.share);
     { const sb = $('stepBody'); sb.scrollTo({ top: $('linkOut').getBoundingClientRect().top - sb.getBoundingClientRect().top + sb.scrollTop - 12, behavior: 'smooth' }); }
   } catch (e) { $('linkOut').textContent = e instanceof TypeError ? 'We could not reach the gift service. Check your connection and try again in a minute. Your bouquet is safe here.' : 'Could not create the link: ' + e.message; } finally { btn.disabled = false; }
 };
