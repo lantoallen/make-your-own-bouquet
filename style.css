@@ -484,3 +484,5 @@ body.view #emptyHint,#canvas[data-view="letter"] #emptyHint,#canvas[data-view="e
 
 /* letter step while the letter is off */
 .intro{margin-top:12px;padding:14px 16px;border-radius:16px;background:var(--soft);color:var(--mut);font-size:.88rem;line-height:1.55}
+/* buttons inside the letter use the app font, not the letter's handwriting */
+#lActions button{font:600 .82rem Quicksand,sans-serif;font-style:normal}
