@@ -55,10 +55,13 @@ $('undoBtn').onclick = undo; $('redoBtn').onclick = redo;
 const setCount = () => { $('count').textContent = S.items.length; $('emptyHint').classList.toggle('hide', view || S.items.length > 0); };
 const mkIt = (t, c) => { const k = TYPES[t][1], sp = k === 'b' ? 55 : 90, x = rnd(-sp, sp); return { t, c, x, y: -(k === 'b' ? rnd(40, 120) : rnd(70, 150)), r: Math.round(x / 5), s: 1, z: k === 'b' || k === 'x' ? 2 : k === 'i' || k === 's' ? 1 : 0 }; };
 const fs = () => $('frame').getBoundingClientRect().width / $('frame').offsetWidth || 1;
+const phone = () => matchMedia('(max-width:800px) and (orientation:portrait)').matches;
 function add(t, c) {
   if (S.items.length >= 40) return toast('Your bouquet is full (40 stems). Delete one to add another.');
   checkpoint(); const it = mkIt(t, c); if (TYPES[t][1] === 'x') Object.assign(it, { x: 0, y: -95, s: 2, r: 0 });
-  S.items.push(it); mk(it); select(it);
+  S.items.push(it); mk(it);
+  // on phones the editing tray would cover the list and the Next button, so just show where the stem landed
+  if (phone()) { select(null); const e = els.get(it); e.classList.add('pop'); setTimeout(() => e.classList.remove('pop'), 600); } else select(it);
 }
 function place(it) { const e = els.get(it); e.style.transform = `translate(${it.x}px,${it.y}px) rotate(${it.r}deg) scale(${it.s})`; e.style.zIndex = it.z; if (it === sel) inv(it); if (S.cont === 'none') drawStems(); }
 function mk(it) {
@@ -88,6 +91,9 @@ $('tools').onclick = ev => {
   place(sel);
 };
 document.addEventListener('pointerdown', e => { if (!e.target.closest('.sp,#selbar,#grid,#sw,#tabs')) select(null); });
+$('selDone').onclick = () => select(null);
+// phones: the editing tray floats just above the bottom bar, so Back/Next stay reachable
+new ResizeObserver(() => document.documentElement.style.setProperty('--navh', $('stepNav').offsetHeight + 'px')).observe($('stepNav'));
 const inv = it => { const s = els.get(it) && els.get(it).querySelector('.sh'); if (s) s.style.setProperty('--inv', 1 / it.s); };
 function drawH(it) {
   document.querySelectorAll('.sh').forEach(x => x.remove()); if (!it || view) return; const e = els.get(it), s = el('div', { className: 'sh' });

@@ -474,3 +474,10 @@ body.view #emptyHint,#canvas[data-view="letter"] #emptyHint,#canvas[data-view="e
 .gift-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
 .gift-actions button{margin:0}
 .gift-actions .danger{color:#b23f33}
+
+/* selection tray: name row with a Done button; on phones it floats above the bottom bar */
+.selrow{display:flex;align-items:center;gap:8px}.selrow .selhead{flex:1;min-width:0}
+#selDone{flex:none;padding:6px 14px;font-size:.8rem;border-radius:999px;min-height:0!important}
+@media(max-width:800px) and (orientation:portrait){#selbar{left:8px;right:8px;bottom:calc(var(--navh,64px) + 8px);border-radius:20px;padding-bottom:10px}}
+.sp.pop{animation:spPop .5s ease}
+@keyframes spPop{0%{scale:.6}60%{scale:1.12}100%{scale:1}}
