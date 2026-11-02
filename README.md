@@ -93,6 +93,12 @@ The tests run the real app in Chromium with Supabase replaced by an in-memory st
 
 If you have not run the new `supabase.sql` yet, the app still works. It falls back to reading the tables directly, which is how older versions behaved, so run it to get the protections below.
 
+### Keeping the database awake
+
+Free Supabase projects pause after about 7 days without activity, and every gift link stops working while paused. The workflow in `.github/workflows/keepalive.yml` makes one read-only request every 3 days to prevent that. If the database stops answering, the run fails and GitHub emails you, so it also works as an outage alert. You can run it by hand from the repository's **Actions** tab (*Keep database awake* → *Run workflow*).
+
+GitHub turns off scheduled workflows in repositories with no commits for 60 days. It emails a warning first; re-enable it with one click in the Actions tab, or upgrade Supabase to a paid plan, which never pauses.
+
 ### Without Supabase
 
 If `SB.url` is empty, the whole gift is encoded into the link (`#d=...`). This works for simple gifts. Voice notes, backdrop photos, QR codes and email need the short `?g=<id>` links that Supabase provides, and replies are unavailable.
