@@ -190,3 +190,54 @@ test('a sender can delete a gift, after confirming, and the link stops working',
   await rx.goto(link);
   await expect(rx.locator('#landing h1')).toHaveText('We could not find this gift');
 });
+
+test('on a phone, Next stays reachable after adding flowers and the tray closes with Done', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await start(page);
+  await addFlowers(page, 2);
+  await expect(page.locator('#selbar')).toHaveClass(/empty/);          // adding from the list does not open the tray
+  await page.locator('#bunch .sp').first().click({ force: true });     // tap a stem on the stage
+  await expect(page.locator('#selbar')).not.toHaveClass(/empty/);
+  await page.click('#nextStep');                                       // still clickable with the tray open
+  await expect(page.locator('#steps button[data-s="2"]')).toHaveAttribute('aria-current', 'step');
+  await page.click('#steps button[data-s="1"]');
+  await page.locator('#bunch .sp').first().click({ force: true });
+  await page.click('#selDone');
+  await expect(page.locator('#selbar')).toHaveClass(/empty/);
+});
+
+test('the Share step keeps Create gift link in the bottom bar', async ({ page }) => {
+  await start(page);
+  await addFlowers(page, 1);
+  await step(page, 4);
+  await expect(page.locator('#share')).toBeInViewport();
+  await expect(page.locator('#moreOpts')).not.toHaveAttribute('open', '');
+});
+
+test('when the gift service is down, people get a plain explanation', async ({ page, context }) => {
+  await context.route('**/rest/v1/**', route => route.abort('internetdisconnected'));
+  await start(page);
+  await addFlowers(page, 1);
+  await step(page, 4);
+  await page.click('#share');
+  await expect(page.locator('#linkOut')).toContainText('could not reach the gift service');
+  const rx = await context.newPage();
+  await rx.goto('/?g=abcdefgh2345');
+  await expect(rx.locator('#landing h1')).toHaveText('We could not open this gift just now');
+  await expect(rx.locator('#go')).toHaveText('Try again');
+});
+
+test('after a link is made, the big button shares it instead of making a duplicate gift', async ({ page, context }) => {
+  const db = await mockSupabase(context);
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await start(page);
+  await makeGift(page);
+  expect(Object.keys(db.gifts)).toHaveLength(1);
+  await expect(page.locator('#share')).toHaveText(/Share…|Copy link/);
+  await page.click('#share');
+  await page.waitForTimeout(500);
+  expect(Object.keys(db.gifts)).toHaveLength(1);                 // no duplicate
+  await step(page, 1); await addFlowers(page, 1); await step(page, 4);   // change the bouquet
+  await expect(page.locator('#share')).toHaveText('Create a new link');
+  await expect(page.locator('#linkOut')).toContainText('You changed something');
+});
